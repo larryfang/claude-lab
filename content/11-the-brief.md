@@ -117,6 +117,25 @@ For anything built from scattered sources, one sentence at the top of the brief 
 2. **Iterate on the brief, not the output.** When a run disappoints, resist fixing the document by hand. Ask "which letter was missing?" and fix that. The next hundred runs get better.
 3. **Ask for the thing you actually want.** People ask for a summary when they want a decision, a report when they want a list of what is broken. Say the real thing.
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What does each letter of **B.R.I.E.F.** stand for?
+A: **B**ackground, **R**esult, **I**nputs, **E**dges, **F**lag.
+Q: Which letter is skipped most often, and what does it do?
+A: **Flag.** It tells Cowork what to surface to you instead of deciding silently.
+Q: Why write "do not use the web" in a brief?
+A: If a claim can only come from files you also have, you can check every claim.
+Q: A run disappoints. What do you fix first?
+A: The brief. Find the missing letter. A hand-fixed document improves once; a fixed brief improves every future run.
+Q: What does a good **Result** name?
+A: The artefact, its sections in order, and the file name and format.
+Q: What is the gap-analysis opener?
+A: "Before producing anything, list the information you found and any gaps that would weaken the result. Wait for my response."
+```
+
 ```quiz
 Q: Which part of B.R.I.E.F. prevents Cowork silently resolving an ambiguity it should have escalated?
 - Background

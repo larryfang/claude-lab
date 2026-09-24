@@ -53,6 +53,17 @@ An unread flag section is the same as not having asked.
 | **Anything about a named person** | Reputational and factual risk | Verify title, role, spelling |
 | **A date or a commitment** | Becomes a promise | Check the source system |
 
+## Practise the review
+
+The table above is only useful if you can spot those claims in a fluent paragraph. This draft came back from a well-briefed run. Five sentences should not reach the VP as written.
+
+```spot
+# Select every sentence you would not send without checking or changing it, then choose Check.
+Q3 closed with 42 opportunities in the export (source: `pipeline-q3.csv`, rows 2–43). [[Win rate improved to 31% because the new discovery script works.|A causal claim. The data shows the win rate rose while the script was in use; it does not show the script caused it. Ask what else changed in the quarter.]] The three largest open deals are in the table on page 2, with close dates taken from the CRM. [[Northwind cut its list price by 40% last month, so expect pressure on renewals.|A competitor price with no source and no date. Open the page, check the date and cite it, or cut the sentence.]] [[Average deal size was about $48k.|A number going to an executive with no source row, and "about" hides whether it was rounded, derived or estimated. Trace it before it is repeated.]] Two opportunities were excluded from the totals because their amount field is blank; both are listed in the Issues tab. [[The trend is statistically significant, so it will continue into Q4.|A significance claim on 42 deals, and a forecast stated as a fact. Check the sample yourself and label the forecast as an inference.]] [[Priya Shah, CFO at Acme, confirmed they will sign in October.|A commitment attributed to a named person. Verify her title and find the commitment in the CRM or in email before it becomes a promise in your forecast.]]
+```
+
+Notice what the good sentences have in common: a named source, a stated exclusion, a pointer to where the evidence is. That is what your briefs should ask for.
+
 ## Forcing verifiability up front
 
 Verification is far easier if you designed for it. Three instructions, in every brief that matters:

@@ -79,6 +79,39 @@ The other three cost you a re-run. This one costs you data. Copies, narrow scope
 
 **Watch it** — the first run of any new brief, anything touching a real system through a connector, anything that writes outside `output/`, anything on a deadline where a failed run costs you the deadline.
 
+## Make the call
+
+Three moments from real runs. Choose what you would do, read the consequence, then try the other options to see why they lose.
+
+```scenario
+S: You read Cowork's plan for a deal-review pack. Step 2 reads `archive/2025-pipeline.csv` as well as this quarter's export. Steps 3–5 look right.
+Q: What do you do?
++ Tell it to skip `archive/` entirely, say why, and approve the rest of the plan.
+> Wrong source is the most expensive miss on the four-point review: it invalidates the whole run. One specific sentence fixes it before any work happens.
+~ Approve it, and plan to check the numbers carefully at the end.
+> You might catch it. But now you must trace every number to find which ones blended old data. Fixing a plan costs seconds; fixing a finished pack costs a re-run.
+- Approve it. More data usually makes a better analysis.
+> Last year's rows blend silently into this quarter's totals, and nothing in the narrative will tell you. This is how a Confident Gap is born.
+
+S: Ten minutes into a long run you notice the per-channel totals treat "LinkedIn", "linkedin" and "LI" as three separate channels.
+Q: The goal is right; the approach is wrong. Which intervention?
++ Redirect: stop the aggregation, normalise the channel names first, then redo it.
+> A redirect keeps the goal and fixes the method. It is cheaper than a restart and much cheaper than hand-fixing a table later.
+~ Nudge: "keep going, but be careful with channel names".
+> "Be careful" is a wish, not an instruction. Name the exact fix (normalise, then re-aggregate) or the error continues.
+- Let it finish, then merge the three rows by hand in the spreadsheet.
+> The narrative, charts and rankings were all built on the split totals. Fixing one table by hand leaves every other artefact wrong.
+
+S: You have steered the same run four times in three minutes. Each fix creates a new small problem.
+Q: What now?
++ Stop the run, find the missing B.R.I.E.F. element, rewrite the brief, and start again.
+> The 60-second rule. Past a minute of steering, you are debugging your brief. A run briefed once beats a run steered five times, and you can explain its output.
+~ Steer once more with a longer, more detailed correction.
+> Sometimes it works. Usually you get a patchwork document whose reasoning you cannot reconstruct.
+- Keep steering. You have already put three minutes into it.
+> Sunk cost. Every extra steer adds another layer of patched reasoning to a document you will have to defend.
+```
+
 ## Practise the interventions
 
 Next time you run a lab in this course:

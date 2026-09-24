@@ -7,7 +7,7 @@
   "use strict";
 
   var STORE_KEY = "claudelab.v2";
-  var SITE = window.SITE, COURSES = window.COURSES, MD = window.MD;
+  var SITE = window.SITE, COURSES = window.COURSES, MD = window.MD, WIDGETS = window.WIDGETS;
   var byId = {};
   COURSES.forEach(function (c) { byId[c.id] = c; });
   var bodyCache = {};
@@ -29,8 +29,11 @@
   function cstate(id) {
     var s = store.courses[id] = store.courses[id] || {};
     s.completed = s.completed || {}; s.checks = s.checks || {}; s.collapsed = s.collapsed || {};
+    s.ex = s.ex || {}; s.quiz = s.quiz || {};
     return s;
   }
+  // One entry per day with any learning activity — powers the streak and the heatmap.
+  function touch() { var a = store.activity = store.activity || {}, d = WIDGETS.srs.today(); a[d] = (a[d] || 0) + 1; }
 
   /* ---------- Helpers ---------- */
   function $(s, r) { return (r || document).querySelector(s); }
@@ -366,11 +369,12 @@
       if (s.checks[key]) { input.checked = true; label.classList.add("checked"); }
       input.addEventListener("change", function () {
         label.classList.toggle("checked", input.checked);
-        if (input.checked) s.checks[key] = true; else delete s.checks[key];
+        if (input.checked) { s.checks[key] = true; touch(); } else delete s.checks[key];
         save(); maybeCelebrate(label);
       });
     });
     wireSims($("#content"));
+    WIDGETS.wire($("#content"), { course: cid, lesson: id, state: s, store: store, save: save, toast: toast, touch: touch });
   }
   function maybeCelebrate(label) {
     var list = label.closest(".checklist"); if (!list) return;
@@ -447,6 +451,7 @@
   document.addEventListener("click", function (e) {
     var copyBtn = e.target.closest("[data-copy]"); if (copyBtn) { handleCopy(copyBtn); return; }
     var opt = e.target.closest(".quiz-opt"); if (opt) { handleQuiz(opt); return; }
+    var retry = e.target.closest(".quiz-retry"); if (retry) { retryQuiz(retry.closest(".quiz")); return; }
   });
   function handleCopy(btn) {
     var text = "";
@@ -466,7 +471,32 @@
     if (!correct) { var right = q.querySelector('.quiz-opt[data-correct="1"]'); if (right) right.classList.add("correct"); }
     $all(".quiz-opt", q).forEach(function (b) { b.disabled = true; });
     var ex = q.querySelector(".quiz-explain"); if (ex) ex.classList.add("show");
-    if (correct) toast("✓ Correct!");
+    if (correct) { q.classList.add("got-it"); toast("✓ Correct!"); }
+    touch(); save();
+    scoreQuiz(q.closest(".quiz"));
+  }
+  // When every question in a quiz is answered: show the score, keep the best one, offer a retry.
+  function scoreQuiz(quiz) {
+    var qs = $all(".quiz-q", quiz), answered = qs.filter(function (q) { return q.classList.contains("answered"); });
+    if (answered.length !== qs.length || !currentCourseId) return;
+    var right = qs.filter(function (q) { return q.classList.contains("got-it"); }).length;
+    var lessonId = (location.hash.match(/#\/[^/]+\/([^/?]+)/) || [])[1] || "";
+    var key = lessonId + ":" + $all(".quiz", $("#content")).indexOf(quiz), s = cstate(currentCourseId);
+    if (!s.quiz[key] || right > s.quiz[key].c) s.quiz[key] = { c: right, t: qs.length };
+    save();
+    var msg = right === qs.length ? "Perfect score. That idea is yours now." : right >= qs.length / 2 ? "Solid. Read the explanations for the ones you missed, then retry." : "Worth another pass — reread the section, then retry.";
+    var row = $(".quiz-score", quiz) || document.createElement("div");
+    row.className = "quiz-score"; row.setAttribute("role", "status");
+    row.innerHTML = '<span class="quiz-score-num">' + right + " / " + qs.length + '</span><span class="quiz-score-msg">' + msg + '</span><button class="quiz-retry btn-sm" type="button">↻ Retry</button>';
+    quiz.appendChild(row);
+    if (right === qs.length && qs.length > 1) burstConfetti();
+  }
+  function retryQuiz(quiz) {
+    $all(".quiz-q", quiz).forEach(function (q) { q.classList.remove("answered", "got-it"); });
+    $all(".quiz-opt", quiz).forEach(function (b) { b.disabled = false; b.classList.remove("correct", "wrong"); });
+    $all(".quiz-explain", quiz).forEach(function (x) { x.classList.remove("show"); });
+    var row = $(".quiz-score", quiz); if (row) row.remove();
+    var first = $(".quiz-opt", quiz); if (first) first.focus();
   }
 
   /* ---------- Toast + Confetti ---------- */

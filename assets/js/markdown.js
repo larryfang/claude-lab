@@ -198,11 +198,136 @@
       "</div>";
   }
 
+  // Stable short id from text, so saved state survives edits elsewhere in a lesson.
+  function hash(s) {
+    let h = 5381;
+    for (let k = 0; k < s.length; k++) h = ((h << 5) + h + s.charCodeAt(k)) | 0;
+    return (h >>> 0).toString(36);
+  }
+
+  // ```flashcards — "Q: front" then "A: back" (A: may continue on following lines).
+  function renderFlashcards(code, ctx) {
+    const cards = [];
+    let cur = null;
+    code.split("\n").forEach(function (raw) {
+      const line = raw.trim();
+      if (!line) return;
+      const q = line.match(/^Q:\s*(.*)$/i), a = line.match(/^A:\s*(.*)$/i);
+      if (q) { cur = { f: q[1], b: "" }; cards.push(cur); return; }
+      if (a && cur) { cur.b = a[1]; return; }
+      if (cur && cur.b) cur.b += " " + line;
+    });
+    const data = cards.filter(function (c) { return c.f && c.b; }).map(function (c) {
+      return { id: (ctx.lessonId || "x") + ":" + hash(c.f), f: parseInline(c.f), b: parseInline(c.b) };
+    });
+    if (!data.length) return "";
+    return '<div class="flash" data-flash data-cards="' + escAttr(JSON.stringify(data)) + '">' +
+      '<div class="flash-head"><span class="flash-kicker">🃏 Flashcards</span><span class="flash-count">1 / ' + data.length + "</span></div>" +
+      '<div class="flash-stage"></div></div>';
+  }
+
+  // ```order — "# prompt", then the items in the CORRECT order ("1. item"), then "> explanation".
+  function renderOrder(code) {
+    let title = "Put these in the right order.", explain = "";
+    const items = [];
+    code.split("\n").forEach(function (raw) {
+      const line = raw.trim();
+      if (!line) return;
+      let m;
+      if ((m = line.match(/^#\s*(.*)$/))) { title = m[1]; return; }
+      if ((m = line.match(/^>\s*(.*)$/))) { explain += (explain ? " " : "") + m[1]; return; }
+      if ((m = line.match(/^(?:\d+\.|[-*])\s+(.*)$/))) items.push(parseInline(m[1]));
+    });
+    if (items.length < 2) return "";
+    return '<div class="order" data-order data-items="' + escAttr(JSON.stringify(items)) + '" data-explain="' + escAttr(parseInline(explain)) + '">' +
+      '<div class="order-head"><span class="order-kicker">↕️ Put it in order</span></div>' +
+      '<p class="order-title">' + parseInline(title) + "</p><ol class=\"order-list\"></ol>" +
+      '<div class="order-actions"><button class="order-check btn-sm" type="button">Check order</button><span class="order-result" role="status"></span></div></div>';
+  }
+
+  // ```scenario — "S: situation", "Q: question", then options "+ best" "~ partial" "- poor", each followed by "> consequence".
+  function renderScenario(code) {
+    const blocks = [];
+    let cur = null, opt = null;
+    code.split("\n").forEach(function (raw) {
+      const line = raw.trim();
+      if (!line) return;
+      let m;
+      if ((m = line.match(/^S:\s*(.*)$/i))) { cur = { s: m[1], q: "", opts: [] }; blocks.push(cur); opt = null; return; }
+      if (!cur) return;
+      if ((m = line.match(/^Q:\s*(.*)$/i))) { cur.q = m[1]; return; }
+      if ((m = line.match(/^([+~-])\s+(.*)$/))) { opt = { g: { "+": "best", "~": "okay", "-": "poor" }[m[1]], t: m[2], fb: "" }; cur.opts.push(opt); return; }
+      if ((m = line.match(/^>\s*(.*)$/)) && opt) { opt.fb += (opt.fb ? " " : "") + m[1]; return; }
+      if (!opt && !cur.q) cur.s += " " + line;
+    });
+    if (!blocks.length) return "";
+    const letters = ["A", "B", "C", "D", "E", "F"];
+    const verdict = { best: "Strong move.", okay: "Workable, but not the best.", poor: "This goes badly." };
+    let h = '<div class="scenario"><div class="scn-head"><span class="scn-kicker">🧭 What would you do?</span></div>';
+    blocks.forEach(function (b) {
+      h += '<div class="scn" data-scn><p class="scn-situation">' + parseInline(b.s) + "</p>" + (b.q ? '<p class="scn-q">' + parseInline(b.q) + "</p>" : "") + '<div class="scn-opts">';
+      b.opts.forEach(function (o, k) {
+        h += '<button class="scn-opt" type="button" data-grade="' + o.g + '" data-i="' + k + '"><span class="opt-marker">' + (letters[k] || "•") + "</span><span>" + parseInline(o.t) + "</span></button>";
+      });
+      h += "</div>";
+      b.opts.forEach(function (o, k) {
+        h += '<div class="scn-fb scn-fb-' + o.g + '" data-for="' + k + '" hidden><strong>' + verdict[o.g] + "</strong> " + parseInline(o.fb) + "</div>";
+      });
+      h += "</div>";
+    });
+    return h + "</div>";
+  }
+
+  // ```reflect — the question. The learner's answer autosaves to their notebook.
+  function renderReflect(code, ctx) {
+    const q = code.trim().replace(/\s*\n\s*/g, " ");
+    if (!q) return "";
+    const id = (ctx.lessonId || "x") + ":" + hash(q);
+    const dom = "reflect-" + hash(id);
+    return '<div class="reflect" data-reflect data-id="' + escAttr(id) + '" data-q="' + escAttr(q) + '">' +
+      '<label class="reflect-q" for="' + dom + '"><span class="reflect-kicker">🪞 Reflect</span>' + parseInline(q) + "</label>" +
+      '<textarea class="reflect-input" id="' + dom + '" rows="4" placeholder="Write a few lines. It saves in this browser only."></textarea>' +
+      '<div class="reflect-foot"><span class="reflect-status" aria-live="polite"></span><a href="#/notebook">Open your notebook →</a></div></div>';
+  }
+
+  // ```spot — "# instructions", then a draft where [[flawed text|why it is wrong]] marks each planted error.
+  function renderSpot(code) {
+    let title = "Some of these sentences should not survive a review. Select each one you would challenge, then check.";
+    const body = [];
+    code.split("\n").forEach(function (raw) {
+      const m = raw.match(/^#\s*(.*)$/);
+      if (m) title = m[1]; else body.push(raw);
+    });
+    const text = body.join(" ").replace(/\s+/g, " ").trim();
+    const segs = [];
+    text.split(/(\[\[[\s\S]*?\]\])/).forEach(function (part) {
+      const f = part.match(/^\[\[([\s\S]*?)\|([\s\S]*?)\]\]$/);
+      if (f) { segs.push({ t: f[1].trim(), why: f[2].trim() }); return; }
+      part.split(/(?<=[.!?])\s+/).forEach(function (s) { if (s.trim()) segs.push({ t: s.trim() }); });
+    });
+    const flaws = segs.filter(function (s) { return s.why; }).length;
+    if (!flaws) return "";
+    let n = 0;
+    let h = '<div class="spot" data-spot><div class="spot-head"><span class="spot-kicker">🔎 Find the flaws</span><span class="spot-meta">' + flaws + " planted errors</span></div>" +
+      '<p class="spot-title">' + parseInline(title) + '</p><div class="spot-text">';
+    segs.forEach(function (s) {
+      h += '<span class="spot-seg" role="button" tabindex="0" aria-pressed="false" data-flaw="' + (s.why ? "1" : "0") + '"' + (s.why ? ' data-n="' + (++n) + '"' : "") + ">" + parseInline(s.t) + "</span> ";
+    });
+    h += '</div><div class="spot-actions"><button class="spot-check btn-sm" type="button">Check my review</button><span class="spot-result" role="status"></span></div><ol class="spot-why" hidden>';
+    segs.forEach(function (s) { if (s.why) h += "<li>" + parseInline(s.why) + "</li>"; });
+    return h + "</ol></div>";
+  }
+
   function renderFence(lang, code, ctx) {
     lang = (lang || "").toLowerCase();
     if (lang === "quiz") return renderQuiz(code);
     if (lang === "prompt") return renderPrompt(code);
     if (lang === "claude-sim" || lang === "terminal") return renderSim(code);
+    if (lang === "flashcards") return renderFlashcards(code, ctx);
+    if (lang === "order") return renderOrder(code);
+    if (lang === "scenario") return renderScenario(code);
+    if (lang === "reflect") return renderReflect(code, ctx);
+    if (lang === "spot") return renderSpot(code);
     const label = lang || "text";
     return '<div class="codeblock"><div class="codeblock-head"><span class="codeblock-lang">' + escapeHtml(label) +
       '</span><button class="copy-btn" type="button" data-copy>Copy</button></div><pre><code>' +

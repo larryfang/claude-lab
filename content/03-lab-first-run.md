@@ -189,6 +189,14 @@ You wrote **two briefs**. Claude planned, read a dozen files, cleaned data, calc
 Same loop as chat, operating on whole jobs instead of single messages. The skill you are building is not "prompting". It is **briefing** — and Module 2 is entirely about that.
 :::
 
+```reflect
+What was the first mistake you found in your deliverable, and which instruction in the brief would have prevented it?
+```
+
+```reflect
+Name one real job from your week that fits this loop. What would "done" look like, as two files?
+```
+
 :::lab Clean up (optional)
 - [ ] Keep `Cowork-Lab` — later labs reuse it
 - [ ] Or delete it entirely; nothing here was real

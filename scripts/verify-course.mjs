@@ -9,7 +9,7 @@ const errors = [];
 const warn = [];
 const fail = (message) => errors.push(message);
 
-for (const file of ["assets/js/markdown.js", "assets/js/content.js", "assets/js/app.js"]) {
+for (const file of fs.readdirSync(path.join(root, "assets/js")).filter((f) => f.endsWith(".js")).map((f) => `assets/js/${f}`)) {
   const check = spawnSync(process.execPath, ["--check", path.join(root, file)], { encoding: "utf8" });
   if (check.status !== 0) fail(`${file}: JavaScript syntax error\n${check.stderr.trim()}`);
 }
@@ -47,6 +47,23 @@ for (const course of courses) {
           if (correct !== 1 || wrong < 1) fail(`${lesson.file}: quiz question ${i + 1} needs one correct answer and at least one distractor`);
         });
       }
+      for (const block of md.matchAll(/```flashcards\s*\n([\s\S]*?)```/g)) {
+        const fronts = (block[1].match(/^Q:/gm) || []).length, backs = (block[1].match(/^A:/gm) || []).length;
+        if (fronts < 2 || fronts !== backs) fail(`${lesson.file}: flashcards need at least two Q:/A: pairs (found ${fronts} Q, ${backs} A)`);
+      }
+      for (const block of md.matchAll(/```order\s*\n([\s\S]*?)```/g)) {
+        if ((block[1].match(/^\d+\.\s+/gm) || []).length < 3) fail(`${lesson.file}: order block needs at least three numbered items`);
+      }
+      for (const block of md.matchAll(/```scenario\s*\n([\s\S]*?)```/g)) {
+        block[1].split(/^S:/m).slice(1).forEach((scn, i) => {
+          const best = (scn.match(/^\+\s+/gm) || []).length, opts = (scn.match(/^[+~-]\s+/gm) || []).length, fbs = (scn.match(/^>\s*/gm) || []).length;
+          if (best !== 1 || opts < 2 || fbs < opts) fail(`${lesson.file}: scenario ${i + 1} needs one best (+) option, at least two options, and a > consequence for each`);
+        });
+      }
+      for (const block of md.matchAll(/```spot\s*\n([\s\S]*?)```/g)) {
+        const flaws = [...block[1].matchAll(/\[\[([\s\S]*?)\]\]/g)];
+        if (flaws.length < 2 || flaws.some((f) => !/\|\s*\S/.test(f[1]))) fail(`${lesson.file}: spot block needs at least two [[flaw|explanation]] marks`);
+      }
     }
   }
   for (const route of course.fastPaths || []) {
@@ -80,8 +97,10 @@ for (const file of walk(path.join(root, "content")).filter((f) => f.endsWith(".m
 }
 
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
-const versions = [...html.matchAll(/(?:styles|markdown|content|app)\.(?:css|js)\?v=([^"']+)/g)].map((m) => m[1]);
-if (versions.length !== 4 || new Set(versions).size !== 1) fail(`index.html: all four asset versions must match (found ${versions.join(", ")})`);
+const versions = [...html.matchAll(/assets\/[^"']+\.(?:css|js)\?v=([^"']+)/g)].map((m) => m[1]);
+const scripts = fs.readdirSync(path.join(root, "assets/js")).filter((f) => f.endsWith(".js"));
+for (const f of scripts) if (!html.includes(`assets/js/${f}?v=`)) fail(`index.html: assets/js/${f} is not loaded with a ?v= version`);
+if (versions.length !== scripts.length + 1 || new Set(versions).size !== 1) fail(`index.html: every asset URL must carry the same ?v= (found ${versions.join(", ")})`);
 if (courses.length !== 2) warn.push(`expected 2 courses, found ${courses.length}`);
 
 if (errors.length) {

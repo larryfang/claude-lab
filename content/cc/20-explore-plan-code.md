@@ -39,6 +39,19 @@ Implement the OAuth flow from your plan. Write tests for the callback handler, r
 Commit with a descriptive message and open a PR.
 ```
 
+### Check your model of the loop
+
+```order
+# A teammate asks Claude Code for a new OAuth login. Put their session in the right order.
+1. Enter plan mode and have Claude read `src/auth` and explain the session flow
+2. Ask for a step-by-step plan that names the files and a test for each step
+3. Open the plan with Ctrl+G and edit the edge cases it missed
+4. Leave plan mode and have Claude implement against the plan
+5. Run the test suite and fix failures until it passes
+6. Commit with a descriptive message and open a PR
+> Understand before you plan, plan before you code, verify before you commit. Each step makes the next one cheaper to get right, and a test failure found in step 5 costs far less than one found in review.
+```
+
 ## Plan mode, deeper
 
 :::concept Why plan mode is the biggest unlock
