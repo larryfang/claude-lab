@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { classify } from "./link-status.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const files = ["README.md", "CONTRIBUTING.md", ...walk(path.join(root, "content")).filter((f) => f.endsWith(".md"))];
@@ -17,6 +18,7 @@ function walk(dir) {
 const skipped = [...urls].filter((url) => /example\.com|github\.com\/acme\/|YOUR_|\[|localhost|127\.0\.0\.1/.test(url));
 const queue = [...urls].filter((url) => !skipped.includes(url));
 const failures = [];
+const blocked = [];
 let checked = 0;
 
 async function worker() {
@@ -27,8 +29,9 @@ async function worker() {
     try {
       const response = await fetch(url, { redirect: "follow", signal: controller.signal, headers: { "user-agent": "Claude-Lab-Link-Check/1.0" } });
       checked++;
-      const authExpected = (((/^https:\/\/mcp\./.test(url) || /\/mcp\/?(?:$|\?)/.test(url)) && response.status === 401) || (url === "https://claude.ai/code" && response.status === 403));
-      if (!(response.ok || (response.status >= 300 && response.status < 400) || authExpected)) failures.push(`${response.status} ${url}`);
+      const result = classify(url, response.status);
+      if (result === "blocked") blocked.push(`${response.status} ${url}`);
+      if (result === "broken") failures.push(`${response.status} ${url}`);
     } catch (error) {
       checked++;
       failures.push(`${error.name}: ${url}`);
@@ -36,8 +39,9 @@ async function worker() {
   }
 }
 await Promise.all(Array.from({ length: 8 }, worker));
+for (const entry of blocked) console.log(`::warning title=Link UNVERIFIED (host blocks CI)::${entry}`);
 if (failures.length) {
   console.error(`Link check failed (${failures.length}/${checked}):\n- ${failures.join("\n- ")}`);
   process.exit(1);
 }
-console.log(`Link check passed: ${checked} live URLs checked, ${skipped.length} placeholders/local URLs skipped.`);
+console.log(`Link check passed: ${checked - blocked.length} live URLs checked, ${blocked.length} UNVERIFIED (host blocks CI), ${skipped.length} placeholders/local URLs skipped.`);
