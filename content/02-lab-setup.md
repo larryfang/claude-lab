@@ -87,6 +87,18 @@ Before any Cowork run on real data, four questions:
 
 If you cannot answer question four, you are not ready to run it.
 
+## Reflect
+
+Take two minutes to connect this lab to your real work.
+
+```reflect
+Which real work folder would you be most tempted to grant Cowork, and what is the narrowest folder inside it that would still get the job done?
+```
+
+```reflect
+Think of one real job you want Cowork to run on real data: if it went completely wrong, what is the worst outcome, and how would you undo it?
+```
+
 ```quiz
 Q: Why grant Cowork the narrowest possible folder?
 - To make it faster

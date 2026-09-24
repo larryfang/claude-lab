@@ -95,6 +95,30 @@ git diff --cached | claude -p "Review this staged diff. If you find a likely bug
 }
 ```
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: How do you run Claude once from a script, with no session?
+A: `claude -p "your prompt"`. It runs the prompt once, prints the result, and exits.
+
+Q: How do you get output another tool can parse?
+A: Add `--output-format json` (or `stream-json` for real-time processing). `--json-schema` forces the output to match a schema.
+
+Q: What are your safety rails for an unattended run?
+A: `--allowedTools` and `--permission-mode`. Allow only what the job needs.
+
+Q: Headless auto mode keeps blocking. What does it do?
+A: It aborts, because there is no human to ask.
+
+Q: What is the easy path to Claude in GitHub Actions?
+A: Run `/install-github-app` in a session, then mention `@claude` in an issue or PR comment to trigger it.
+
+Q: How do you cap what a headless run can cost?
+A: `--max-budget-usd`, e.g. `--max-budget-usd 2`. Add `--fallback-model sonnet` for when the primary model is overloaded.
+```
+
 ```quiz
 Q: How do you run Claude Code without an interactive session, for use in a script?
 + claude -p "your prompt" (optionally with --output-format json)

@@ -105,6 +105,54 @@ You are about to do three labs. Before that, decide which of the six is worth mo
 
 That third answer is your first Skill in Module 8.
 
+## Make the call
+
+Choose what you would do, read the consequence, then try the other options.
+
+```scenario
+S: It is Thursday afternoon. A 200-question security questionnaire has just landed, and the deal is blocked until it goes back.
+Q: How do you use Cowork on it?
++ Have Cowork draft every answer from your past responses, docs, security policies and trust centre, flag each one it could not source, and send the draft to security or legal for sign-off.
+> The answers almost all exist, so retrieval and formatting is the leverage. Sign-off stays with a human because each answer is a contractual representation, not marketing copy.
+~ Have Cowork draft only the easy questions, and write the hard ones yourself.
+> Safer than sending unreviewed, but you give away most of the leverage. And the easy answers are still compliance statements: they need a human sign-off too.
+- Let Cowork answer the lot and send it tonight, so the deal moves by Friday.
+> A generated compliance answer sent unreviewed is a contractual statement nobody checked. One confidently wrong claim costs more than every hour the tool saved.
+
+S: Your territory plan is due. You want Cowork to score every account in your book against your own criteria.
+Q: What do you do first?
++ Give it the criteria, have it score a small test territory, spot-check the results and adjust the weights, then run the full book.
+> Calibrate small, then scale. The spot-check is where your "why" goes in; the full run then repeats a scoring you have already checked.
+~ Run the full book at once, then spot-check a few accounts at the end.
+> You may catch a problem, but every score rests on weights nobody checked, so any fix means running the whole book again.
+- Run the full book and use the ranked list as next quarter's plan, unchanged.
+> Nothing checked the weights, and deciding where you spend your time is your judgement. You would be working a quarter from a ranking you never calibrated.
+```
+
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: Which sales play is the best one to start with?
+A: **The pre-call brief.** It is the highest-frequency research task, genuinely tedious, and the quality gap is obvious to both sides of the call.
+
+Q: What must a pipeline analysis also flag?
+A: The **data quality problems**. Half of a stale pipeline is stale logging, and knowing which half is which is the actual insight.
+
+Q: Where must real outreach personalisation come from?
+A: Your notes and their public signals — not a template with a merge field. Twenty genuinely specific emails beat two hundred generated ones.
+
+Q: Who signs off a security questionnaire that Cowork drafted?
+A: A human, often security or legal. Cowork drafts and flags every answer it could not source; it never sends a compliance answer.
+
+Q: Who calls the forecast number?
+A: You. Cowork can compute weighted values and flag risk. Calling the number is judgement, and judgement is what you are paid for.
+
+Q: What does one wrong fact in a customer-facing doc cost?
+A: More than the ten hours the tool saved you that week. That is why verification is not optional in this lane.
+```
+
 ```quiz
 Q: Why is "flag the data quality problems" the crucial addition to a pipeline analysis brief?
 - It makes the report longer

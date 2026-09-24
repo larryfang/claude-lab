@@ -24,7 +24,7 @@ test("course home draws the module journey and marks where you are", async ({ pa
 test("lesson page has a position chip, an on-this-page rail, and reading progress", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/#/cowork/the-brief");
-  await expect(page.locator(".lesson-pos")).toContainText("Lesson 2 of 5");
+  await expect(page.locator(".lesson-pos")).toContainText("Lesson 2 of 6");
   const h2s = await page.locator("article.lesson h2").count();
   await expect(page.locator(".toc a")).toHaveCount(h2s);
   await expect(page.locator(".toc")).toBeVisible();

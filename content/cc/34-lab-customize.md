@@ -86,6 +86,16 @@ Make a small change to any file, then run /standup, then use the code-reviewer s
 `.claude/commands`, `.claude/agents`, and `.claude/settings.json` are **team artifacts** — commit them so everyone gets the same commands, reviewers, and guarantees. That's how a team standardizes its workflow.
 :::
 
+## Reflect
+
+```reflect
+Which multi-step prompt do you retype most often in your own repo, and what would you name the command that replaces it?
+```
+
+```reflect
+Which "remember to…" habit in your project should be a guaranteed hook instead, and would you commit it so your whole team gets it?
+```
+
 ```quiz
 Q: What's the fastest way to create these customizations correctly?
 + Ask Claude to scaffold them — it knows the command/subagent/hook formats natively

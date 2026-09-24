@@ -140,6 +140,18 @@ This is the strongest candidate for a schedule in the whole course: read-only, s
 - [ ] Note who each update goes to
 - [ ] Module 8 schedules it for Monday 8am, writing a draft into a Project for you to review
 
+## Reflect
+
+Answer about your own work, not the practice data. Your answers save to your notebook in this browser.
+
+```reflect
+Which item on your real tracker is In Progress with no recent update? Is that work stopped, or happening and not logged, and how do you know?
+```
+
+```reflect
+What do you know about your project right now that the tracker does not? Where would it go in each of your three updates?
+```
+
 ```quiz
 Q: Why check the tracker for stalled work before writing the update?
 - To count issues

@@ -130,6 +130,54 @@ One page, agreed, visible. Non-negotiable items:
 - [ ] What goes on the never-do list for my team?
 :::
 
+## Make the call
+
+Choose what you would do, read the consequence, then try the other options.
+
+```scenario
+S: Your Skill has worked well for you every week for a month. A colleague in your team wants to use it.
+Q: How do you hand it over?
++ Give them the Skill, your Project instructions and three example requests. Let them run it without you, then read what they produce.
+> The unsupervised run is the only real test. Fix whatever confused them in the Skill, not in a conversation, then give the same package to three more people.
+~ Give them the same package, but sit next to them for the first run.
+> Friendly, but it tells you almost nothing. You fill every gap without noticing: a hint, a correction, "oh you need to point it at that folder".
+- Send the Skill file to the whole team, so everyone can start at once.
+> Nobody has run it without you yet, and the file alone has no Project instructions or example requests. People get mediocre results and quietly conclude it is overrated.
+
+S: You are presenting your first month to a sceptical manager. You have an hours-saved figure, and a weekly competitive watch that nobody had time to run before.
+Q: What do you lead with?
++ The competitive watch that now happens every week.
+> A change people can see, and it is not disputable. Tasks now done that were not done before are usually the biggest number.
+~ The hours-saved figure, measured before and after, including verification.
+> Honest and measurable, so keep it in. But hours saved always sounds inflated, and on its own a sceptic will not believe it.
+- A clean success story: every run was perfect.
+> Nobody believes an unbroken success story. "It got this wrong, here is what I changed" builds far more trust.
+```
+
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What are the four reliable causes of a failed rollout?
+A: Access without briefing skill, starting with the hardest thing, no shared standards, and a single visible failure. None of them is about the tool.
+
+Q: What goal does the adoption ladder set?
+A: "Get every user one level higher than they are now." The levels run from **L0** chat Q&A to **L4** an admin-provisioned plugin.
+
+Q: Who runs the play in days 1–30?
+A: **You.** Not a pilot group. One person, one play, one artefact, every week until the output is reliably good.
+
+Q: Why must a colleague's first run be unsupervised?
+A: Sitting next to them, you fill every gap without noticing. Send it, walk away, and read what they produce.
+
+Q: What does a rising count of errors caught mean?
+A: People are actually checking. A count of zero means nobody is looking, not that nothing is wrong.
+
+Q: What goes on your team's never-do list?
+A: One page, agreed and visible. For example: nothing goes to a customer without a named human reviewer, and no scheduled task writes to a source system.
+```
+
 ```quiz
 Q: What is the most persuasive thing to have after 30 days?
 - A list of hours saved

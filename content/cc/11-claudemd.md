@@ -100,6 +100,30 @@ Check it into git so the team contributes — it **compounds in value**. And deb
 If something only matters *occasionally* (a niche workflow, deep domain docs), don't put it in `CLAUDE.md` (which loads every turn). Make it a **Skill** — Claude loads it on demand. More on that in the Customize module.
 :::
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What is the fastest way to a first `CLAUDE.md`?
+A: Run `/init`. It analyzes your codebase and generates a starter file. Treat it as a first draft and refine it over time.
+
+Q: What question decides whether a `CLAUDE.md` line stays?
+A: *"Would removing this cause Claude to make a mistake?"* If not, cut it.
+
+Q: Why does a long `CLAUDE.md` backfire?
+A: It loads every turn, eating context, and Claude starts ignoring it because the important rules get buried.
+
+Q: Where does a rule for ALL your projects go?
+A: `~/.claude/CLAUDE.md`. Team-shared rules go in `./CLAUDE.md`; personal, gitignored notes go in `./CLAUDE.local.md`.
+
+Q: Claude keeps breaking a rule you wrote. What is the likely fix?
+A: **Prune.** The file is probably too long and the rule got lost. If Claude asks about something already in there, reword it instead.
+
+Q: Where does sometimes-relevant knowledge belong?
+A: In a **Skill**, which Claude loads on demand — not in `CLAUDE.md`, which loads every turn.
+```
+
 ```quiz
 Q: What's the fastest way to create a solid first CLAUDE.md?
 + Run /init to generate one from your codebase, then prune and refine it

@@ -66,6 +66,16 @@ Describe the outcome, not the steps. Name the sources, set the rules, and ask to
 
 Everything else — Skills, schedules, Projects, connectors — is machinery for doing that repeatedly and at scale.
 
+## Reflect
+
+```reflect
+Which one recurring task will you defend for the next four weeks, and who will receive it in week 1?
+```
+
+```reflect
+What would you need to see by week 4 to write down, honestly, that this has changed your week?
+```
+
 :::try You are done
 That is the **💯 Completionist** badge if you have worked through everything — all four lanes, the fundamentals, and the capstone.
 

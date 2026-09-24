@@ -84,6 +84,30 @@ Everything in this course lives somewhere on that list:
 - **Schedules** remove you from the loop entirely
 - **The plan and the stop button** are how you stay in control while all of that happens
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What is the workspace folder, really?
+A: A **permission boundary**, not a suggestion. Grant `Q3-launch/`, not `Documents/`.
+
+Q: Why is the plan your cheapest intervention point?
+A: Fixing a wrong plan costs a sentence. Fixing a wrong deliverable costs a re-run.
+
+Q: What three things do you look for when you read the plan?
+A: A **source it should not be reading**, a **step that writes where you did not expect**, and a **missing step**.
+
+Q: Why can parallel subagents give inconsistent results?
+A: They do not share what they learn mid-run. If cross-consistency matters, ask for a review of all the outputs together.
+
+Q: Which jobs are safe to schedule?
+A: Jobs that are read-only or write to a scratch folder, and that you have run by hand successfully at least three times.
+
+Q: What does a Project give recurring work?
+A: Its own files, links, instructions and memory — so you stop re-explaining your business every single run.
+```
+
 ```quiz
 Q: What is the cheapest point at which to correct a Cowork run?
 - After reading the final deliverable

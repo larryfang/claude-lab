@@ -101,6 +101,54 @@ The discipline is mechanical, not heroic: **every figure traces to a source**, r
 
 That third answer is your first Skill in Module 8.
 
+## Make the call
+
+Choose what you would do, read the consequence, then try the other options.
+
+```scenario
+S: Close week. Your three-way reconciliation leaves four unmatched items, and a colleague suggests having Cowork match them to the closest plausible candidates so the file ties.
+Q: What do you tell Cowork?
++ Leave all four unmatched and report each one in the exception report, with its financial impact.
+> The exception report is the value, not the matches. An unmatched item reported honestly is useful, and the reviewer, not Cowork, clears the exceptions.
+~ Match the two that look very likely, and report the other two as exceptions.
+> Likely is not certain. Two of those matches may be errors in your books, and once the file ties, nobody looks at them again.
+- Match all four, so the file ties before the deadline.
+> A plausible match invented to make the file tie is a corruption of your books wearing a tidy spreadsheet.
+
+S: You are reviewing the draft board pack. Cowork has described a missed revenue line as "in line with expectations".
+Q: What do you do?
++ Re-brief so the miss is stated plainly with its number, and check the rest of the deck for the same softening.
+> In this lane smoothing is a misrepresentation problem, not a style problem. The brief must forbid it, and your review must check for it.
+~ Correct the wording on that slide yourself and move on.
+> That slide is now honest, but Cowork will happily smooth, so other limitations may be softened elsewhere — and the brief still does not forbid it.
+- Leave it. The number is close, and a positive tone reads well to the board.
+> What to tell the board is your judgement, and a miss reframed as "in line" is a misrepresentation. The tool changes nothing about whose name is on it.
+```
+
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What is the rule that makes a reconciliation safe?
+A: **Never force a match.** An unmatched item reported honestly is useful; an invented match is a corruption of your books wearing a tidy spreadsheet.
+
+Q: What is the only acceptable filler for a missing value?
+A: "Not recorded". Cowork never estimates a missing value, and that rule goes in every finance brief, without exception.
+
+Q: What does Cowork do with journal entries and chase emails?
+A: **Drafts only.** It drafts entries with workings and chase emails for your review. An accountable human posts the entries; Cowork never sends a chase.
+
+Q: Why is smoothing so serious in a board pack?
+A: In finance it is not a style problem; it is a misrepresentation problem. The brief must forbid it, and your review must check for it.
+
+Q: What is the mechanical defence against confident wrong numbers?
+A: Every figure traces to a source, and row counts in and out are stated on every calculation. The person who reviews and posts stays responsible.
+
+Q: Which Skill should you build first in this lane?
+A: The **proofreading pass** that traces every number in every close document back to a verified source — before you automate anything else.
+```
+
 ```quiz
 Q: Why is the month-end variance pack the best first finance play?
 - It is the most impressive to leadership

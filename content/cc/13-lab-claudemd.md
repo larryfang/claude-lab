@@ -115,6 +115,16 @@ Commit CLAUDE.md with a clear message.
 `CLAUDE.md` is living. When Claude does something annoying, add a rule. When a rule stops being needed, delete it. When Claude ignores a rule, the file's probably too long — prune. Review it like code.
 :::
 
+## Reflect
+
+```reflect
+Which line did you cut from your own `CLAUDE.md` that felt risky, and what would Claude actually get wrong without it?
+```
+
+```reflect
+What did Claude do in your repo recently that annoyed you enough to become a rule, and how will you prove that the rule landed?
+```
+
 ```quiz
 Q: How do you know a CLAUDE.md rule actually "landed"?
 + Claude's behavior visibly changes (e.g., it refuses to edit a forbidden directory)

@@ -86,6 +86,54 @@ Get one human to argue with the messaging house **before** generating anything f
 Anthropic ships an official **Marketing plugin** (availability varies by plan — look under **Customize → Plugins**): `/campaign-plan`, `/draft-content`, `/brand-review` against your uploaded style guide, `/competitive-brief`, `/performance-report`, `/email-sequence` and `/seo-audit`. Install it and run the commands on your own material — then use the labs here to understand what a good version does, and customise where the ready-made one misses your voice and definitions.
 :::
 
+## Make the call
+
+Choose what you would do, read the consequence, then try the other options.
+
+```scenario
+S: Your launch is in two weeks. Cowork has written the messaging house, and you want to generate all eight launch artefacts from it this afternoon.
+Q: What do you do next?
++ Get one human to argue with the messaging house first, fix what they find, then generate the kit.
+> That review is the highest-leverage thirty minutes in the whole launch. Every artefact inherits the foundation, so one fix now saves eight fixes later.
+~ Generate the kit now, and ask a colleague to review all eight artefacts at the end.
+> A review still happens, but a flaw in the foundation is now in eight fluent documents, and it looks deliberate. That is slower to find and harder to fix.
+- Generate the kit and ship it. All eight artefacts agree with each other, so they must be right.
+> Consistency is not correctness. If the messaging house is wrong, it is now wrong in eight places at once.
+
+S: Your head of sales wants an "unlike vendor X" comparison page live by Friday. Cowork has drafted it from the competitor's public pages.
+Q: What happens before it goes live?
++ Verify every claim against a dated source, then get a human sign-off.
+> Customer-facing competitive content carries real legal and credibility exposure, its sources go stale fast, and the vendor you describe is highly motivated to find the error.
+~ Check the claims that look surprising, and publish the rest as drafted.
+> Better than nothing, but ordinary-looking claims go stale too — and the vendor will read every one of them.
+- Publish it. Cowork read the vendor's own pages, so the page is accurate.
+> The draft is only as current as the day it was read, and nobody checked it. The person you are describing is the one most likely to find the mistake.
+```
+
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What is the hard part of a launch kit?
+A: **Consistency across all eight artefacts.** Generating them together from one messaging foundation stops reps saying three different things.
+
+Q: Why is the battlecard the most dangerous GTM play?
+A: It is repeated out loud, by someone who was not there, to the person best placed to contradict it. Every made-up detail ends with a rep corrected by a prospect.
+
+Q: What makes a campaign readout credible to a sceptical CMO?
+A: Asking for the data problems and a "what this cannot tell you" section. A readout that admits its attribution is unreliable earns more trust.
+
+Q: Which voice-of-customer output is the sleeper?
+A: **The words customers actually use** for each theme. They go straight into your copy, your SEO and your sales scripts.
+
+Q: What are the two places GTM must not trust Cowork?
+A: **Positioning strategy** — deciding who you choose not to serve — and **anything competitive that is customer-facing**.
+
+Q: What is the highest-leverage thirty minutes in a launch?
+A: One human arguing with the messaging house **before** anything is generated from it. A wrong foundation becomes wrong in eight places.
+```
+
 ```quiz
 Q: What is Cowork's structural advantage in producing a launch kit?
 - It writes faster

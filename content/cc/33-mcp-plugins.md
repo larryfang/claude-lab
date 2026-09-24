@@ -86,6 +86,30 @@ You now have five ways to customize. Pick by **what you need**:
 **CLAUDE.md** = always-on knowledge · **Skill** = on-demand know-how · **Subagent** = a separate worker · **Hook** = a guarantee · **MCP** = a connection · **Plugin** = a package of all of them.
 :::
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: How do you share an MCP server with your team?
+A: Add it with `-s project`, which writes a committable `.mcp.json`. The default scope is `-s local`.
+
+Q: Why connect only the MCP servers you actually use?
+A: Each server's tool definitions load into the context window. Tool search defers schemas, but every connected tool still costs context.
+
+Q: When is a CLI better than an MCP server?
+A: Often — a CLI like `gh` is the most context-efficient integration. Reach for MCP when there's no good CLI or you need structured, typed access.
+
+Q: What is a plugin, and why be careful installing one?
+A: One installable unit bundling skills, subagents, hooks, and MCP servers. Its hooks and MCP servers run on your machine with your permissions.
+
+Q: Which settings layer wins over all the others?
+A: **Managed** (`managed-settings.json`) — org policy. Below it, Local beats Project, and Project beats User.
+
+Q: CLAUDE.md, Skill, Subagent, Hook — the one-line shortcut?
+A: **CLAUDE.md** = always-on knowledge · **Skill** = on-demand know-how · **Subagent** = a separate worker · **Hook** = a guarantee.
+```
+
 ```quiz
 Q: You want Claude to read tickets from your issue tracker and query your database. What connects it to those?
 + MCP servers (claude mcp add …) — or a CLI if one exists

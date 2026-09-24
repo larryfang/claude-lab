@@ -141,6 +141,30 @@ Anthropic ships open-source plugins for **eleven business functions** — sales,
 
 For now: build one good Skill. Bundling matters when you have three or four that belong together — and the next-but-one lesson hands you a ready-to-adapt Skill for each function.
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What is a Skill, in one sentence?
+A: A folder containing a `SKILL.md` file: a short description of when to use it, and the instructions for doing the job your way.
+
+Q: Which line in `SKILL.md` matters most, and why?
+A: The **description**. It is how Claude decides whether the Skill applies, so a vague one means the Skill never fires.
+
+Q: How do you write a description that fires?
+A: Write it as "Use when the user asks for X, Y or Z", in the words people actually say, and say what it produces. It is capped at 200 characters.
+
+Q: Which section makes a Skill's output yours, not generic?
+A: The **definitions**: your stage weightings, your segment taxonomy, what "at risk" means at your company. Stated once, never re-derived.
+
+Q: When is a brief ready to become a Skill?
+A: After three or four runs, when you know what you correct every time. Those corrections are the Skill.
+
+Q: What are the two ways a Skill runs?
+A: **Automatically**, when a request matches its description, or **as a slash command** (`/skill-name`) when the run must be exact and deliberate.
+```
+
 ```quiz
 Q: What is the single most important line in a SKILL.md?
 - The name

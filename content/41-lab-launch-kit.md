@@ -107,6 +107,18 @@ Check specifically for this: find every limitation in your messaging house and r
 - [ ] Note the artefacts you needed that were not in the list, and add them
 - [ ] Module 8 makes this a Skill you run per launch in one line
 
+## Reflect
+
+Answer about your own work, not the practice data. Your answers save to your notebook in this browser.
+
+```reflect
+Think of your last real launch. Where did the one-pager, the sales script and the FAQ drift apart, and what would a reviewed messaging house have caught?
+```
+
+```reflect
+Pick one limitation of a product you are launching. Would each artefact state it plainly, or smooth it into a positive framing? How will you check?
+```
+
 ```quiz
 Q: Why must the messaging house be reviewed by a human before generating the rest of the kit?
 - To check spelling

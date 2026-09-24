@@ -96,6 +96,30 @@ Claude Code's creator Boris Cherny runs scheduled Claude sessions against Anthro
 Start with worktrees. Reach for teams/workflows only when the task genuinely needs more agents than you can hand-coordinate.
 :::
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: Why run parallel sessions in git worktrees?
+A: Two sessions in the same working directory clobber each other. Each worktree is a separate checkout on its own branch.
+
+Q: How do you start a session in a fresh worktree?
+A: `claude -w` (`--worktree`).
+
+Q: Which command shows every session — running, blocked, or done?
+A: `claude agents`, the control tower. `claude agents --json` scripts it.
+
+Q: Why does a separate Reviewer session beat self-review?
+A: A fresh context isn't biased toward the code it just wrote, so it reviews better.
+
+Q: What do you do before a fan-out across 500 files?
+A: Refine the prompt on the first 2–3 files, see what goes wrong, *then* run the whole set.
+
+Q: Which coordination level do you start with?
+A: **Worktrees**: you coordinate, with max control and the simplest mental model. Reach for teams/workflows only when the task genuinely needs them.
+```
+
 ```quiz
 Q: Why use git worktrees to run parallel Claude sessions?
 + Each session gets an isolated checkout + branch, so their edits don't collide

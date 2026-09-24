@@ -6,11 +6,14 @@ test("every registered lesson renders without browser errors", async ({ page }) 
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/#/");
   const lessons = await page.evaluate(() => window.COURSES.flatMap((course) => course.modules.flatMap((module) => module.lessons.map((lesson) => ({ course: course.id, id: lesson.id })))));
-  expect(lessons).toHaveLength(66);
+  expect(lessons).toHaveLength(70);
   for (const lesson of lessons) {
     await page.goto(`/#/${lesson.course}/${lesson.id}`);
     await expect(page.locator("article.lesson h1")).toBeVisible();
     await expect(page.locator(".error-box")).toHaveCount(0);
+    const text = await page.locator("article.lesson").innerText();
+    expect(text, `${lesson.id} leaks block syntax`).not.toMatch(/^\s*(```|:::)/m);
+    expect(text, `${lesson.id} leaks spot markup`).not.toContain("[[");
   }
   expect(errors).toEqual([]);
 });

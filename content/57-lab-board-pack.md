@@ -82,6 +82,18 @@ The session that built the deck will defend the deck — it re-reads its own rea
 - [ ] Save the proofreading brief — in Module 8 it becomes your **first finance Skill**, and it should be built before any automation
 - [ ] The whole chain — variance pack, reconciliation, pack, proofread — is your capstone candidate, and Module 8 puts the read-only parts on a schedule (writing to a Project, as scheduled tasks cannot reach local folders)
 
+## Reflect
+
+Answer about your own work, not the practice data. Your answers save to your notebook in this browser.
+
+```reflect
+What did the fresh-session proofread catch that the session which built the deck missed? Which of your real close documents most needs the same independent pass?
+```
+
+```reflect
+Which slide in your real board pack would most tempt you to smooth a limitation, and what line in your brief will forbid it?
+```
+
 ```quiz
 Q: Why decompose the driver tree before building the forecast?
 - It is faster

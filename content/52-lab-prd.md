@@ -118,6 +118,18 @@ The adversarial pass is not optional politeness towards the process. It is the o
 - [ ] Note which section your engineers always ask about, and expand it in the template
 - [ ] Module 8 makes this a Skill: "PRD this brain-dump against this evidence"
 
+## Reflect
+
+Answer about your own work, not the practice data. Your answers save to your notebook in this browser.
+
+```reflect
+Which requirement in your PRD had no evidence behind it? Is it there for strategy, technical necessity or a commitment, or only because you assumed it?
+```
+
+```reflect
+What did the customer review say you misunderstood? For a real feature you are specifying now, are you solving the problem or only the request?
+```
+
 ```quiz
 Q: Why must you write the problem statement yourself?
 - Cowork writes them badly

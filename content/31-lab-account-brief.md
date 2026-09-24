@@ -104,6 +104,18 @@ Two instructions in there do a lot of work.
 - [ ] Note which section you always wish were longer, and expand it
 - [ ] In Module 8, this becomes a Skill you invoke with a single line
 
+## Reflect
+
+Answer about your own work, not the practice data. Your answers save to your notebook in this browser.
+
+```reflect
+Think of your next real first call. Which two facts in its brief would you check yourself before you say them out loud, and where would you check them?
+```
+
+```reflect
+Which of your real open deals has the weakest evidence base? What would you need to find out before your next call with them?
+```
+
 ```quiz
 Q: What is the sharpest test of whether an account brief is genuinely researched?
 - Its length

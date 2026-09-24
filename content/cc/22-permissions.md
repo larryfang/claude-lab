@@ -81,6 +81,54 @@ For most day-to-day work on **your own** repo:
 3. **Deny** reads of `.env`/secrets and destructive commands (`rm -rf`, `git push`, force operations).
 4. Reach for **sandboxing** when working with anything unfamiliar.
 
+## Make the call
+
+Choose what you would do, read the consequence, then try the other options.
+
+```scenario
+S: You clone an unfamiliar open-source repo that you don't fully trust, and you want Claude to fix its failing build.
+Q: How do you run the session?
++ Keep permissions on and reach for sandboxing (`/sandbox`), so Claude works inside a filesystem boundary and a network egress allowlist.
+> Claude can work freely inside hard boundaries. If a file or dependency carries hidden instructions, the boundaries still stand between it and your system.
+~ Keep permissions on in normal mode, and read each request before you approve it.
+> Safe — you stay in control of every action. But a long fix means many prompts, and sandboxing would let Claude work freely inside hard boundaries.
+- Start Claude with `--dangerously-skip-permissions` so the fix goes faster.
+> Never on untrusted code or content. A prompt injection hidden in a file, dependency or issue can steer Claude into harmful commands, with no prompt to stop it.
+
+S: On your own repo, Claude asks you to approve `npm run lint` for the tenth time today.
+Q: What do you change?
++ Allowlist it with `/permissions` (or in `settings.json`) so it runs without a prompt.
+> The noise goes away for that one safe command, and everything else still asks. You keep control where it matters.
+~ Keep approving it each time; that's the safety model working.
+> Safe, but tedious. After the tenth approval you're not reviewing, you're just clicking — which is when a risky request slips past you.
+- Restart with `--dangerously-skip-permissions` so nothing asks again.
+> You trade one annoying prompt for no prompts on anything. That's only legit in a throwaway sandbox, a disposable container/VM, or isolated CI with a trusted repo.
+```
+
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What does auto mode do?
+A: A separate classifier model reviews each action and interrupts you only for the genuinely risky ones. It's the default on Pro, Max and Team plans.
+
+Q: allow, deny, ask — what does each do?
+A: **allow** runs without a prompt; **deny** blocks entirely, even if Claude asks; everything else falls through to the normal **ask** prompt.
+
+Q: Where do you codify permission rules for the whole team?
+A: In `.claude/settings.json`. Commit it to share team rules.
+
+Q: What does sandboxing (`/sandbox`) give you?
+A: OS-level isolation: a filesystem boundary plus a network egress allowlist, with credential masking built in.
+
+Q: When is `--dangerously-skip-permissions` legit?
+A: In a throwaway sandbox, a disposable container/VM, or CI where the environment is isolated and the repo is trusted. Never on untrusted code or content.
+
+Q: Why keep permissions on for a repo you don't fully trust?
+A: **Prompt injection**: instructions hidden in a file, dependency, issue, or web page can steer Claude into running harmful commands.
+```
+
 ```quiz
 Q: You're tired of approving `npm test` every time. Best fix?
 + Allowlist it via /permissions (or settings.json) so it runs without prompting

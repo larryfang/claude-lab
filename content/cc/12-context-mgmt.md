@@ -82,6 +82,54 @@ Your main context stayed clean — only this summary was added.
 > good. implement using utils/redis.ts and the defaults in config/limits.ts
 ```
 
+## Make the call
+
+Choose what you would do, read the consequence, then try the other options.
+
+```scenario
+S: You just finished a login bug fix, and in the same session you now want to start an unrelated CSV export feature.
+Q: What do you do before you describe the new task?
++ Run `/clear`, then describe the CSV export task.
+> The new task starts fresh, with no login-bug detail in the way. It's the easiest fix for the most common rookie mistake.
+~ Run `/compact`, then describe the CSV export task.
+> You get space back, but a summary of the bug fix still rides along into an unrelated task. `/compact` is for staying deep in *one* task.
+- Type the new request and keep going.
+> This is the kitchen sink trap: the export work runs on context polluted with the bug fix, and quality drops.
+
+S: Mid-refactor, you need to know whether any other middleware already does rate limiting, and finding out means reading a lot of files.
+Q: How do you get the answer?
++ Ask Claude to use a subagent to investigate and report back a summary with file references.
+> The subagent explores in its own context window and returns just a summary, so your main session stays clean and focused on building.
+~ Let Claude read the middleware files in the main session, then run `/compact` afterwards.
+> You get the answer, but every file read fills your main window first, and you depend on the summary to keep the refactor details you need.
+- Ask Claude to read the whole `src/` folder so it has everything.
+> "Read the whole `src/` folder" sprawl is exactly what eats context. The refactor details start to get lost in the noise.
+```
+
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: When do you `/clear`, and when do you `/compact`?
+A: `/clear` between **unrelated** tasks. `/compact` when you are deep in one task and the history is still useful.
+
+Q: What does `/compact` keep while it frees space?
+A: Key code, file states, and decisions. Give it a focus, e.g. `/compact focus on the API changes and the failing test`.
+
+Q: What creates a checkpoint, and how do you open the rewind menu?
+A: Every user prompt you send creates a checkpoint. Double-tap `Esc` or run `/rewind` to open the menu.
+
+Q: Do checkpoints replace git?
+A: No. They track Claude's changes only.
+
+Q: You corrected the same thing twice. What now?
+A: Stop. `/clear` and write a sharper prompt that bakes in what you learned.
+
+Q: How do you ask a side question that stays out of history?
+A: Use `/btw`. It doesn't enter the conversation history.
+```
+
 ```quiz
 Q: You're 40 messages deep on ONE feature and the window is filling, but the history is still useful. Best move?
 - /clear (start over)

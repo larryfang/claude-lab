@@ -109,6 +109,54 @@ That last paragraph is the important one. **Two, check, then forty.** It costs a
 If each item depends on the previous one — a narrative, a cumulative model, an argument that builds — parallelism cannot help and will hurt, because the workers cannot see each other's output. Say so: *"Process these in order, and let each build on the previous one."*
 :::
 
+## Make the call
+
+Choose what you would do, read the consequence, then try the other options.
+
+```scenario
+S: Your Monday pipeline-hygiene brief ran well the one time you ran it by hand. You want it to run every week from now on.
+Q: What do you do next?
++ Run it by hand two more times, read each output properly, then schedule it.
+> Rule 2: run it manually three times first. A small flaw gives one flawed output by hand, but a flawed output every week once it is scheduled.
+~ Schedule it now, and plan to read the first outputs carefully.
+> Workable if you really do read them. But people gradually stop reading scheduled outputs, and then the flaw repeats every Monday unseen.
+- Schedule it now. It worked once, so it will work every week.
+> Any small flaw now repeats every Monday, while you gradually stop reading the files. One manual run is not enough to trust it.
+
+S: Your fan-out brief will produce one account brief for each of the 40 accounts in `accounts.csv`.
+Q: How do you start the run?
++ Ask for the first two briefs, check the structure, then let it do the rest.
+> Two, check, then forty. It costs a minute, and an ambiguity in your brief shows up in two files, not forty.
+~ Run all 40, then ask it to review the set and make it consistent.
+> The consistency pass helps, because subagents do not share context mid-run. But any ambiguity in your brief is now in forty documents.
+- Run all 40 and read them at the end.
+> Parallel workers multiply the errors. You get forty files of uneven depth and scoring, with every ambiguity in your brief repeated forty times.
+```
+
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What are the three rules for scheduled work?
+A: Read-only, or it writes to a scratch folder. Run it manually three times first. It must report its own failures.
+
+Q: Why should a weekly report show only the delta?
+A: A full report every week goes unread by week three. "What changed" gets read.
+
+Q: What goes in a scheduled report's status line?
+A: The date, the number of records queried, the number returned, and OK or PROBLEM. It is your failure detection at a glance.
+
+Q: Why can a scheduled task not use a local folder?
+A: It runs remotely, with your connectors and the files in your Claude account. Create it inside a **Project** and write to the Project's files.
+
+Q: When should you delete a scheduled job?
+A: When you have not read its last three outputs. It is not saving you time; it is generating unread files and false confidence.
+
+Q: Why can fan-out outputs come back inconsistent?
+A: Parallel subagents do not share context mid-run. Ask for a final pass that reviews the set and makes depth, scoring and terminology consistent.
+```
+
 ```quiz
 Q: What is the worst way a scheduled task can fail?
 - It produces too much output

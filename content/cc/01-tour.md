@@ -104,6 +104,30 @@ If API_KEY is unset, startup fails fast in api.ts. Nothing reaches sync.ts.
 The box above is a guided demo so you can practice the flow safely. The *real* magic happens in your own terminal — which you'll do next lesson.
 :::
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What does **Shift+Tab** do?
+A: It cycles the permission/working mode: Auto, Accept edits, Plan mode, Manual.
+
+Q: What is Claude blocked from doing in plan mode?
+A: Editing files or running destructive commands. The block is at the tool level, so it can only read, search, and think.
+
+Q: How do you interrupt Claude mid-action without losing context?
+A: Press `Esc`. Context is preserved, so you can redirect.
+
+Q: How do you restore an earlier conversation or code state?
+A: Double-tap `Esc` or run `/rewind` to open the checkpoint menu. Every prompt is a checkpoint.
+
+Q: `/clear` or `/compact` — which one before an unrelated task?
+A: `/clear` wipes context for a fresh, unrelated task. `/compact` only summarizes the conversation to reclaim context.
+
+Q: How do you pick up a session from an earlier sitting?
+A: `claude --continue` resumes the most recent session; `claude --resume` lets you pick one from a list.
+```
+
 ```quiz
 Q: You're about to let Claude work in a codebase you don't know well. Which mode is safest to start in?
 - Auto-accept edits

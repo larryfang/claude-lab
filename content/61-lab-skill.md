@@ -165,6 +165,16 @@ I have these Skills: [list them and what each does]. Explain how I would bundle 
 
 For most people this comes later. One well-tested Skill that a colleague actually uses beats four untested ones.
 
+## Reflect
+
+```reflect
+Think about the job you chose for your Skill. Which correction did you make every time you ran it, and is that correction now a rule in your Skill?
+```
+
+```reflect
+Which colleague will run your Skill first, without you in the room, and what do you expect will confuse them?
+```
+
 ```quiz
 Q: What is the "cold test" and why does it matter?
 - Running the Skill on old data

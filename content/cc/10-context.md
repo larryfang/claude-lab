@@ -44,6 +44,30 @@ Run `/context` to see what's currently occupying the window, `/usage` to see whi
 Context discipline isn't just for your prompts — Anthropic cut roughly **80% of Claude Code's own system prompt** for its newest models, on the principle that every non-essential instruction competes with your task ([@trq212, Claude Code engineer, 2026-07-24](https://x.com/trq212/status/2080710971228918066)). If the tool's makers prune that hard, your CLAUDE.md deserves the same treatment (next lesson).
 :::
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What happens to Claude as the context window fills?
+A: It starts "forgetting" earlier instructions and makes more mistakes (*context rot*). It gets dumber for the rest of the session.
+
+Q: What four things eat your context?
+A: Reading files, command output, long meandering conversations, and an over-stuffed `CLAUDE.md` loaded on every turn.
+
+Q: What is the prime directive of context?
+A: **Keep the working context small and relevant.** Give Claude exactly what the current task needs — no more.
+
+Q: Long session full of detours, or fresh session with a sharp prompt?
+A: The fresh session with a sharp prompt almost always wins.
+
+Q: How do you see what is filling your context?
+A: `/context` shows what occupies the window, `/usage` shows what eats your plan limits, and `/statusline` keeps a context-usage readout in view.
+
+Q: How do subagents protect your context?
+A: They research in a *separate* window, and only a summary returns to yours.
+```
+
 ```quiz
 Q: Why is a long, multi-topic session a problem?
 + As context fills, Claude forgets earlier instructions and makes more mistakes — quality degrades

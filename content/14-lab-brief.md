@@ -240,6 +240,6 @@ Q: A run disappoints. Where should you make the fix?
 > Briefs are reusable assets. Hand-edited documents are not.
 ```
 
-:::try Module complete
-That is your **🧠 Brief Writer** badge. Next: give Cowork access to your actual systems, so the data stops being practice data.
+:::try Next: the whole run
+You can write a brief that works. Next, watch one complete run — brief, plan review, steering, verification — with the operator's thinking on the page. Finish it and the **🧠 Brief Writer** badge is yours.
 :::

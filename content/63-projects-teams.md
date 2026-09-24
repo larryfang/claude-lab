@@ -132,6 +132,30 @@ That is when "here is my file" becomes "install this and you have the team playb
 
 For most people, later. One well-documented Project with one tested Skill and an honest handover document beats an elaborate plugin nobody has used.
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What does a Cowork Project hold?
+A: Files, instructions, memory, and its own scheduled tasks. Open it next month and Claude already knows your definitions and the decisions you made.
+
+Q: What is the test for making something a Project?
+A: Would you have to re-explain the same context if you started fresh? If yes, it is a Project.
+
+Q: Which line in Project instructions helps output quality most?
+A: The list of **unreliable fields**. Naming them means Cowork flags those fields rather than building conclusions on them.
+
+Q: Output is subtly, consistently wrong. What do you check first?
+A: What the Project takes as established context. Ask it to list everything it believes, then correct each mistake explicitly.
+
+Q: What are the four parts of a handover package?
+A: The Skills (the files), the Project instructions, the connector list, and three example requests.
+
+Q: Which part of the handover do people forget?
+A: The **Project instructions**. Without them, a colleague runs your Skills faithfully, gets generic output, and concludes the Skills are mediocre.
+```
+
 ```quiz
 Q: What is the test for whether something should be a Project?
 - Whether it lasts more than a week

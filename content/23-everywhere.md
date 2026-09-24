@@ -50,6 +50,30 @@ Tag `@Claude` in a channel and hand it actual work: it posts its checklist in th
 Everything in this lesson runs on the same account: the same skills, the same connectors, the same permissions and data rules you set in Module 3. Nothing here is a new trust decision — it is the trust decisions you already made, available where the work is. That is also the argument to your security team: no new data paths, just new doors into the ones you governed.
 :::
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: How do the Microsoft 365 add-ins differ from exporting a file?
+A: Claude works **inside** Office on the open file, not on exported copies.
+
+Q: How do you reach your Skills inside an Office add-in?
+A: Type **`/`** in the add-in sidebar and your installed skills appear. Skills also fire automatically when relevant.
+
+Q: Which two approvals does the add-in need at work?
+A: Your **Claude plan** (Anthropic side) *and* IT's **add-in deployment** (Microsoft side). Until IT says yes, export the file into Cowork.
+
+Q: What happens to an email Claude for Outlook writes?
+A: It lands as an **unsent draft** for your review. The send gate stays yours.
+
+Q: What do Cowork sessions on web and mobile work from?
+A: **Connectors and uploaded files.** Local folders, browser use and computer use need your desktop app open.
+
+Q: Is using Claude in Office, Slack or mobile a new trust decision?
+A: No. Same account, skills, connectors, permissions and data rules — new doors into the data paths you already governed.
+```
+
 ```quiz
 Q: You spend close week inside a 40-tab workbook. Where should Claude meet you?
 + The Claude for Excel add-in — it works on the open workbook with cell-level citations and preserves formula chains

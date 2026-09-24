@@ -135,6 +135,18 @@ This chain — integrity, model, readout — is a perfect scheduled task, becaus
 - [ ] Note your funnel stage definitions
 - [ ] Module 8 puts this on a schedule and has it report its own failures
 
+## Reflect
+
+Answer about your own work, not the practice data. Your answers save to your notebook in this browser.
+
+```reflect
+In your own campaign data, which ranking claim rests on the fewest rows? Would you still move budget on it?
+```
+
+```reflect
+Name one limit of your own tracking that belongs in "what this data cannot tell you". How would stating it change how your CMO reads the rest?
+```
+
 ```quiz
 Q: Why does every ranking claim need its sample size stated next to it?
 - For completeness

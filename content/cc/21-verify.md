@@ -76,6 +76,30 @@ Have Claude **show the proof**: the test output, the command it ran and what it 
 Green — 3/3 passing. Evidence above. Commit?
 ```
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: Why does Claude need a check it can run itself?
+A: Claude stops when the work **looks done**. With a pass/fail check, it runs the check, reads the result, and iterates until it passes.
+
+Q: What counts as a "check"?
+A: Anything that returns a signal: a test suite (the gold standard), a build exit code, a linter or type-checker, an output diff, a screenshot compared to a design.
+
+Q: What is the test-first recipe?
+A: Have Claude write failing tests and run them so you see red. Then it implements until green and shows the passing output.
+
+Q: How do you keep Claude working toward a condition across turns?
+A: Set a `/goal`. Claude keeps working toward the condition across turns until it's met.
+
+Q: Which gate blocks the turn from ending until your check passes?
+A: A **Stop hook**. It runs your check as a script, so the stop is deterministic.
+
+Q: Claude says "Done, it works!" What do you insist on?
+A: Evidence: the test output, the command it ran and what it returned, or the screenshot. If you can't verify it, don't ship it.
+```
+
 ```quiz
 Q: Why is "give Claude a way to verify" the difference between watching and walking away?
 + With a runnable check, Claude closes its own loop — does the work, runs the check, and iterates until it passes
@@ -100,5 +124,5 @@ Q: Claude says "Done, it works!" What should you insist on?
 ```
 
 :::try Next
-You can plan and verify. Before you let Claude run more freely, let's set up permissions so it's both safe *and* not asking you to approve every keystroke.
+You can plan and verify. Next: the same discipline for when something breaks — debugging with Claude Code, where the rule is *no fix without a failing test*. Then permissions.
 :::

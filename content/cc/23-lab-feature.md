@@ -84,6 +84,16 @@ Use a subagent to review the diff against the plan for edge cases and gaps. Then
 - [ ] A fresh-context review ran and I committed the result
 :::
 
+## Reflect
+
+```reflect
+Which step of the loop did you most want to skip on your own repo — plan mode, the red tests, or the fresh-context review — and what would skipping it have cost you?
+```
+
+```reflect
+Which small change waiting in your backlog would you take through this loop next, and which test would prove it done?
+```
+
 ```quiz
 Q: In the lab, what caught the whitespace-only edge case?
 + An adversarial review subagent looking at the diff in a fresh context

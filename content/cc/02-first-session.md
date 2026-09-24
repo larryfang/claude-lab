@@ -109,6 +109,14 @@ You just ran the core loop on your own code. Two habits to carry forward from th
 1. **Ask before you assume.** Orientation questions are free and prevent wrong-problem solutions.
 2. **Always close the loop with verification.** "Show me it works" beats "it works."
 
+```reflect
+Which part of Claude's overview of your own project surprised you, and what would you have assumed if you had not asked first?
+```
+
+```reflect
+Which run or test command proves a change works in your project, and how will you make Claude show you its output every time?
+```
+
 ```quiz
 Q: In the session, why did Claude show the `npm test` output instead of just saying "done"?
 + Evidence beats assertion — showing passing tests lets you trust the work without re-checking it yourself

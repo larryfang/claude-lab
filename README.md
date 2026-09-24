@@ -4,7 +4,7 @@
 
 ### Hands-on, interactive, open-source courses for getting genuinely good at Claude — for **Sales, GTM, Product & Finance** *and* **developers**.
 
-Learn by *doing*: auto-saving checklists, instant-feedback quizzes, copy-paste prompts, and an **in-browser Claude Code terminal you can actually type into**.
+Learn by *doing*: labs on your real work, an **in-browser Claude Code terminal**, branching scenarios, find-the-flaw reviews, brief and CLAUDE.md checkers — and a **spaced-repetition review deck** so it sticks.
 
 [**▶ Live demo**](https://larryfang.github.io/claude-lab/) · [Quick start](#-quick-start) · [Add a course](#-add-a-course-or-lesson) · [Contribute](CONTRIBUTING.md)
 
@@ -25,9 +25,24 @@ It's built to be **forked**: swap in your company's examples, project keys, and 
 | 🤝 **Claude Cowork for Sales, GTM, Product & Finance** | AEs, PMM/growth, product managers, finance & RevOps | Write **briefs** that work first time, connect **CRM/Jira/mail/docs**, ship real **deliverables** (decks, live-formula spreadsheets, docs), four **role lanes** of labs, build a **Skill**, put it on a **schedule**, verify before you send — *no code required* |
 | ⌨️ **Claude Code for Developers** | Engineers, new to Claude Code | Agentic mental model, **context engineering & CLAUDE.md**, Explore→Plan→Code→Commit, TDD, **subagents, hooks, MCP**, headless/CI, worktrees — with a **terminal simulator** |
 
-~60 lessons across both tracks, grounded in current Anthropic docs and community best practices.
+70 lessons across both tracks, grounded in current Anthropic docs and community best practices — including worked examples (*Anatomy of a Great Run*), a diagnosis lab (*The Failure Clinic*), *Debugging With Claude Code*, and *Prompt Patterns That Work*.
 
 ## ✨ Features
+
+**New in 2.0 — the learn → practise → check → remember loop**
+
+- **Flashcards with spaced repetition** — grade each card Again / Got it / Easy; every card joins a Leitner review deck (`#/review`) that brings it back just before you would forget it
+- **Scenarios** — "what would you do?" judgement calls with the consequence of every choice
+- **Find the flaw** — click the sentences in a fluent draft that should not survive a review; scores hits, misses and false alarms
+- **Ordering exercises** — shuffle-and-sort sequences, with keyboard controls and drag on desktop
+- **Brief and CLAUDE.md checkers** — deterministic, in-browser signal checks (B.R.I.E.F. letters; length, commands, vague rules, secrets…) that say plainly they are heuristics
+- **Reflections and a notebook** — autosaving reflection boxes collected in `#/notebook`, exportable as Markdown
+- **Progress dashboard** (`#/me`) — levels and XP derived from saved state, streaks, a 16-week activity heatmap, quiz accuracy, and JSON export/import to move devices
+- **Certificates** — a printable, self-issued certificate per course at 100%
+- **Full-text search** — searches inside every lesson, shows the matching section with a highlighted snippet, and jumps straight to it
+- **New UI** — animated hub, module journey map with "you are here", lesson position chip, an on-this-page rail with scroll-spy, reading progress, and a `?` shortcut sheet
+
+**Core**
 
 - **Multi-course hub** with per-course progress, badges, and a course switcher
 - **Four role lanes** in the Cowork course — Sales, GTM, Product and Finance — so learners practise on the work they actually do
@@ -35,9 +50,9 @@ It's built to be **forked**: swap in your company's examples, project keys, and 
 - **Role-based fast paths** — short, time-estimated routes for Sales, GTM, Product, Finance, Claude Code foundations, feature delivery, and automation
 - **Freshness evidence** — volatile product lessons show the date and official source used for their latest verification
 - **Hands-on labs** in every module, with auto-saving checklists
-- **Instant-feedback quizzes** and **copy-to-clipboard prompt/command cards**
+- **Instant-feedback quizzes** with a score, best-score tracking and retry, plus **copy-to-clipboard prompt/command cards**
 - **Progress & badges** with a little confetti 🎉 (saved locally, no account)
-- **Beautiful, responsive UI**, light/dark mode, full keyboard nav (`/` search, `←`/`→` lessons)
+- **Beautiful, responsive UI**, light/dark mode, full keyboard nav (`/` search, `←`/`→` lessons, `?` shortcuts)
 - **No build step or runtime JavaScript dependencies** — pure HTML/CSS/JS; content is plain Markdown. Google Fonts are optional and fall back cleanly to system fonts offline.
 
 ## 🚀 Quick start
@@ -76,11 +91,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the Markdown + custom-block cheat-she
 
 ```bash
 npm install
-npm test              # content structure + all browser interactions
+npm test              # content structure + unit tests + all browser interactions
 npm run check:links   # live external-link check
 ```
 
-The browser suite renders every registered lesson and checks progress persistence, quizzes, search, keyboard navigation, guided simulations, route pages, accessibility state, and 390 px / 320 px layouts. GitHub Actions runs the main suite on every push and pull request, plus a weekly external-link check.
+The browser suite renders every registered lesson and checks progress persistence, quizzes and scores, every learning block, the review deck, notebook export, progress export/import, the certificate, full-text search, keyboard navigation, guided simulations, route pages, accessibility state, and 390 px / 320 px layouts. Unit tests cover the checker heuristics and the link-check rules. GitHub Actions runs the main suite on every push and pull request, plus a weekly external-link check.
 
 ## 📁 Project structure
 
@@ -91,8 +106,10 @@ The browser suite renders every registered lesson and checks progress persistenc
 │   ├── css/styles.css      # Design system (CSS variables to rebrand)
 │   └── js/
 │       ├── markdown.js     # Tiny Markdown engine + custom blocks (incl. terminal sim)
+│       ├── widgets.js      # Flashcards + spaced repetition, order, scenario, reflect, spot
+│       ├── checkers.js     # Heuristic brief and CLAUDE.md checkers
 │       ├── content.js      # Multi-course manifest: COURSES, modules, badges  ← edit here
-│       └── app.js          # Hub + routing, per-course progress, quizzes, search, confetti, sim
+│       └── app.js          # Hub, journey, lessons, search index, review, notebook, progress, certificate
 ├── content/                # Cowork course lessons (*.md)
 │   └── cc/                 # Claude Code course lessons (*.md)
 ├── start.command           # macOS: double-click to preview locally

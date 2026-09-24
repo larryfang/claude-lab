@@ -193,6 +193,16 @@ Not a tool. A way of delegating: describe the outcome precisely, name the source
 That transfers to every agentic tool you will use, and to every person you will ever brief.
 :::
 
+## Reflect
+
+```reflect
+Which recurring job in your week does your review machine now do, and what will you check in its next three scheduled outputs before you trust it?
+```
+
+```reflect
+Which field on your unreliable fields list would do the most damage if a Monday run used it without a flag?
+```
+
 :::try Last lesson
 That is your **🏆 Capstone Champion** badge. One short lesson left: making it a habit.
 :::

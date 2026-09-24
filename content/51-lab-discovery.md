@@ -132,6 +132,18 @@ The report is evidence. The recommendation is yours. Write it in your own words 
 - [ ] Note the sections you always want and the ones you always delete
 - [ ] Module 8 makes this one Skill: "synthesise the transcripts in this folder"
 
+## Reflect
+
+Answer about your own work, not the practice data. Your answers save to your notebook in this browser.
+
+```reflect
+When you checked three quotes word for word against their transcripts, what did you find? Which research document of yours needs the same check before its next review?
+```
+
+```reflect
+Did the priority you wrote from memory match the report's ranking? Where they differed, which one of you was wrong, and why?
+```
+
 ```quiz
 Q: Why run an evidence inventory before theming?
 - To count the files

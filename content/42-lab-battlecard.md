@@ -134,6 +134,18 @@ A battlecard's real failure mode is going stale silently. Someone reads a six-mo
 - [ ] Snapshots of the source pages are saved
 - [ ] Module 8 puts the monitoring on a schedule so you learn when their pricing page changes
 
+## Reflect
+
+Answer about your own work, not the practice data. Your answers save to your notebook in this browser.
+
+```reflect
+Which claim about a real competitor have you heard a rep repeat that nobody could verify in under a minute? Where would it go on your battlecard now?
+```
+
+```reflect
+What proportion of your battlecard survived the final safety check, and what does that tell you about the claims your team repeats today?
+```
+
 ```quiz
 Q: Why separate the research pass from the battlecard pass?
 - To produce more files

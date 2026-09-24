@@ -93,6 +93,16 @@ Summarize the change, then commit with a conventional message and open a PR with
 You took a repo you may have never seen and shipped a verified change the professional way — context first, plan, test, review, ship. That's not "using an AI." That's **agentic engineering**. Most developers never build this muscle. You just did.
 :::
 
+## Reflect
+
+```reflect
+Which step of the clone → PR loop felt slowest on your repo, and what would you change — in `CLAUDE.md`, a command, or a subagent — to speed it up next time?
+```
+
+```reflect
+Which habit from this course will you apply first in your team's main repo, and how will you know after a week that it stuck?
+```
+
 ```quiz
 Q: The capstone chained which techniques together?
 + /init → plan mode → test-first → fresh-context review → commit/PR

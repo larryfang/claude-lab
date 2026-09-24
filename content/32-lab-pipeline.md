@@ -130,6 +130,18 @@ You now have a three-step chain — hygiene, model, review — that you will wan
 - [ ] Note your CRM's field names, so the next run does not need to guess
 - [ ] Module 8 turns this into one Skill and one scheduled Friday job
 
+## Reflect
+
+Answer about your own work, not the practice data. Your answers save to your notebook in this browser.
+
+```reflect
+Which problem in your real pipeline data did the hygiene report show that you did not know about? What will you fix before your next deal review?
+```
+
+```reflect
+Did your model's total match your CRM's own pipeline number? If not, what explained the gap, and what would you have said if your manager had asked first?
+```
+
 ```quiz
 Q: Why run the hygiene pass before any analysis?
 - To reduce file size

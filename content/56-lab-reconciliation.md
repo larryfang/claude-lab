@@ -89,6 +89,18 @@ Do not send anything. Do not connect to email. Drafts on disk only.
 Notice what made this safe: drafts to disk, not a connected mailbox; the verify-first line at the top of each; and the cross-reference against the exceptions, so you never chase a customer whose payment is sitting unmatched in your own books. When you later wire this to a real mail connector, keep all three — and keep it producing **drafts**.
 :::
 
+## Reflect
+
+Answer about your own work, not the practice data. Your answers save to your notebook in this browser.
+
+```reflect
+Did the reconciliation find all five seeded problems, and did it invent any? How would you measure your setup against a known answer before you trust it with your real books?
+```
+
+```reflect
+Could you have chased a real customer whose payment was sitting unmatched in your own books? What check will stop that at your next close?
+```
+
 ```quiz
 Q: A payment's amount exactly matches a different invoice. Where does it belong in the reconciliation?
 - Matched — the amounts tie

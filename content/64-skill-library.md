@@ -208,6 +208,30 @@ description: >-
 - [ ] Run it once more as an explicit `/skill-name` and confirm both paths work
 :::
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: Why do the templates ship with `[BRACKETS]`?
+A: The definitions section is the value. Generic definitions produce generic output, which is what you already had without the Skill.
+
+Q: What are the two ways to get a Skill installed?
+A: **Upload the file**: zip the Skill's folder and upload it. Or **have Claude build it**: it interviews you in a Cowork session and produces the installable folder.
+
+Q: When is `/skill-name` better than letting a Skill auto-fire?
+A: When the job has side effects, or you want a guaranteed, exact run: `/variance-pack` on close day, not "hey, do the variance thing".
+
+Q: What should you check before adapting a template?
+A: Whether the official plugin for your function already covers the job. The templates earn their keep where the plugin misses your standards.
+
+Q: What does the plugin **Customize** flow do?
+A: Claude opens a session, inspects your connected tools, interviews you, and rewrites the plugin's skills for your stack.
+
+Q: What is the cold test?
+A: Install the Skill, then ask for the job in natural language, with no brief. It proves the Skill fires on its own from its description.
+```
+
 ```quiz
 Q: Why do the templates ship with [BRACKETS] instead of finished definitions?
 - To make them shorter

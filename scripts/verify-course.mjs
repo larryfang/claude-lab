@@ -51,6 +51,10 @@ for (const course of courses) {
         const fronts = (block[1].match(/^Q:/gm) || []).length, backs = (block[1].match(/^A:/gm) || []).length;
         if (fronts < 2 || fronts !== backs) fail(`${lesson.file}: flashcards need at least two Q:/A: pairs (found ${fronts} Q, ${backs} A)`);
       }
+      // A card's saved id is lessonId + hash(front), so a repeated front would share one review record.
+      const allFronts = [...md.matchAll(/```flashcards\s*\n([\s\S]*?)```/g)].flatMap((b) => [...b[1].matchAll(/^Q:\s*(.*)$/gm)].map((m) => m[1].trim()));
+      const dupes = allFronts.filter((f, i) => allFronts.indexOf(f) !== i);
+      if (dupes.length) fail(`${lesson.file}: duplicate flashcard front "${dupes[0]}"`);
       for (const block of md.matchAll(/```order\s*\n([\s\S]*?)```/g)) {
         if ((block[1].match(/^\d+\.\s+/gm) || []).length < 3) fail(`${lesson.file}: order block needs at least three numbered items`);
       }

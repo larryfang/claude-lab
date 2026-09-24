@@ -124,6 +124,18 @@ FLAG: any question where a truthful answer is likely to lose us the deal — I n
 - [ ] Nothing customer-facing left without a named human reviewer
 - [ ] The answer bank saved somewhere permanent — it is now a team asset
 
+## Reflect
+
+Answer about your own work, not the practice data. Your answers save to your notebook in this browser.
+
+```reflect
+How many accounts on your real target list came back NO HOOK FOUND? What does that tell you about which of them are ready for a personalised approach?
+```
+
+```reflect
+Which answer your team gives on security questionnaires is most likely to be stale, and which named human should review it before the next one goes out?
+```
+
 ```quiz
 Q: Cowork found a specific hook for all fifteen accounts on a cold list. What should you do?
 - Send them all

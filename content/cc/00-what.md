@@ -50,6 +50,30 @@ Nearly every best practice in this course exists to manage this one constraint. 
 
 Your job is to give it context (next module), a plan (the workflow module), and a way to check its work (the verification lesson). Do that and you can hand off real work and walk away.
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What loop does Claude Code run, over and over?
+A: Gather context → take an action → verify the result, then repeat until the goal is met.
+
+Q: What one constraint explains nearly every best practice?
+A: The **context window**. It fills up fast, and as it fills, performance degrades.
+
+Q: What fills Claude's context window?
+A: The entire conversation: every message, every file it reads, every command's output.
+
+Q: Vibe coding vs agentic engineering — what is the difference?
+A: Vibe coding is one-shot "just build it" with no plan and no tests. Agentic engineering runs research → plan → execute → review, with you as oversight.
+
+Q: What mental model should you hold for Claude Code?
+A: A fast, capable engineer who just joined your team: brilliant, tireless and literal, with no memory of your project beyond what you give it.
+
+Q: What three things must you give Claude to hand off real work?
+A: Context, a plan, and a way to check its work.
+```
+
 ```quiz
 Q: How is Claude Code fundamentally different from code autocomplete or a chat window?
 - It's just a faster autocomplete

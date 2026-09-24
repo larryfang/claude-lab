@@ -90,6 +90,30 @@ Cowork needs more trust than chat because it can act. You keep control in four w
 Cowork needs a **paid plan** (Pro, Max, Team or Enterprise). It runs on desktop, web and mobile. This course uses the **Claude Desktop app** because the labs depend on reliable local-folder access; a cloud session on web or mobile can reach a folder you connected on your computer only while Desktop is open there. Cowork **ships fast and evolves quickly**, so screens and features shift. If your interface differs slightly from these lessons, that is expected — the concepts and the briefs still hold. Frame every UI instruction in this course as "look for something that does this", not "click exactly here".
 :::
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What is chat organised around, and what is Cowork organised around?
+A: Chat is organised around the **prompt**; Cowork around the **outcome**. Same model, completely different unit of work.
+
+Q: What are the five ingredients of the Cowork test?
+A: **Multiple inputs**, a **file deliverable**, it **recurs**, a **clear quality bar**, and **boring** middle steps. Three or more and Cowork is the right surface.
+
+Q: Is Cowork a source of truth?
+A: No. It reports what it read. If your CRM is wrong, your brief is wrong.
+
+Q: You run the same brief twice. What should you expect?
+A: Two slightly different documents. Cowork is not deterministic — fine for a draft, not fine for a system of record.
+
+Q: What is genuinely **not** sandboxed in Cowork?
+A: **Computer use** — driving your browser or desktop apps. Code and shell commands run isolated, and either way it can change the files you shared.
+
+Q: What are the four ways you keep control of Cowork?
+A: You choose the folders, you see the plan (and can interrupt), code and shell run isolated, and you review the output.
+```
+
 ```quiz
 Q: The core difference between Chat and Cowork is best described as…
 - Cowork runs a bigger model

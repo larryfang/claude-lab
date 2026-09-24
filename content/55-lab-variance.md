@@ -90,6 +90,18 @@ Read the commentary once more, looking only for softened language: a miss descri
 - [ ] Note the corrections you made; they become the rules section of your Skill in Module 8
 - [ ] If you have the Finance plugin, run `/variance-analysis` on the same data and compare — now you know what it is doing under the hood, and where your version is stricter
 
+## Reflect
+
+Answer about your own work, not the practice data. Your answers save to your notebook in this browser.
+
+```reflect
+When you asked Cowork to show its working on the largest variance, did it defend the number or correct it? What does that tell you about the checks your real close needs?
+```
+
+```reflect
+In your last real variance commentary, where might a miss have been softened into "broadly in line"? What would the plain version say, with the number?
+```
+
 ```quiz
 Q: Why must the Summary tab use live formulas instead of pasted values?
 - It renders faster

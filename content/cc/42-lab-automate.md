@@ -80,6 +80,16 @@ git worktree remove ../your-repo-experiment
 Anytime you run `claude -p` in scripts/CI, add `--allowedTools "..."` (and consider `--permission-mode auto`) so an unattended run can only do what the job needs. Never `--dangerously-skip-permissions` on code you don't trust.
 :::
 
+## Reflect
+
+```reflect
+Which repetitive job in your own repo — a review, a summary, a check — would you turn into a `claude -p` one-liner, and which tools would you allow it?
+```
+
+```reflect
+Which two tasks from your current week could run in separate worktrees at the same time, and what would you check before you merge them back?
+```
+
 ```quiz
 Q: What does `claude -p "..."` give you that an interactive session doesn't?
 + A one-shot, scriptable, pipeable command — perfect for CI, pre-commit, and pipelines
@@ -97,5 +107,5 @@ Q: Why run a second Claude in a git worktree instead of the same folder?
 ```
 
 :::try Module complete!
-You can run Claude headless and in parallel. Mark it done for your **🚀 Automator** badge. Last module: the habits that separate power users from the pack — and the capstone.
+You can run Claude headless and in parallel. Mark it done for your **🚀 Automator** badge. Last module: the prompt patterns and habits that separate power users from the pack — and the capstone.
 :::

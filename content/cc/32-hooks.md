@@ -87,6 +87,30 @@ Hooks can be defined in `settings.json` (user / project / local), in a **plugin'
 If your `CLAUDE.md` keeps growing rules like "remember to format," "remember to run tests," "don't touch generated files" — and Claude keeps slipping — that's a sign to **convert them to hooks.** Deterministic enforcement beats a longer, noisier memory file (and it shrinks your context). This is one of the best ways to keep `CLAUDE.md` lean.
 :::
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What makes a hook different from a `CLAUDE.md` rule?
+A: A hook is **deterministic**: it runs automatically, every time. A `CLAUDE.md` rule is advisory — a suggestion Claude usually follows.
+
+Q: Which hook event can block a tool before it runs?
+A: **PreToolUse**. Exit code 2 blocks the action and feeds the stderr message back to Claude.
+
+Q: Which event guarantees formatting after every edit?
+A: **PostToolUse**, with a matcher like `Edit|Write` running your formatter.
+
+Q: Which event gates completion on a passing build or test?
+A: **Stop**. It fires when Claude tries to end its turn.
+
+Q: Where do hooks live, and how does your command get the event?
+A: In `.claude/settings.json` (commit it to share). Your command receives the event as JSON on stdin.
+
+Q: Your `CLAUDE.md` keeps growing "remember to…" rules. What now?
+A: Convert the must-happen ones into hooks. Deterministic enforcement beats a longer, noisier memory file, and it shrinks your context.
+```
+
 ```quiz
 Q: What makes a hook different from a CLAUDE.md rule?
 + Hooks are deterministic — they run automatically every time; CLAUDE.md rules are advisory

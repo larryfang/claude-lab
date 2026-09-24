@@ -135,9 +135,66 @@ The simulator is deliberately guided: a learner must type the suggested step (wh
 
 > ⚠️ **Related:** inside a `:::` container, a code fence whose body contains a literal `:::` line will confuse the container's depth counting (it is fence-blind) and close or extend the block incorrectly. Keep literal `:::` examples out of fences that sit inside containers.
 
+### Learning blocks (2.0)
+
+Five blocks turn reading into practice. All are fenced blocks, so they must **not** sit inside a `:::` container. `npm run check:content` validates each one.
+
+**Flashcards** — `Q:` front, `A:` back, at least two cards. Graded cards join the learner's spaced-repetition review deck (`#/review`). By convention they go in a `## Lock it in` section just before the quiz.
+````text
+```flashcards
+Q: What does F stand for in B.R.I.E.F.?
+A: **Flag** — what to surface rather than decide.
+Q: Why restrict sources?
+A: So every claim is checkable against files you also have.
+```
+````
+
+**Scenario** — `S:` situation, `Q:` question, then options marked `+` (the one best choice), `~` (workable) or `-` (poor), each followed by one `>` consequence line. Several `S:` blocks may share one fence.
+````text
+```scenario
+S: Step 2 of the plan reads `archive/`.
+Q: What do you do?
++ Tell it to skip `archive/` and approve the rest.
+> Wrong source invalidates the whole run; one sentence fixes it now.
+- Approve it; more data is better.
+> Old rows blend silently into this quarter's totals.
+```
+````
+
+**Order** — an optional `# prompt`, the items **in the correct order** as a numbered list (at least three), and an optional `>` explanation. The learner sees them shuffled.
+````text
+```order
+# Put the loop in order.
+1. Explore
+2. Plan
+3. Code
+4. Commit
+> Understand before you plan, plan before you code.
+```
+````
+
+**Spot the flaw** — a draft paragraph where each planted error is wrapped as `[[the flawed sentence|why it is wrong]]` (at least two). Every other sentence is clickable too, so false alarms count.
+````text
+```spot
+# Select every sentence you would not send as written.
+Q3 closed with 42 deals (source: `pipeline.csv`). [[Win rate rose because the new script works.|A causal claim from a correlation.]] [[Average deal size was about $48k.|No source row, and "about" hides rounding.]]
+```
+````
+
+**Reflect** — one question; the answer autosaves to the learner's notebook (`#/notebook`), which exports as Markdown.
+````text
+```reflect
+Which real job from your week fits this loop?
+```
+````
+
+**Checkers** — `brief-check` and `claudemd-check` render an editable box (the fence body is the starting text; leave it empty for a blank box) and a heuristic checker from `assets/js/checkers.js`. They look for signals, not quality, and say so on screen. Tests for the heuristics live in `scripts/checkers.test.mjs`.
+
+> ⚠️ Inside flashcards, scenario and order blocks, no line may start with `#` except the optional prompt line, and option text must not start with `+`, `~` or `-`.
+
 ## Shipping a JS or CSS change
 
-`index.html` loads `styles.css` and the three JS files with a `?v=` query. Browsers cache
+`index.html` loads `styles.css` and every file in `assets/js/` with a `?v=` query (the content check fails if one is missing). Browsers cache
 those files hard, so **bump every `?v=` together** when you change any of them, or returning
 learners keep the old copy:
 
@@ -146,7 +203,7 @@ learners keep the old copy:
 sed -i '' 's/?v=2026-08-24/?v=2026-09-15/g' index.html
 ```
 
-All four URLs deliberately carry the identical string, so one find-and-replace does it. Lesson
+All asset URLs deliberately carry the identical string, so one find-and-replace does it. Lesson
 Markdown needs no version — `app.js` fetches `content/` with `cache: "no-cache"`, so edits to
 a `.md` file go live on the next page load.
 
@@ -154,7 +211,8 @@ a `.md` file go live on the next page load.
 
 ```bash
 npm install
-npm run check:content  # manifest, lesson files, quizzes, custom blocks, routes, metadata
+npm run check:content  # manifest, lesson files, quizzes, learning blocks, routes, metadata
+npm run check:unit     # link-check rules and the brief / CLAUDE.md checker heuristics
 npm run check:browser  # every lesson plus learner interactions and responsive layouts
 npm run check:links    # external URLs; also runs weekly in GitHub Actions
 ```
@@ -164,8 +222,9 @@ Run `npm test` before a pull request to execute the content and browser suites t
 ## Style guide
 
 - Audience for the Cowork course is **non-technical revenue and product people** — AEs, PMM/growth, PMs. Explain jargon the first time; use analogies.
-- Keep lessons **short and active**. Every concept lesson should end with a quiz; every "lab" lesson should have real, do-it-now steps with checklists.
-- Cowork labs come in **three role lanes** (Sales / GTM / Product). Where a lab differs by lane, put each variant in its own `:::details` block so learners only open theirs.
+- Keep lessons **short and active**. Every concept lesson should end with a flashcard deck and a quiz; every "lab" lesson should have real, do-it-now steps with checklists and end with a reflection.
+- Where a lesson teaches a judgement call, add a scenario. Where it teaches a sequence, add an order exercise. Where it teaches review, add a spot-the-flaw draft.
+- Cowork labs come in **four role lanes** (Sales / GTM / Product / Finance). Where a lab differs by lane, put each variant in its own `:::details` block so learners only open theirs.
 - Every Cowork brief in a lab should follow **B.R.I.E.F.** (Background, Result, Inputs, Edges, Flag) and ask for **two artefacts** — a data file and a narrative file — so the output is verifiable.
 - Use `[BRACKETS]` for things learners replace (project keys, names).
 - Frame UI steps **resiliently** ("In Settings → Connectors; the exact label may vary") since the product evolves.

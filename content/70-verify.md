@@ -133,6 +133,30 @@ The first time this feels slow. By the fifth deliverable you will do it in four 
 And you will find things. Everyone does. That is what tells you the check is working.
 :::
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What are the four checks in the four-check pass?
+A: Trace three numbers, count the rows, verify three quotes and three claims, and read the flags.
+
+Q: Which three numbers should you trace?
+A: Three picked at random, not the headline number. The random ones are the ones nobody checks.
+
+Q: Why is counting the rows worth doing every time?
+A: It is the fastest, highest-yield check. Silent exclusions are the most common serious error, and they are invisible in the narrative.
+
+Q: Which three instructions make a deliverable verifiable by design?
+A: Restrict the sources, demand citations inline, and separate OBSERVED from INFERRED.
+
+Q: What can a self-audit not catch?
+A: A source Cowork misread and is still confident about. It audits against its own misreading; your three-number trace catches that.
+
+Q: What is the fresh-eyes upgrade?
+A: Run the same audit brief in a **new** Cowork session with no memory of building the deliverable. The builder session re-reads its own reasoning as confirmation.
+```
+
 ```quiz
 Q: What is the fastest, highest-yield check on any data deliverable?
 - Reading it twice
@@ -164,5 +188,5 @@ Q: What is the real test in the standing checklist?
 ```
 
 :::try Next
-The last piece: getting a team to actually use this.
+You can prevent and catch errors. Next, the Failure Clinic: six broken runs to diagnose from the symptom alone — then getting a team to actually use this.
 :::

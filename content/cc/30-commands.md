@@ -105,6 +105,30 @@ Running /pr…
 Anything to adjust before I mark it ready for review?
 ```
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: When should a prompt become a custom command?
+A: When you type the same multi-step prompt over and over. Type it once; reuse it forever as `/yourcommand`.
+
+Q: Where do project and personal commands live?
+A: `.claude/commands/` for project commands (commit it; shared with your team). `~/.claude/commands/` for personal ones, available in all your projects.
+
+Q: How does a command accept input?
+A: Use `$ARGUMENTS` in the file. `/fix-issue 1234` then runs the workflow against issue 1234.
+
+Q: What three things does a Skill add over a command file?
+A: A **directory** for supporting files, **frontmatter** to control who invokes it, and **auto-invocation** when your request matches its `description`.
+
+Q: How do you stop Claude auto-triggering a deploy skill?
+A: Set `disable-model-invocation: true` in its frontmatter. It then only runs when *you* type `/name`.
+
+Q: Where does the name `/git:commit` come from?
+A: Folders create namespacing: `.claude/commands/git/commit.md` becomes `/git:commit`.
+```
+
 ```quiz
 Q: You keep pasting the same 4-step "open a PR" prompt. Best move?
 + Save it as .claude/commands/pr.md so you can run /pr

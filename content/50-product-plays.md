@@ -102,6 +102,54 @@ Anthropic's own PMs go one step further: they **stack plugins** — productivity
 
 That last one goes on a schedule in Module 8.
 
+## Make the call
+
+Choose what you would do, read the consequence, then try the other options.
+
+```scenario
+S: Cowork's synthesis of six discovery interviews ranks one theme clearly first. You present your recommendation tomorrow.
+Q: What do you do before you present?
++ Trace the top theme's quotes to their sources, decide whether six interviews are enough for this decision, and form your own view of the ranking.
+> Whether the evidence is enough is your call. A ranking you can explain without re-reading the document is one you can defend.
+~ Check that the quotes are real, then present the ranking as written.
+> The evidence is now traceable, but the ranking is still the document's. When someone asks why item one beats item two, the honest answer is "it appeared in that order".
+- Present the ranking. The report is well argued and every theme has quotes.
+> Fluent synthesis reads like a decision you made. Cowork will produce a confident report from six interviews; nobody asked whether six was enough.
+
+S: Your backlog-evidence report flags a low-priority issue as under-prioritised: many linked complaints, from large accounts.
+Q: What do you do?
++ Treat it as evidence, weigh it against your strategy, capacity and technical debt, and make the priority call yourself.
+> Cowork can rank by evidence weight. It cannot know your strategy, your team's capacity, or the deal that closes if you ship a specific thing.
+~ Raise the priority because the evidence is strong, and say the report recommended it.
+> The evidence may well be right, but the decision now belongs to the report. If "the analysis said so" is your only reason, it is not your call.
+- Ask Cowork to change the priority in the tracker so the backlog matches the evidence.
+> The brief says it plainly: do not change any priority, do not create or edit issues. This is analysis, not action, and what to build next is your job.
+```
+
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What is the split in PM work?
+A: **Synthesis** — reading many sources and reporting what they say — is Cowork's strength. **Judgement** — what to build, cut, and tell an executive — stays yours.
+
+Q: What is the real PM failure mode with Cowork?
+A: Not bad judgement from Cowork. Its synthesis is so fluent that a prioritisation it generated *reads* like a decision you made.
+
+Q: What is the critical instruction in a discovery synthesis brief?
+A: "Every claim needs a verbatim quote and its source. Where two customers contradicted each other, quote both and do not resolve it."
+
+Q: In an evidence-backed PRD, what do you write yourself?
+A: The problem statement and the decisions. Cowork writes the structure, the evidence links, the edge cases and the open questions.
+
+Q: Name three judgement calls Cowork must never make.
+A: Any three of: what to build next, what a metric means, what to tell an executive, whose problem matters most, whether the evidence is enough.
+
+Q: How do you defend against a generated roadmap?
+A: **Make the evidence traceable, then form your own view.** If you cannot explain a ranking without re-reading the document, it is not your ranking.
+```
+
 ```quiz
 Q: What is the correct division of labour between you and Cowork in PM work?
 - Cowork drafts, you approve

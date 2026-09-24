@@ -59,6 +59,54 @@ These patterns are starting points, not laws. Sometimes you *should* let context
 
 > Pay attention to what works. When output is great, notice what you did — the prompt shape, the context, the mode. When Claude struggles, ask *why*: too-noisy context? too-vague prompt? too-big a task? Over time you'll build intuition no guide can capture.
 
+## Make the call
+
+Choose what you would do, read the consequence, then try the other options.
+
+```scenario
+S: It's late. Claude's change looks right at a quick glance, Claude says it's done, and you want to ship it.
+Q: What do you do before you ship?
++ Ask Claude to run the tests or the build and show you the output, then review that evidence.
+> You review proof, not a claim. Plausible-looking code that misses edge cases gets caught before it ships.
+~ Read the diff closely yourself, then ship.
+> Better than nothing, but now you are the only check, and edge cases hide well in plausible-looking code.
+- Ship it. It looks right, and Claude said it's done.
+> This is the trust-then-verify gap: plausible code that doesn't handle edge cases, shipped. If you can't verify it, don't ship it.
+
+S: You are an hour into a big feature, the context is filling up, and the work will run across several more sessions.
+Q: How do you carry the work forward?
++ Have Claude write the plan to `PLAN.md`, then implement from it in a fresh session.
+> The plan survives the context reset, and the new session starts clean with a written plan to check against.
+~ Keep this one session going, because you're deep in one rich problem.
+> Sometimes that's right. But a plan that lives only in the context doesn't survive a reset, and the window keeps filling.
+- Start a fresh session and re-explain the feature from memory.
+> The decisions you worked out live only in the old context, so the new session starts without them.
+```
+
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What does the meta-skill reduce to?
+A: **Manage context, and close the loop.** Feed Claude exactly what the task needs, and give it a way to check its own work.
+
+Q: Why externalize a big plan into `SPEC.md` / `PLAN.md`?
+A: So it survives a context reset. Then implement from it in a fresh session.
+
+Q: What is the fix for the kitchen-sink session?
+A: `/clear` between unrelated tasks.
+
+Q: What is the fix for the infinite exploration?
+A: Scope investigations narrowly, or hand them to a **subagent** so the exploration doesn't touch your main context.
+
+Q: What is the fix for the over-specified `CLAUDE.md`?
+A: Prune ruthlessly: if Claude already does it right without the rule, delete it. Convert "must-happen" rules into hooks.
+
+Q: On the team adoption ladder, what comes first?
+A: End-to-end verification of Claude's own work. Autonomy — auto mode, then background agents — comes second.
+```
+
 ```quiz
 Q: Claude has been wrong twice on the same thing despite your corrections. The pro move is…
 + /clear and restart with a sharper prompt incorporating what you learned

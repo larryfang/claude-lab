@@ -64,7 +64,8 @@ test("length warns past 200 lines and fails past 300", () => {
 });
 
 test("a secret fails loudly with its line number", () => {
-  const r = claudemd(GOOD_MD + "\nAPI_KEY=sk-ant-abcdefghijklmnopqrstuvwxyz0123");
+  const fakeKey = ["sk", "ant", "x".repeat(28)].join("-"); // built at runtime so secret scanners stay quiet
+  const r = claudemd(GOOD_MD + "\nAPI_KEY=" + fakeKey);
   const c = check(r, "secrets");
   assert.equal(c.level, "fail");
   assert.match(c.detail, /line 10/i);

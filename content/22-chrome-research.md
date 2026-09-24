@@ -115,6 +115,30 @@ That last line — **list the URLs first** — is the cheapest control there is.
 If a claim will end up in a battlecard or a customer-facing document, have Cowork save the source page text or a dated snapshot into your workspace folder. Six weeks later the page will have changed and you will need to know what it actually said.
 :::
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What are the three rungs of the research ladder, in order?
+A: **1. Web search**, **2. Research**, **3. Claude in Chrome**. Climb in that order; most people reach for the riskiest first.
+
+Q: Why default to rung 2, Research?
+A: It gives you **citations** by default, and it cannot click "submit" on anything.
+
+Q: What is the single best control for browser research?
+A: A **separate Chrome profile** for agent work, logged into nothing except what the task needs.
+
+Q: Why never combine web browsing with write access in one run?
+A: Web pages can carry instructions aimed at an agent. Research, then review, then act — as separate steps.
+
+Q: Which two rules does every research brief need?
+A: **A URL and a date for every claim**, and **OBSERVED kept separate from INFERRED**.
+
+Q: What is the cheapest control in a research brief?
+A: Ask it to **list the URLs it intends to visit** before it starts. You see where it is going before it goes.
+```
+
 ```quiz
 Q: What is the single most effective control when using browser automation for research?
 - Using incognito mode

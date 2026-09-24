@@ -75,7 +75,10 @@ var COWORK_COURSE = {
           keywords: ["plan", "steering", "interrupt", "redirect", "stop", "failure", "review", "control"] },
         { id: "lab-brief", file: "14-lab-brief.md", title: "Lab: Fix a Bad Brief", minutes: 15, level: "Core",
           summary: "Hands-on. Run a lazy brief, feel the mediocre output, then rewrite it with B.R.I.E.F. and compare.",
-          keywords: ["lab", "brief", "rewrite", "compare", "quality", "practice"] }
+          keywords: ["lab", "brief", "rewrite", "compare", "quality", "practice"] },
+        { id: "great-run", file: "15-anatomy-great-run.md", title: "Anatomy of a Great Run", minutes: 14, level: "Core",
+          summary: "One complete run from brief to sendable pack, with the operator's thinking on the page — and where the time really goes.",
+          keywords: ["worked example", "end to end", "walkthrough", "plan review", "steering", "verification", "timeline", "deal review"] }
       ]
     },
     {
@@ -210,6 +213,9 @@ var COWORK_COURSE = {
         { id: "verify", file: "70-verify.md", title: "Verify Before You Send", minutes: 11, level: "Core",
           summary: "The four-check review pass, how to force citations, and the claims you must never take on trust.",
           keywords: ["verify", "review", "hallucination", "citations", "accuracy", "quality", "checklist", "risk"] },
+        { id: "failure-clinic", file: "72-failure-clinic.md", title: "The Failure Clinic", minutes: 16, level: "Core",
+          summary: "Six case files of broken runs. Diagnose each from its symptom and name the brief line or check that prevents it.",
+          keywords: ["failure", "diagnosis", "confident gap", "silent exclusion", "drift", "eager rewrite", "wrong source", "contradiction", "case study"] },
         { id: "rollout", file: "71-rollout.md", title: "Rolling It Out to Your Team", minutes: 10, level: "Core",
           summary: "A 30-60-90 plan, the objections you will hear, and how to measure whether it actually saved time.",
           keywords: ["rollout", "adoption", "change management", "team", "enablement", "measurement", "objections"] }
@@ -274,7 +280,7 @@ var CC_COURSE = {
   level: "Hands-on · terminal",
   fastPaths: [
     { id: "foundations", emoji: "⚡", title: "Foundations in 80 minutes", audience: "Developers new to Claude Code", desc: "Build the core mental model, manage context, plan work, and close the verification loop.", lessons: ["cc-what", "cc-tour", "cc-first", "cc-context", "cc-claudemd", "cc-context-mgmt", "cc-epcc", "cc-verify"] },
-    { id: "ship-feature", emoji: "🔁", title: "Ship a feature safely", audience: "Developers ready to use Claude on a real repository", desc: "Go from context and plan mode through permissions, tests, and a complete feature lab.", lessons: ["cc-what", "cc-context", "cc-claudemd", "cc-epcc", "cc-verify", "cc-permissions", "cc-lab-feature"] },
+    { id: "ship-feature", emoji: "🔁", title: "Ship a feature safely", audience: "Developers ready to use Claude on a real repository", desc: "Go from context and plan mode through permissions, tests, and a complete feature lab.", lessons: ["cc-what", "cc-context", "cc-claudemd", "cc-epcc", "cc-verify", "cc-debug", "cc-permissions", "cc-lab-feature"] },
     { id: "automation", emoji: "🚀", title: "Automation power path", audience: "Experienced users building repeatable workflows", desc: "Combine skills, subagents, hooks, headless runs, and worktrees without skipping safety.", lessons: ["cc-permissions", "cc-commands", "cc-subagents", "cc-hooks", "cc-mcp-plugins", "cc-headless", "cc-parallel", "cc-lab-automate"] }
   ],
   freshness: {
@@ -342,6 +348,9 @@ var CC_COURSE = {
         { id: "cc-verify", file: "cc/21-verify.md", title: "Give Claude a Way to Verify", minutes: 10, level: "Core",
           summary: "Tests, builds, screenshots — close the loop so you can walk away. TDD with Claude Code.",
           keywords: ["verify", "tests", "tdd", "build", "screenshot", "evidence", "goal", "stop hook"] },
+        { id: "cc-debug", file: "cc/24-debugging.md", title: "Debugging With Claude Code", minutes: 14, level: "Core",
+          summary: "Reproduce, isolate, prove with a failing test, fix the cause — and never let a try/except pass as a fix.",
+          keywords: ["debugging", "bug", "stack trace", "reproduce", "failing test", "root cause", "git bisect", "regression"] },
         { id: "cc-permissions", file: "cc/22-permissions.md", title: "Permissions & Staying Safe", minutes: 9, level: "Core",
           summary: "Default prompts, auto mode, /permissions allowlists, /sandbox, and the YOLO flag caution.",
           keywords: ["permissions", "auto mode", "sandbox", "allowlist", "safety", "dangerously skip"] },
@@ -396,6 +405,9 @@ var CC_COURSE = {
       title: "Best Practices & Capstone",
       desc: "The habits that separate power users from the pack — then put it all together.",
       lessons: [
+        { id: "cc-prompts", file: "cc/49-prompt-patterns.md", title: "Prompt Patterns That Work", minutes: 12, level: "Core",
+          summary: "Eight moves that turn a vague request into one Claude can finish and prove — with before/after examples.",
+          keywords: ["prompts", "prompting", "patterns", "specific", "scope", "done criteria", "constraints", "evidence"] },
         { id: "cc-bestpractices", file: "cc/50-bestpractices.md", title: "Habits & Failure Patterns", minutes: 10, level: "Core",
           summary: "The traits of effective users and the five failure patterns (with the fix for each).",
           keywords: ["best practices", "habits", "failure patterns", "anti-patterns", "kitchen sink", "fixes"] },

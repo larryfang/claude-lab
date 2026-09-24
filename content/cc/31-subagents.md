@@ -93,6 +93,54 @@ Two correctness issues + one test gap. Want me to fix all three?
 > fix the CSRF and error-leak issues, add the denied-consent test, then re-review
 ```
 
+## Make the call
+
+Choose what you would do, read the consequence, then try the other options.
+
+```scenario
+S: You want a reusable reviewer for your payment code, and you are writing its file in `.claude/agents/`.
+Q: Which definition do you write?
++ A `payment-flow-reviewer` with `tools: Read, Grep, Glob, Bash` and a description that says when to use it.
+> Specificity buys better tool selection and tighter context. A reviewer needs Read/Grep/Bash, not Write, and the description is how Claude decides when to delegate.
+~ A general `qa` subagent with the same read-only tools, used for every review.
+> It still keeps the review out of your main context, but a vague agent loses to a feature-specific one on tool selection and focus.
+- An agent named `Plan` with every tool enabled, so it can also fix what it finds.
+> Naming it `Plan` overrides the built-in and breaks plan mode in subtle ways. Every tool also throws away the restriction a reviewer should have.
+
+S: Your `CLAUDE.md` says the old `v1/` API is deprecated. You ask Claude to have the built-in Explore subagent find utilities you can reuse.
+Q: How do you hand off the search?
++ Restate the rule in the delegation prompt: ignore the deprecated `v1/` code.
+> Explore deliberately skips `CLAUDE.md` to stay lean, so the rule only reaches it when the handoff states it.
+~ Delegate to a custom subagent instead, because it loads `CLAUDE.md`.
+> That works — custom subagents load the same `CLAUDE.md` and memory hierarchy — but you give up fast, read-only Explore for a rule that one sentence could carry.
+- Delegate as usual; Explore reads `CLAUDE.md` like the main session does.
+> It doesn't. Explore skips `CLAUDE.md` and git status, so its summary can recommend the deprecated code.
+```
+
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: Where does a subagent's context go?
+A: It runs in its **own context window**. Only a **summary** returns to your main session.
+
+Q: Where do subagent definitions live?
+A: A Markdown file in `.claude/agents/` (project) or `~/.claude/agents/` (personal), with frontmatter and a system prompt.
+
+Q: How does Claude decide when to delegate to a subagent?
+A: From the subagent's `description` frontmatter.
+
+Q: Which built-in subagents skip `CLAUDE.md` and git status?
+A: **Explore** and **Plan**. Restate a rule in the delegation prompt when they must follow it.
+
+Q: Why never name a custom subagent `Explore` or `Plan`?
+A: You'll override the built-ins and break plan mode in subtle ways.
+
+Q: `/subtask` or `/fork` — what is the difference?
+A: `/subtask` hands a side task to a subagent and the result comes back here. `/fork` copies the whole conversation into a new background session.
+```
+
 ```quiz
 Q: What's the #1 reason to use a subagent?
 + It runs in a separate context window and returns only a summary, keeping your main context clean

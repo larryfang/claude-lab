@@ -101,6 +101,30 @@ Press Ctrl+G to edit this plan, or approve to implement.
 Step 1 done and verified. Continue with step 2?
 ```
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What are the four phases of the canonical workflow?
+A: Explore → Plan → Code → Commit. Separate *figuring out what to do* from *doing it*.
+
+Q: What does plan mode prevent?
+A: Editing files and running destructive commands. It is enforced at the tool level, so Claude can only read and reason.
+
+Q: How do you edit Claude's plan before it proceeds?
+A: Press `Ctrl+G` to open the plan in your editor.
+
+Q: When do you skip the plan?
+A: When you could describe the diff in one sentence — a typo, a log line, a rename. Plan when uncertain, multi-file, or in unfamiliar code.
+
+Q: What does `/model opusplan` do?
+A: It uses **Opus to plan** and **Sonnet to execute**, without manual switching.
+
+Q: How do you start a large, fuzzy feature?
+A: Have Claude interview you and write `SPEC.md`, then implement from it in a fresh session.
+```
+
 ```quiz
 Q: What's the main reason to explore and plan before coding?
 + Jumping straight to code often solves the wrong problem; planning separates understanding from doing

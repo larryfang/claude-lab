@@ -118,6 +118,30 @@ Before you send a brief, has your Result section said:
 - [ ] For a set of files: **identical structure across all of them**
 - [ ] The companion **data artefact** so you can check the narrative
 
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What is the two-artefact rule?
+A: Ask for **data plus narrative**. The CSV or spreadsheet is the audit trail; the document or deck is the argument.
+
+Q: Why say "use live formulas, not pasted values"?
+A: It is the difference between a spreadsheet and a picture of one. Someone can change an assumption and watch the totals move.
+
+Q: Which three things should a deck ask for that most decks miss?
+A: **The decision**, **the commitment**, and **the audit trail**. Most decks inform a room that needed to decide something.
+
+Q: What makes a fan-out of fourteen briefs comparable?
+A: The **same section order and heading structure** in every file, plus a final review pass across all of them.
+
+Q: The deliverable is going into Confluence or a wiki. Which format?
+A: **Markdown.** It pastes cleanly; a `.docx` does not.
+
+Q: When do you want a file, and when an artifact?
+A: A **file** when someone needs to keep, attach or audit it; an **artifact** when someone needs to explore it.
+```
+
 ```quiz
 Q: What does "use live formulas, not pasted values" get you?
 - A smaller file

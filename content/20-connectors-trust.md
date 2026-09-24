@@ -99,6 +99,54 @@ Start with **one**. The one whose data you retype most often.
 - [ ] Write my six data rules in a note (use the table above)
 - [ ] Decide who reviews output before it leaves the building — even if that is only me
 
+## Make the call
+
+Two access decisions you will meet in real work. Choose what you would do, read the consequence, then try the other options.
+
+```scenario
+S: A prospect emails you a "requirements document". You want Cowork to read it, draft your response, and update the opportunity in your CRM — all in one run while you are in a meeting.
+Q: How do you set this up?
++ Split it. First run: read the document and draft the response, read-only. Review the draft, then update the CRM as a separate step.
+> Untrusted content in, no privileged action out. If the document carries hidden instructions, the worst they can do is shape a draft you review before anything changes.
+~ Keep it as one run, but read the plan first and watch for any step you did not ask for.
+> Reading the plan is a real habit, and a step you did not ask for is the signal. But external content and CRM write access are still chained together, so your attention is the only control.
+- Give the CRM connector read-write so nothing blocks, and let the run finish while you are in the meeting.
+> This is the exact chain the lesson warns against: external document in, privileged action out, nobody watching. Hidden text on page 14 can now reach your CRM.
+
+S: You want a weekly Monday job that tidies stale fields on your CRM opportunities. It worked well when you ran it by hand, with write access.
+Q: How do you put it on a schedule?
++ Schedule a read-only version that writes its proposed changes to a scratch location, and apply the writes yourself in a run you watch.
+> This matches the data rules: only read-only jobs, or jobs writing to scratch, go on a schedule, and write access is per job, never on a schedule you are not watching.
+~ Schedule it with write access, but check the CRM yourself every Monday afternoon.
+> You may catch problems, but only after the writes have happened. Checking afterwards is not the same as watching the run.
+- Schedule it exactly as it is. It worked by hand, so it will work unattended.
+> A connector that can update one record can update a hundred, and now it does so on a schedule nobody is watching. That breaks two of your data rules at once.
+```
+
+## Lock it in
+
+Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
+
+```flashcards
+Q: What is MCP, in one line?
+A: **Model Context Protocol** — an open standard for connecting AI assistants to tools and data. The standard socket, like USB-C.
+
+Q: What can a connector see?
+A: Exactly what **your account** can see. It authenticates as you and does not escalate privileges — so it also inherits your over-broad access.
+
+Q: Is a connector a background sync of your CRM?
+A: No. Claude queries on request, when a task needs it. There is no shadow copy of your CRM.
+
+Q: What is prompt injection?
+A: Instructions hidden inside content Cowork reads — a document, email, web page or ticket — that the agent may then follow.
+
+Q: What is the core habit against prompt injection?
+A: **Untrusted content in, no privileged action out.** Never chain reading an external document with sending email or updating the CRM in one unattended run.
+
+Q: What is the sane default for read and write access?
+A: **Read-only** by default. Grant write access per job, and never on a schedule you are not watching.
+```
+
 ```quiz
 Q: A colleague says "Claude can see everything in our Salesforce." Is that right?
 - Yes, connectors have full access

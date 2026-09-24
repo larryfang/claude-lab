@@ -173,6 +173,18 @@ Auth tokens expire — commonly every 30 to 90 days, sometimes sooner. Reconnect
 Two likely causes, both worth knowing about. Permissions may be trimming rows your account cannot see. Or the connector may be paginating and Cowork stopped at the first page. Ask: *"How many records matched in total, and how many did you actually retrieve?"* For large pulls, an export to CSV is often more reliable than a live query.
 :::
 
+## Reflect
+
+Take two minutes to connect this lab to your real work.
+
+```reflect
+Which cross-reference between two systems do you do by hand today, and how much of your week does it take?
+```
+
+```reflect
+Look at your ACCESS-LOG.md: which grant would you be least comfortable explaining to your security team, and what would you change about it?
+```
+
 ```quiz
 Q: Why run a read-only smoke test on a new connector?
 - To warm the cache
