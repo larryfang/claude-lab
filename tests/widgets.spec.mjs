@@ -101,3 +101,15 @@ test("CLAUDE.md checker flags the starter file's problems", async ({ page }) => 
   await expect(lint.locator(".lint-check.warn, .lint-check.fail").first()).toBeVisible();
   await expect(lint.locator(".lint-check")).toHaveCount(9);
 });
+
+test("flashcards work from the keyboard alone", async ({ page }) => {
+  await page.goto("/#/cowork/the-brief");
+  const deck = page.locator(".flash").first();
+  const total = (await deck.locator(".flash-count").textContent()).split("/")[1].trim();
+  await deck.locator(".flash-card").focus();
+  await page.keyboard.press("Space");
+  await expect(deck.locator(".flash-card")).toHaveClass(/flipped/);
+  await page.keyboard.press("2");
+  await expect(deck.locator(".flash-count")).toHaveText(`2 / ${total}`);
+  await expect(deck.locator(".flash-card")).toBeFocused();
+});

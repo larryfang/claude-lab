@@ -13,7 +13,7 @@ Jordan leads RevOps at a mid-market software company. The VP of Sales wants a de
 | Minutes | Stage | What Jordan does | Why it pays |
 |---|---|---|---|
 | 0–6 | **Brief** | Writes all five B.R.I.E.F. parts and asks for two artefacts | Every later check depends on it |
-| 6–8 | **Plan review** | Reads the plan against the four-point review; fixes two things | Cheapest moment to catch an error |
+| 6–8 | **Plan review** | Reads the plan against the four-point review; fixes three things | Cheapest moment to catch an error |
 | 8–20 | **Run** | Watches the first minute, then lets it work; one nudge | Early steering is almost free |
 | 20–30 | **Verify** | Runs the four-check pass on the output | Makes the time saving real |
 | 30–32 | **Keep** | Saves the brief for next week | The next run starts at minute 6 |
@@ -93,7 +93,7 @@ The files are in `output/`. They look finished. Jordan runs the four-check pass 
 | **Verify claims** | The memo said one deal "has gone quiet since the pricing call". Jordan checked the export's last-activity note | The note said "pricing sent". Changed the claim to what the source says |
 | **Read the flags** | Five flags: 2 blank amounts, 1 stage/date contradiction, 2 merged stage spellings | The contradiction was a real data-entry error. Jordan fixed it in the CRM and noted it in the memo |
 
-Two corrections in ten minutes. Neither would have been visible from the memo alone, and both would have been repeated on Monday's call in Jordan's voice.
+Two corrections to the memo and one to the CRM, in ten minutes. None was visible from the memo alone, and the two memo errors would have been repeated on Monday's call in Jordan's voice.
 
 ## 5 · Keep the asset (minutes 30–32)
 

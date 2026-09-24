@@ -385,7 +385,7 @@ a { color: var(--link); text-underline-offset: 2px; }
 /* Module cards */
 .section-title { font-family: var(--font-display); font-size: 1.5rem; margin: 40px 0 6px; letter-spacing: -.01em; }
 .section-desc { color: var(--muted); margin: 0 0 20px; }
-.module-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(265px, 1fr)); gap: 16px; }
+.module-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(265px, 100%), 1fr)); gap: 16px; }
 .module-card { display: flex; flex-direction: column; padding: 20px; border-radius: var(--radius-lg); background: var(--surface); border: 1px solid var(--line); text-decoration: none; color: inherit; transition: transform .15s, box-shadow .18s, border-color .15s; position: relative; overflow: hidden; }
 .module-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--clay-soft); }
 .module-card .mc-emoji { font-size: 1.8rem; margin-bottom: 12px; }
@@ -510,7 +510,7 @@ a { color: var(--link); text-underline-offset: 2px; }
 /* ============================================================
    Multi-course: hub + sidebar course header
    ============================================================ */
-.course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+.course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 20px; }
 .course-card { display: flex; flex-direction: column; padding: 26px; border-radius: var(--radius-lg); background: var(--surface); border: 1px solid var(--line); text-decoration: none; color: inherit; transition: transform .15s, box-shadow .18s, border-color .15s; position: relative; overflow: hidden; }
 .course-card::after { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: linear-gradient(90deg, var(--clay), var(--try)); opacity: .9; }
 .course-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--clay-soft); }
@@ -533,7 +533,7 @@ a { color: var(--link); text-underline-offset: 2px; }
 .route-chooser-body { padding: 0 18px 16px; color: var(--ink-2); }
 .route-chooser-body p { margin: 0 0 10px; }
 .route-question { padding: 12px 14px; border-radius: 10px; background: var(--surface-2); }
-.fast-path-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-bottom: 34px; }
+.fast-path-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); gap: 14px; margin-bottom: 34px; }
 .fast-path-card { display: flex; gap: 14px; padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: inherit; text-decoration: none; transition: transform .15s, border-color .15s, box-shadow .15s; }
 .fast-path-card:hover { transform: translateY(-2px); border-color: var(--clay); box-shadow: var(--shadow); }
 .fast-path-emoji { font-size: 1.6rem; }

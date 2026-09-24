@@ -54,3 +54,15 @@ test("? opens the keyboard shortcut sheet and Escape closes it", async ({ page }
   await page.keyboard.press("Escape");
   await expect(page.locator("#shortcutsModal")).toBeHidden();
 });
+
+for (const width of [390, 320]) {
+  test(`new pages have no horizontal overflow at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    for (const route of ["#/", "#/cowork/great-run", "#/cowork/failure-clinic", "#/claude-code/cc-debug", "#/claude-code/cc-lab-claudemd", "#/me", "#/review", "#/notebook", "#/cowork/certificate"]) {
+      await page.goto("/" + route);
+      await page.waitForTimeout(150);
+      const m = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
+      expect(m.scroll, `${route} overflows at ${width}px`).toBeLessThanOrEqual(m.client);
+    }
+  });
+}
