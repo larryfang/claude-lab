@@ -25,7 +25,7 @@ It's built to be **forked**: swap in your company's examples, project keys, and 
 | 🤝 **Claude Cowork for Sales, GTM, Product & Finance** | AEs, PMM/growth, product managers, finance & RevOps | Write **briefs** that work first time, connect **CRM/Jira/mail/docs**, ship real **deliverables** (decks, live-formula spreadsheets, docs), four **role lanes** of labs, build a **Skill**, put it on a **schedule**, verify before you send — *no code required* |
 | ⌨️ **Claude Code for Developers** | Engineers, new to Claude Code | Agentic mental model, **context engineering & CLAUDE.md**, Explore→Plan→Code→Commit, TDD, **subagents, hooks, MCP**, headless/CI, worktrees — with a **terminal simulator** |
 
-70 lessons across both tracks, grounded in current Anthropic docs and community best practices — including worked examples (*Anatomy of a Great Run*), a diagnosis lab (*The Failure Clinic*), *Debugging With Claude Code*, and *Prompt Patterns That Work*.
+63 lessons plus 7 reference pages across both tracks, grounded in current Anthropic docs and community best practices — including worked examples (*Anatomy of a Great Run*), a diagnosis lab (*The Failure Clinic*), *Debugging With Claude Code*, and *Prompt Patterns That Work*.
 
 ## ✨ Features
 
