@@ -54,6 +54,8 @@
     </div>
   </header>
 
+  <div class="read-progress" id="readProgress" role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden><div></div></div>
+
   <div class="layout">
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar" aria-label="Course navigation">
@@ -80,6 +82,23 @@
         <kbd>esc</kbd>
       </div>
       <ul class="search-results" id="searchResults"></ul>
+    </div>
+  </div>
+
+  <!-- Keyboard shortcuts -->
+  <div class="modal" id="shortcutsModal" hidden>
+    <div class="modal-backdrop" data-close-shortcuts></div>
+    <div class="modal-panel shortcuts-panel" role="dialog" aria-modal="true" aria-labelledby="shortcutsTitle">
+      <div class="shortcuts-head"><h2 id="shortcutsTitle">Keyboard shortcuts</h2><button class="icon-btn shortcuts-close" type="button" aria-label="Close" data-close-shortcuts>✕</button></div>
+      <dl class="shortcuts-list">
+        <div><dt><kbd>/</kbd></dt><dd>Search every lesson, including the text inside it</dd></div>
+        <div><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>Previous / next lesson</dd></div>
+        <div><dt><kbd>Space</kbd></dt><dd>Flip the focused flashcard</dd></div>
+        <div><dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></dt><dd>Grade a flipped card: Again · Got it · Easy</dd></div>
+        <div><dt><kbd>Enter</kbd></dt><dd>Run the next simulator step</dd></div>
+        <div><dt><kbd>?</kbd></dt><dd>Show this sheet</dd></div>
+        <div><dt><kbd>Esc</kbd></dt><dd>Close search, this sheet, or the menu</dd></div>
+      </dl>
     </div>
   </div>
 

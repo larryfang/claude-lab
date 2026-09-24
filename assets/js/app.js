@@ -153,36 +153,79 @@
   }
 
   /* ---------- Hub ---------- */
+  function isLab(l) { return /^(lab|capstone)\b/i.test(l.title); }
+  function heroVisual() {
+    return '<div class="hero-visual" aria-hidden="true"><div class="hv-orb hv-orb-1"></div><div class="hv-orb hv-orb-2"></div>' +
+      '<div class="hv-card hv-brief"><div class="hv-bar"><i></i><i></i><i></i><span>brief.md</span><em>checker</em></div>' +
+        '<p class="hv-line" style="--d:0"><b>B</b><span>I run RevOps; this pack is for our VP of Sales.</span></p>' +
+        '<p class="hv-line" style="--d:1"><b>R</b><span>Produce <code>output/deal-review.xlsx</code> + a memo.</span></p>' +
+        '<p class="hv-line" style="--d:2"><b>I</b><span>Use only <code>pipeline-q3.csv</code>. No web.</span></p>' +
+        '<p class="hv-line" style="--d:3"><b>E</b><span>Never estimate a missing amount.</span></p>' +
+        '<p class="hv-line" style="--d:4"><b>F</b><span>Flag every row you exclude, and why.</span></p>' +
+        '<div class="hv-score"><span>5 / 5</span> signals present</div></div>' +
+      '<div class="hv-card hv-term"><span class="p">$</span> npm test<span class="ok">✓ 42 passed</span></div>' +
+      '<div class="hv-card hv-flash"><div class="hv-flip"><span class="f"><small>Question</small>What does <b>F</b> stand for?</span><span class="b"><small>Answer</small>Flag — surface it, don\'t decide it.</span></div></div>' +
+      '<div class="hv-chip">🔥 3-day streak <b>+20 XP</b></div></div>';
+  }
   function renderHub() {
     currentCourseId = null;
     refreshTopProgress(null);
     buildHubNav();
-    document.title = SITE.title + " — Cowork for Sales, GTM, Product & Finance";
-    var html = "";
-    html += '<section class="hero">';
-    html += '<span class="hero-eyebrow">✦ Hands-on · Interactive · Open source</span>';
+    document.title = SITE.title + " — Hands-on courses for Claude Cowork and Claude Code";
+    var lessons = 0, labs = 0, minutes = 0;
+    COURSES.forEach(function (c) { countable(c).forEach(function (x) { lessons++; if (isLab(x.lesson)) labs++; minutes += x.lesson.minutes || 0; }); });
+    var html = '<section class="hub-hero"><div class="hub-hero-copy">';
+    html += '<span class="hero-eyebrow">✦ Claude Lab 2.0 · Hands-on · Open source</span>';
     html += "<h1>Get genuinely good at <span class=\"grad\">Claude</span>.</h1>";
-    html += '<p class="hero-sub">' + esc(SITE.tagline) + " Pick a track below and start practicing — progress, quizzes, and badges save automatically in your browser.</p>";
-    html += "</section>";
-    html += '<h2 class="section-title">Choose your track</h2><p class="section-desc">Two hands-on courses. Start wherever fits you today.</p>';
+    html += '<p class="hero-sub">' + esc(SITE.tagline) + " Learn one idea, practise it in a lab, check yourself, and let the review deck make it stick. Everything saves in your browser — no account.</p>";
+    html += '<div class="hero-cta"><a class="btn btn-primary" href="' + courseHref(COURSES[0].id) + '">' + COURSES[0].emoji + " Start with Cowork →</a>" + (COURSES[1] ? '<a class="btn btn-ghost" href="' + courseHref(COURSES[1].id) + '">' + COURSES[1].emoji + " I write code →</a>" : "") + "</div>";
+    html += "</div>" + heroVisual() + "</section>";
+
+    var last = store.last && byId[store.last.c] && lessonInfo(byId[store.last.c], store.last.l);
+    var st = streaks(), due = dueCards().length, xp = totalXp();
+    if (last || xp) {
+      html += '<div class="today-row">';
+      if (last) html += '<a class="resume-card" href="' + lessonHref(last.course.id, last.lesson.id) + '"><span class="resume-kicker">Continue where you left off</span><strong>' + esc(last.lesson.title) + "</strong><small>" + last.course.emoji + " " + esc(last.module.title) + '</small><span class="resume-go" aria-hidden="true">→</span></a>';
+      html += '<a class="today-card" href="#/review"><b>' + due + "</b><span>" + (due === 1 ? "card" : "cards") + ' due</span></a>';
+      html += '<a class="today-card" href="#/me"><b>' + st.current + '</b><span>day streak</span></a>';
+      html += '<a class="today-card" href="#/me"><b>' + xp + "</b><span>XP · " + levelOf(xp).name + "</span></a></div>";
+    }
+
+    html += '<div class="stats-strip">' +
+      '<div data-stat="lessons"><b>' + lessons + "</b><span>lessons</span></div>" +
+      '<div data-stat="labs"><b>' + labs + "</b><span>hands-on labs</span></div>" +
+      '<div data-stat="hours"><b>' + Math.round(minutes / 60) + "</b><span>hours of practice</span></div>" +
+      '<div data-stat="tracks"><b>' + COURSES.length + "</b><span>tracks</span></div></div>";
+
+    html += '<h2 class="section-title">Choose your track</h2><p class="section-desc">Two hands-on courses. Start wherever fits you today — progress in each is saved separately.</p>';
     html += '<div class="course-grid">';
     COURSES.forEach(function (c) {
       var p = progressPct(c);
       var resume = countable(c).filter(function (x) { return !cstate(c.id).completed[x.lesson.id]; })[0];
       var startId = resume ? resume.lesson.id : c.modules[0].lessons[0].id;
       var cta = p.done === 0 ? "Start course" : (p.pct === 100 ? "Review" : "Resume");
+      var cLabs = countable(c).filter(function (x) { return isLab(x.lesson); }).length;
       html += '<a class="course-card" href="' + lessonHref(c.id, startId) + '">';
       html += '<div class="course-card-top"><span class="course-emoji">' + c.emoji + "</span>";
       html += '<span class="course-ring" style="--p:' + p.pct + '"><span>' + p.pct + "%</span></span></div>";
       html += "<h2>" + c.title + "</h2>";
       html += '<p class="course-aud">' + esc(c.audience) + "</p>";
       html += '<p class="course-tag">' + esc(c.tagline) + "</p>";
-      html += '<div class="course-meta"><span>' + countable(c).length + " lessons</span><span class=\"dot\">·</span><span>" + c.modules.filter(function (m) { return !isRef(m); }).length + " modules</span><span class=\"dot\">·</span><span>" + c.level + "</span></div>";
+      html += '<div class="course-meta"><span>' + countable(c).length + " lessons</span><span class=\"dot\">·</span><span>" + cLabs + " labs</span><span class=\"dot\">·</span><span>" + c.level + "</span></div>";
       html += '<span class="course-btn">' + cta + ' <svg viewBox="0 0 24 24" width="16" height="16"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
       html += "</a>";
     });
     html += "</div>";
-    html += '<p style="margin-top:44px;color:var(--muted);font-size:.85rem">Open source &amp; built to be remixed. <a href="' + SITE.repo + '" target="_blank" rel="noopener">Fork it on GitHub</a> to make an internal edition for your team.</p>';
+
+    html += '<h2 class="section-title">How Claude Lab teaches</h2><p class="section-desc">Reading about Claude does not make you good at it. Every module runs the same four-step loop.</p><div class="how-grid">';
+    [["📖", "Learn", "Short lessons, one idea each, with the why — not just the clicks."],
+     ["🛠️", "Practise", "Labs on your real work, a terminal simulator, scenarios, and find-the-flaw reviews."],
+     ["✅", "Check", "Scored quizzes, ordering exercises, and checkers for your briefs and CLAUDE.md."],
+     ["🔁", "Remember", "Flashcards return on a schedule; your notebook keeps every reflection."]].forEach(function (s, k) {
+      html += '<div class="how-step"><span class="how-num">' + (k + 1) + '</span><span class="how-emoji">' + s[0] + "</span><h3>" + s[1] + "</h3><p>" + s[2] + "</p></div>";
+    });
+    html += "</div>";
+    html += '<footer class="hub-foot"><span>Open source &amp; built to be remixed. <a href="' + SITE.repo + '" target="_blank" rel="noopener">Fork it on GitHub</a> to make an internal edition for your team.</span><span class="kbd-hint">Press <kbd>?</kbd> for shortcuts</span></footer>';
     $("#content").innerHTML = html;
     window.scrollTo(0, 0);
   }
@@ -194,8 +237,8 @@
     refreshTopProgress(cid);
     buildCourseNav(c, null);
     document.title = c.title + " · " + SITE.title;
-    var p = progressPct(c);
-    var resume = countable(c).filter(function (x) { return !cstate(c.id).completed[x.lesson.id]; })[0];
+    var p = progressPct(c), s = cstate(cid);
+    var resume = countable(c).filter(function (x) { return !s.completed[x.lesson.id]; })[0];
     var resumeId = resume ? resume.lesson.id : c.modules[0].lessons[0].id;
     var resumeLabel = p.done === 0 ? "Start the course" : (p.pct === 100 ? "Review from the top" : "Resume where you left off");
     var earned = earnedBadges(c);
@@ -213,10 +256,10 @@
 
     html += '<div class="dash">';
     html += '<div class="ring" style="--p:' + p.pct + '"><span class="ring-label">' + p.pct + "%</span></div>";
-    html += '<div class="dash-info"><h3>Your progress</h3><p>' + p.done + " of " + p.total + " lessons complete. " + (p.pct === 100 ? "You finished the whole course — 🏆" : "Work top-to-bottom, or jump around.") + "</p>";
+    html += '<div class="dash-info"><h3>Your progress</h3><p>' + p.done + " of " + p.total + " lessons complete · " + courseXp(c) + " XP. " + (p.pct === 100 ? "You finished the whole course — 🏆" : "Work top-to-bottom, or jump around.") + "</p>";
     html += '<div class="badge-row">';
     (c.badges || []).forEach(function (b) { var has = earned.indexOf(b) !== -1; html += '<span class="badge ' + (has ? "earned" : "") + '">' + (has ? b.emoji : "🔒") + " " + b.label + "</span>"; });
-    html += "</div></div></div>";
+    html += '</div><a class="cert-link" href="' + courseHref(cid) + '/certificate">' + (p.pct === 100 ? "🎓 Get your certificate →" : "🎓 Certificate unlocks at 100%") + "</a></div></div>";
 
     if (c.fastPaths && c.fastPaths.length) {
       html += '<h2 class="section-title">Choose your route</h2><p class="section-desc">Short on time? Pick the outcome closest to your job. Every route still counts toward the full course.</p>';
@@ -225,26 +268,27 @@
       html += '<p class="route-question"><strong>Quick check:</strong> Can you already explain the safety model, write a constrained brief, and verify an output? If not, start with Essentials.</p></div></details>';
       html += '<div class="fast-path-grid">';
       c.fastPaths.forEach(function (path) {
-        var mins = fastPathMinutes(c, path);
-        html += '<a class="fast-path-card" href="' + fastPathHref(c.id, path.id) + '"><span class="fast-path-emoji">' + path.emoji + '</span><div><h3>' + esc(path.title) + '</h3><p>' + esc(path.desc) + '</p><span class="fast-path-meta">' + path.lessons.length + ' lessons · about ' + mins + ' min</span></div></a>';
+        var mins = fastPathMinutes(c, path), doneN = path.lessons.filter(function (id) { return s.completed[id]; }).length;
+        html += '<a class="fast-path-card" href="' + fastPathHref(c.id, path.id) + '"><span class="fast-path-emoji">' + path.emoji + '</span><div><h3>' + esc(path.title) + '</h3><p>' + esc(path.desc) + '</p><span class="fast-path-meta">' + path.lessons.length + ' lessons · about ' + mins + ' min' + (doneN ? " · " + doneN + " done" : "") + '</span></div></a>';
       });
       html += "</div>";
     }
 
-    html += '<h2 class="section-title">The path</h2><p class="section-desc">' + c.modules.filter(function (m) { return !isRef(m); }).length + " modules. Each ends with a knowledge check or a hands-on lab.</p>";
-    html += '<div class="module-grid">';
-    var step = 0;
-    c.modules.forEach(function (m) {
-      if (isRef(m)) return;
-      step++;
-      var mp = moduleProgress(c, m);
-      html += '<a class="module-card" href="' + lessonHref(c.id, m.lessons[0].id) + '">';
-      html += '<span class="mc-step">' + step + "</span>";
-      html += '<span class="mc-emoji">' + m.emoji + "</span><h3>" + m.title + "</h3><p>" + m.desc + "</p>";
-      html += '<div class="mc-foot"><span>' + m.lessons.length + " lessons</span><span>" + mp.done + "/" + mp.total + " done</span></div>";
-      html += '<div class="mc-bar"><div style="width:' + mp.pct + '%"></div></div></a>';
+    var mods = c.modules.filter(function (m) { return !isRef(m); });
+    var current = mods.filter(function (m) { return moduleProgress(c, m).pct < 100; })[0];
+    html += '<h2 class="section-title">Your journey</h2><p class="section-desc">' + mods.length + " modules. Each ends with a knowledge check or a hands-on lab.</p>";
+    html += '<ol class="journey">';
+    mods.forEach(function (m, k) {
+      var mp = moduleProgress(c, m), state = mp.pct === 100 ? "done" : m === current ? "current" : "todo";
+      var target = m.lessons.filter(function (l) { return !s.completed[l.id]; })[0] || m.lessons[0];
+      var mins = m.lessons.reduce(function (t, l) { return t + (l.minutes || 0); }, 0);
+      html += '<li class="journey-node ' + state + '"><a href="' + lessonHref(c.id, target.id) + '">';
+      html += '<span class="jn-dot">' + (state === "done" ? "✓" : k + 1) + "</span>";
+      html += '<div class="jn-body"><div class="jn-top"><span class="jn-emoji">' + m.emoji + "</span><h3>" + m.title + '</h3><span class="jn-meta">' + mp.done + "/" + mp.total + " · " + mins + " min</span></div>";
+      html += "<p>" + m.desc + "</p>";
+      html += '<div class="mc-bar"><div style="width:' + mp.pct + '%"></div></div>' + (state === "current" ? '<span class="jn-here">You are here · next: ' + esc(target.title) + "</span>" : "") + "</div></a></li>";
     });
-    html += "</div>";
+    html += "</ol>";
 
     var ref = c.modules.filter(function (m) { return isRef(m); })[0];
     if (ref) {
@@ -450,7 +494,7 @@
     return fetch("content/" + file, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); }).then(function (t) { bodyCache[file] = t; return t; });
   }
 
-  function renderLesson(cid, id) {
+  function renderLesson(cid, id, section) {
     var c = byId[cid]; if (!c) { location.hash = "#/"; return; }
     var info = lessonInfo(c, id); if (!info) { location.hash = courseHref(cid); return; }
     currentCourseId = cid;
@@ -477,6 +521,10 @@
       if (freshness) html += '<a class="freshness" href="' + freshness.sourceUrl + '" target="_blank" rel="noopener">Verified ' + formatVerifiedDate(freshness.verifiedDate) + ' · ' + esc(freshness.sourceLabel) + '</a>';
       html += '<span class="lesson-meta">' + levelChip(l.level) + (l.minutes ? "<span>· " + l.minutes + " min</span>" : "") + "</span>";
       html += "</div>";
+      var modIdx = c.modules.indexOf(m) + 1, lessonIdx = m.lessons.indexOf(l) + 1;
+      html += '<div class="lesson-pos">' + (isRef(m) ? "Reference" : "Module " + modIdx) + " · Lesson " + lessonIdx + " of " + m.lessons.length + '<span class="lesson-pos-dots" aria-hidden="true">' +
+        m.lessons.map(function (x) { return '<i class="' + (x.id === id ? "now" : s.completed[x.id] ? "done" : "") + '"></i>'; }).join("") + "</span></div>";
+      html += '<div class="lesson-grid"><div class="lesson-main">';
       html += '<article class="lesson">' + bodyHtml + "</article>";
 
       html += '<div class="lesson-foot">';
@@ -491,13 +539,55 @@
       if (nextId) { var ni = lessonInfo(c, nextId); html += '<a class="next" href="' + lessonHref(c.id, nextId) + '"><span class="dir">Next →</span><span class="ptitle">' + ni.lesson.title + "</span></a>"; }
       else { html += '<a class="next" href="' + courseHref(c.id) + '"><span class="dir">Done →</span><span class="ptitle">Course home</span></a>'; }
       html += "</div></div>";
+      html += '</div><aside class="toc-rail"></aside></div>';
 
       $("#content").innerHTML = html;
+      $("#content").classList.add("with-toc");
       setActiveNav(id);
       wireLesson(cid, id);
+      buildToc(cid, id);
+      store.last = { c: cid, l: id, t: Date.now() }; save();
+      if (section) { var target = document.getElementById(section); if (target) target.scrollIntoView(); }
+      updateReadProgress();
       var cb = $("#completeBtn"); if (cb) cb.addEventListener("click", function () { toggleComplete(cid, id); });
     }).catch(function (err) { $("#content").innerHTML = errorHtml(l.file, err); });
   }
+
+  /* ---------- On this page + reading progress ---------- */
+  var tocObserver = null;
+  function buildToc(cid, id) {
+    if (tocObserver) { tocObserver.disconnect(); tocObserver = null; }
+    var rail = $(".toc-rail"), heads = $all("article.lesson h2");
+    if (!rail || heads.length < 2) return;
+    var kit = [[".quiz-q", "🧩", "quiz question"], [".flash", "🃏", "flashcard deck"], [".lab-box", "🧪", "lab"], [".ccsim", "⌨️", "simulation"], ["[data-scn]", "🧭", "scenario"], [".order, .spot, .lint", "🎯", "exercise"], [".reflect", "🪞", "reflection"]]
+      .map(function (k) { var n = $all(k[0], $("article.lesson")).length; return n ? '<li><span aria-hidden="true">' + k[1] + "</span>" + n + " " + k[2] + (n === 1 ? "" : "s") + "</li>" : ""; }).join("");
+    rail.innerHTML = '<nav class="toc" aria-label="On this page"><p class="toc-title">On this page</p><ol>' +
+      heads.map(function (h) { return '<li><a href="' + lessonHref(cid, id) + '" data-target="' + h.id + '">' + esc(h.textContent) + "</a></li>"; }).join("") + "</ol>" +
+      (kit ? '<p class="toc-title">In this lesson</p><ul class="toc-kit">' + kit + "</ul>" : "") + "</nav>";
+    $all(".toc a", rail).forEach(function (a) {
+      a.addEventListener("click", function (e) { e.preventDefault(); var t = document.getElementById(a.dataset.target); if (t) t.scrollIntoView({ behavior: "smooth" }); });
+    });
+    if (!("IntersectionObserver" in window)) return;
+    tocObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        $all(".toc a", rail).forEach(function (a) { a.classList.toggle("active", a.dataset.target === en.target.id); });
+      });
+    }, { rootMargin: "-10% 0px -75% 0px" });
+    heads.forEach(function (h) { tocObserver.observe(h); });
+  }
+  var readTick = false;
+  function updateReadProgress() {
+    var bar = $("#readProgress"); if (!bar) return;
+    var onLesson = !!$("article.lesson");
+    bar.hidden = !onLesson;
+    if (!onLesson) return;
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = max > 0 ? Math.min(100, Math.round(window.scrollY / max * 100)) : 100;
+    bar.firstElementChild.style.width = pct + "%";
+    bar.setAttribute("aria-valuenow", String(pct));
+  }
+  window.addEventListener("scroll", function () { if (readTick) return; readTick = true; requestAnimationFrame(function () { readTick = false; updateReadProgress(); }); }, { passive: true });
 
   function errorHtml(file, err) {
     var isFile = location.protocol === "file:";
@@ -685,22 +775,70 @@
   /* ---------- Search (across all courses) ---------- */
   var searchSel = -1, searchHits = [], searchReturnFocus = null;
   function allSearchItems() { var items = []; COURSES.forEach(function (c) { courseLessons(c).forEach(function (x) { items.push({ course: c, module: x.module, lesson: x.lesson }); }); }); return items; }
-  function openSearch() { var modal = $("#searchModal"); if (modal.hidden) searchReturnFocus = document.activeElement; modal.hidden = false; var input = $("#searchInput"); input.value = ""; input.focus(); runSearch(""); }
+  function openSearch() {
+    var modal = $("#searchModal"); if (modal.hidden) searchReturnFocus = document.activeElement; modal.hidden = false;
+    var input = $("#searchInput"); input.value = ""; input.focus(); runSearch("");
+    if (!textIndex) buildIndex().then(function () { if (!modal.hidden) runSearch(input.value); });
+  }
   function closeSearch() { var modal = $("#searchModal"); if (modal.hidden) return; modal.hidden = true; searchSel = -1; var target = searchReturnFocus && searchReturnFocus.isConnected ? searchReturnFocus : $("#searchBtn"); searchReturnFocus = null; if (target && target.focus) target.focus(); }
+  /* Full-text index: every lesson body split into ## sections, built lazily on first search. */
+  var textIndex = null, indexing = null;
+  function plain(md) {
+    return md.replace(/^```[\w-]*\s*$/gm, " ").replace(/^\s*[-*]\s+\[[ xX]\]\s+/gm, " ").replace(/^:::\w*\s*/gm, " ").replace(/\[\[([^|\]]*)\|[^\]]*\]\]/g, "$1")
+      .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/^(Q:|A:|S:|[+~-]\s|>\s*|\$\s|#+\s)/gm, " ").replace(/[`*_|]/g, " ").replace(/\s+/g, " ").trim();
+  }
+  function buildIndex() {
+    if (indexing) return indexing;
+    indexing = Promise.all(allSearchItems().map(function (x) {
+      return fetchBody(x.lesson.file).then(function (md) {
+        var parts = md.split(/^## /m), out = [];
+        parts.forEach(function (chunk, k) {
+          var nl = chunk.indexOf("\n"), head = k === 0 ? "" : chunk.slice(0, nl).trim(), body = k === 0 ? chunk.replace(/^#\s+.*$/m, "") : chunk.slice(nl + 1);
+          out.push({ item: x, heading: head, slug: head ? MD.slug(head) : "", text: plain(body) });
+        });
+        return out;
+      }).catch(function () { return []; });
+    })).then(function (lists) { textIndex = [].concat.apply([], lists); return textIndex; });
+    return indexing;
+  }
+  function snippet(text, words) {
+    var low = text.toLowerCase(), at = low.indexOf(words[0]), start = Math.max(0, at - 50);
+    var cut = (start ? "…" : "") + text.slice(start, start + 150) + (start + 150 < text.length ? "…" : "");
+    var html = esc(cut);
+    words.forEach(function (w) { if (w.length > 1) html = html.replace(new RegExp("\\b(" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "ig"), "<mark>$1</mark>"); });
+    return html;
+  }
   function runSearch(q) {
     q = q.trim().toLowerCase();
-    var items = allSearchItems(), hits;
-    if (!q) hits = items.slice(0, 8);
-    else hits = items.filter(function (x) {
-      var hay = (x.lesson.title + " " + (x.lesson.summary || "") + " " + (x.lesson.keywords || []).join(" ") + " " + x.module.title + " " + x.course.title).toLowerCase();
-      return q.split(/\s+/).every(function (w) { return hay.indexOf(w) !== -1; });
-    }).slice(0, 12);
+    var items = allSearchItems(), words = q.split(/\s+/).filter(Boolean), hits = [];
+    if (!q) hits = items.slice(0, 8).map(function (x) { return { x: x }; });
+    else {
+      items.forEach(function (x) {
+        var hay = (x.lesson.title + " " + (x.lesson.summary || "") + " " + (x.lesson.keywords || []).join(" ") + " " + x.module.title + " " + x.course.title).toLowerCase();
+        if (words.every(function (w) { return hay.indexOf(w) !== -1; })) hits.push({ x: x });
+      });
+      if (textIndex) {
+        var perLesson = {}, phrase = words.join(" ");
+        textIndex.map(function (sec) {
+          var low = sec.text.toLowerCase();
+          if (!words.every(function (w) { return low.indexOf(w) !== -1; })) return null;
+          return { sec: sec, score: (low.indexOf(phrase) !== -1 ? 10 : 0) + (sec.heading.toLowerCase().indexOf(words[0]) !== -1 ? 5 : 0) };
+        }).filter(Boolean).sort(function (a, b) { return b.score - a.score; }).forEach(function (h) {
+          var key = h.sec.item.course.id + "/" + h.sec.item.lesson.id;
+          if ((perLesson[key] = (perLesson[key] || 0) + 1) > 2) return;
+          hits.push({ x: h.sec.item, sec: h.sec, snip: snippet(h.sec.text, words) });
+        });
+      }
+      hits = hits.slice(0, 14);
+    }
     searchHits = hits; searchSel = hits.length ? 0 : -1;
     var ul = $("#searchResults");
-    if (!hits.length) { ul.innerHTML = '<li class="search-empty">No matches. Try “plan mode”, “CLAUDE.md”, or “connector”.</li>'; return; }
-    ul.innerHTML = hits.map(function (x, i) {
-      return '<li><a href="' + lessonHref(x.course.id, x.lesson.id) + '" class="' + (i === 0 ? "sel" : "") + '" data-i="' + i + '"><span class="sr-title">' + x.lesson.title + '</span><span class="sr-group">' + x.course.emoji + " " + x.module.title + "</span></a></li>";
-    }).join("");
+    if (!hits.length) { ul.innerHTML = '<li class="search-empty">' + (textIndex ? "No matches. Try “plan mode”, “CLAUDE.md”, or “connector”." : "Searching lesson text…") + "</li>"; return; }
+    ul.innerHTML = hits.map(function (h, i) {
+      var x = h.x, href = lessonHref(x.course.id, x.lesson.id) + (h.sec && h.sec.slug ? "?s=" + encodeURIComponent(h.sec.slug) : "");
+      return '<li><a href="' + href + '" class="' + (i === 0 ? "sel" : "") + '" data-i="' + i + '"><span class="sr-main"><span class="sr-title">' + esc(x.lesson.title) + (h.sec && h.sec.heading ? ' <span class="sr-sec">› ' + esc(h.sec.heading) + "</span>" : "") + "</span>" +
+        (h.snip ? '<span class="sr-snippet">' + h.snip + "</span>" : "") + '</span><span class="sr-group">' + x.course.emoji + " " + esc(x.module.title) + "</span></a></li>";
+    }).join("") + (textIndex ? "" : '<li class="search-empty sr-loading">Searching lesson text…</li>');
     $all("#searchResults a").forEach(function (a) { a.addEventListener("click", closeSearch); a.addEventListener("mousemove", function () { setSel(parseInt(a.dataset.i, 10)); }); });
   }
   function setSel(i) { searchSel = i; $all("#searchResults a").forEach(function (a, idx) { a.classList.toggle("sel", idx === i); }); }
@@ -710,7 +848,7 @@
   $("#searchInput").addEventListener("keydown", function (e) {
     if (e.key === "ArrowDown") { e.preventDefault(); setSel(Math.min(searchSel + 1, searchHits.length - 1)); }
     else if (e.key === "ArrowUp") { e.preventDefault(); setSel(Math.max(searchSel - 1, 0)); }
-    else if (e.key === "Enter") { e.preventDefault(); if (searchHits[searchSel]) { location.hash = lessonHref(searchHits[searchSel].course.id, searchHits[searchSel].lesson.id); closeSearch(); } }
+    else if (e.key === "Enter") { e.preventDefault(); var link = $all("#searchResults a")[searchSel]; if (link) { location.hash = link.getAttribute("href"); closeSearch(); } }
   });
   $("#searchModal").addEventListener("keydown", function (e) {
     if (e.key !== "Tab") return;
@@ -721,13 +859,19 @@
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   });
 
+  /* ---------- Shortcuts sheet ---------- */
+  function openShortcuts() { var m = $("#shortcutsModal"); m.hidden = false; $(".shortcuts-close", m).focus(); }
+  function closeShortcuts() { var m = $("#shortcutsModal"); if (m && !m.hidden) m.hidden = true; }
+  $all("[data-close-shortcuts]").forEach(function (el) { el.addEventListener("click", closeShortcuts); });
+
   /* ---------- Keyboard ---------- */
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") { closeSearch(); closeNav(); return; }
-    var typing = /input|textarea/i.test(e.target.tagName || "") || e.target.isContentEditable;
+    if (e.key === "Escape") { closeSearch(); closeNav(); closeShortcuts(); return; }
+    var typing = /input|textarea|select/i.test(e.target.tagName || "") || e.target.isContentEditable;
     if (e.key === "/" && !typing) { e.preventDefault(); openSearch(); return; }
     if (typing) return;
-    var m = location.hash.match(/#\/([^/]+)\/(.+)$/);
+    if (e.key === "?") { e.preventDefault(); openShortcuts(); return; }
+    var m = location.hash.split("?")[0].match(/#\/([^/]+)\/(.+)$/);
     if (m && byId[m[1]]) {
       var c = byId[m[1]], order = flatOrder(c), pos = order.indexOf(m[2]);
       if (e.key === "ArrowRight" && pos > -1 && pos < order.length - 1) location.hash = lessonHref(c.id, order[pos + 1]);
@@ -752,7 +896,12 @@
   /* ---------- Router ---------- */
   function route() {
     var raw = location.hash.replace(/^#\/?/, "");
+    var query = raw.split("?")[1] || "", section = (query.match(/(?:^|&)s=([^&]+)/) || [])[1];
+    raw = raw.split("?")[0];
     var parts = raw.split("/").filter(Boolean);
+    $("#content").classList.remove("with-toc");
+    if (tocObserver) { tocObserver.disconnect(); tocObserver = null; }
+    closeShortcuts();
     if (!parts.length) { renderHub(); return; }
     if (parts[0] === "review") { renderReview(); return; }
     if (parts[0] === "notebook") { renderNotebook(); return; }
@@ -763,12 +912,12 @@
       if (parts[1] === "path" && parts[2]) { renderFastPath(c.id, parts.slice(2).join("/")); return; }
       if (parts[1] === "certificate") { renderCertificate(c.id); return; }
       if (parts[1] === "lesson" && parts[2]) { renderLesson(c.id, parts.slice(2).join("/")); return; }
-      if (parts[1]) { renderLesson(c.id, parts.slice(1).join("/")); return; }
+      if (parts[1]) { renderLesson(c.id, parts.slice(1).join("/"), section && decodeURIComponent(section)); return; }
       renderCourseHome(c.id); return;
     }
     renderHub();
   }
-  window.addEventListener("hashchange", route);
+  window.addEventListener("hashchange", function () { route(); updateReadProgress(); });
 
   /* ---------- Boot ---------- */
   route();
