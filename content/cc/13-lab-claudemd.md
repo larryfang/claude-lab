@@ -30,6 +30,37 @@ changed, edit the source schema and run `pnpm codegen`. Want me to do that inste
 You watched the full lifecycle: **generate → prune hard → add sharp rules → verify the behavior changed.** That last step — Claude *refusing* to touch `src/generated` — is how you know a rule landed. If behavior doesn't change, the rule is buried or ambiguous.
 :::
 
+## Part 1b — Lint a bloated CLAUDE.md
+
+A teammate's CLAUDE.md is below. It has every common problem. Choose **Check it**, fix the file in the box until the checker is happy, and notice which cuts felt risky. (They almost never are.)
+
+```claudemd-check
+# Project Guidelines
+
+IMPORTANT: You MUST ALWAYS follow these rules. NEVER ignore them. This is CRITICAL.
+
+## Rules
+- Write clean code
+- Follow best practices
+- Be careful with the database
+- Make sure it works before you finish
+
+## Structure
+├── src
+│   ├── api
+│   └── models
+├── tests
+└── docs
+
+## Environments
+The staging environment is on the shared cluster and it is used by the QA team and by the mobile team for their nightly builds, so try not to break it, and remember that deploys happen through the pipeline rather than by hand unless there is an emergency.
+- Staging DB password: hunter2-staging
+```
+
+:::tip What a fixed version keeps
+Exact commands (`npm test`, `npm run lint`), the two or three gotchas Claude would get wrong, and nothing Claude could discover by reading the repo. Put the password in an environment variable — then rotate it, because a real one in a committed file is already leaked.
+:::
+
 ## Part 2 — Do it on your own repo
 
 :::lab Build & tune your CLAUDE.md

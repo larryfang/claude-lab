@@ -374,7 +374,9 @@
       });
     });
     wireSims($("#content"));
-    WIDGETS.wire($("#content"), { course: cid, lesson: id, state: s, store: store, save: save, toast: toast, touch: touch });
+    var api = { course: cid, lesson: id, state: s, store: store, save: save, toast: toast, touch: touch };
+    WIDGETS.wire($("#content"), api);
+    window.CHECKERS.wire($("#content"), api);
   }
   function maybeCelebrate(label) {
     var list = label.closest(".checklist"); if (!list) return;

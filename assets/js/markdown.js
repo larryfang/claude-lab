@@ -318,6 +318,17 @@
     return h + "</ol></div>";
   }
 
+  // ```brief-check / ```claudemd-check — an editable box plus a heuristic checker (checkers.js).
+  function renderLint(kind, code) {
+    const brief = kind === "brief";
+    const body = code.replace(/\n$/, "");
+    const rows = Math.min(18, Math.max(brief ? 7 : 10, body.split("\n").length + 1));
+    return '<div class="lint" data-lint="' + kind + '"><div class="lint-head"><span class="lint-kicker">' + (brief ? "🔍 Brief checker" : "🔍 CLAUDE.md checker") + "</span>" +
+      '<span class="lint-note">Heuristic: it checks for signals, not quality</span></div>' +
+      '<textarea class="lint-input" rows="' + rows + '" spellcheck="false" aria-label="' + (brief ? "Your brief" : "Your CLAUDE.md") + '" placeholder="' + (brief ? "Paste your brief here…" : "Paste your CLAUDE.md here…") + '">' + escapeHtml(body) + "</textarea>" +
+      '<div class="lint-actions"><button class="lint-run btn-sm" type="button">Check it</button><span class="lint-privacy">Runs in your browser. Nothing is sent anywhere.</span></div><div class="lint-result" aria-live="polite"></div></div>';
+  }
+
   function renderFence(lang, code, ctx) {
     lang = (lang || "").toLowerCase();
     if (lang === "quiz") return renderQuiz(code);
@@ -328,6 +339,8 @@
     if (lang === "scenario") return renderScenario(code);
     if (lang === "reflect") return renderReflect(code, ctx);
     if (lang === "spot") return renderSpot(code);
+    if (lang === "brief-check") return renderLint("brief", code);
+    if (lang === "claudemd-check") return renderLint("claudemd", code);
     const label = lang || "text";
     return '<div class="codeblock"><div class="codeblock-head"><span class="codeblock-lang">' + escapeHtml(label) +
       '</span><button class="copy-btn" type="button" data-copy>Copy</button></div><pre><code>' +
@@ -421,5 +434,5 @@
     return out.join("\n");
   }
 
-  window.MD = { render: render, slug: slug, parseInline: parseInline };
+  window.MD = { render: render, slug: slug, parseInline: parseInline, hash: hash };
 })();

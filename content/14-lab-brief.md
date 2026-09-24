@@ -162,6 +162,15 @@ Show me your plan before you start.
 - [ ] Both files appeared in `output/`
 - [ ] I read them properly
 
+### Check your rewrite before you run it
+
+Paste the brief you are about to run. The checker looks for a signal of each B.R.I.E.F. letter and for a few common wishes that pretend to be instructions. It cannot tell whether your brief is *good* — only whether a part is missing.
+
+```brief-check
+```
+
+- [ ] My brief shows all five letters, and I fixed every warning that applied
+
 ## Part 3 — Compare, then verify (5 min)
 
 Put the two outputs side by side.

@@ -82,3 +82,22 @@ test("a finished quiz shows a score and can be retried", async ({ page }) => {
   const s = await stored(page);
   expect(Object.values(s.courses.cowork.quiz)[0]).toMatchObject({ c: questions, t: questions });
 });
+
+test("brief checker scores a lazy prompt low and a full brief 5 of 5", async ({ page }) => {
+  await page.goto("/#/cowork/lab-brief");
+  const lint = page.locator('[data-lint="brief"]').first();
+  await lint.locator("textarea").fill("Summarise the customer interviews and tell me what to build.");
+  await lint.locator(".lint-run").click();
+  await expect(lint.locator(".lint-letter.miss")).toHaveCount(5);
+  await lint.locator("textarea").fill("I am a PM. Using only the transcripts in `discovery/`, produce `output/report.md` with three sections. Never estimate a missing number. Flag any contradiction and show me your plan before you start.");
+  await lint.locator(".lint-run").click();
+  await expect(lint.locator(".lint-num")).toHaveText("5 / 5");
+});
+
+test("CLAUDE.md checker flags the starter file's problems", async ({ page }) => {
+  await page.goto("/#/claude-code/cc-lab-claudemd");
+  const lint = page.locator('[data-lint="claudemd"]').first();
+  await lint.locator(".lint-run").click();
+  await expect(lint.locator(".lint-check.warn, .lint-check.fail").first()).toBeVisible();
+  await expect(lint.locator(".lint-check")).toHaveCount(9);
+});

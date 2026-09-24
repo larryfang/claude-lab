@@ -607,6 +607,7 @@ a { color: var(--link); text-underline-offset: 2px; }
    ============================================================ */
 .btn-sm { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-display); font-weight: 600; font-size: .86rem; padding: 8px 15px; border-radius: 10px; border: 1px solid transparent; background: linear-gradient(135deg, var(--clay), var(--clay-deep)); color: #fff; cursor: pointer; transition: filter .15s, transform .12s; }
 .btn-sm:hover { filter: brightness(1.06); }
+[data-theme="dark"] .btn-sm { color: #1a1510; }
 .btn-sm:active { transform: translateY(1px); }
 .linkish { background: none; border: none; padding: 0; font: inherit; color: var(--link); text-decoration: underline; cursor: pointer; }
 .widget-kicker, .flash-kicker, .order-kicker, .scn-kicker, .spot-kicker, .reflect-kicker { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; font-size: .74rem; color: var(--clay-deep); }
@@ -708,7 +709,7 @@ a { color: var(--link); text-underline-offset: 2px; }
 .spot-seg.false { background: var(--surface-3); text-decoration: line-through; }
 .spot-seg[data-n].found::after, .spot-seg[data-n].missed::after { content: attr(data-n); display: inline-grid; place-items: center; width: 17px; height: 17px; margin-left: 4px; border-radius: 50%; font-size: .66rem; font-weight: 800; color: #fff; background: var(--tip); vertical-align: 2px; }
 .spot-seg[data-n].missed::after { background: #d9534f; }
-.spot-why { margin: 14px 0 0; padding: 12px 14px 12px 34px; border-radius: var(--radius-sm); background: var(--warn-bg); font-size: .9rem; }
+.lesson .spot-why { margin: 14px 0 0; padding: 12px 14px 12px 34px; border-radius: var(--radius-sm); background: var(--warn-bg); font-size: .9rem; }
 .spot-why li { margin: .3em 0; }
 
 /* Quiz score */
@@ -726,3 +727,32 @@ a { color: var(--link); text-underline-offset: 2px; }
   .flash-face { padding: 18px; }
   .flash-text { font-size: 1.02rem; }
 }
+
+/* Heuristic checkers */
+.lint { margin: 1.6em 0; padding: 16px 20px 18px; border-radius: var(--radius-lg); border: 1px solid color-mix(in srgb, var(--concept) 35%, var(--line)); background: linear-gradient(180deg, var(--concept-bg), var(--surface) 120px); box-shadow: var(--shadow-sm); }
+.lint-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+.lint-kicker { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; font-size: .74rem; color: var(--concept); }
+.lint-note, .lint-privacy { font-size: .74rem; color: var(--muted); }
+.lint-input { width: 100%; resize: vertical; padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-family: var(--font-mono); font-size: .82rem; line-height: 1.6; }
+.lint-input:focus { outline: none; border-color: var(--concept); box-shadow: 0 0 0 3px color-mix(in srgb, var(--concept) 22%, transparent); }
+.lint-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+.lint-result:empty { display: none; }
+.lint-result { margin-top: 14px; animation: fadeUp .3s ease; }
+.lint-score { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; font-size: .9rem; color: var(--ink-2); }
+.lint-num { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; color: var(--concept); font-variant-numeric: tabular-nums; }
+.lint-letters { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 12px 0; }
+.lint-letter { display: flex; flex-direction: column; align-items: center; padding: 10px 4px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); transition: transform .2s; }
+.lint-letter b { font-family: var(--font-display); font-size: 1.5rem; line-height: 1.1; }
+.lint-letter small { font-size: .66rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.lint-letter.ok { border-color: var(--tip); background: var(--tip-bg); color: var(--tip); }
+.lint-letter.miss { border-style: dashed; color: var(--muted); }
+.lesson .lint-list, .lesson .lint-checks { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.lesson .lint-list li, .lesson .lint-checks li { margin: 0; }
+.lint-list li { padding: 9px 12px; border-radius: var(--radius-sm); background: var(--surface); border: 1px solid var(--line); font-size: .9rem; }
+.lint-list li.lint-warn { border-color: color-mix(in srgb, var(--warn) 40%, var(--line)); background: var(--warn-bg); }
+.lint-check { display: flex; gap: 10px; align-items: flex-start; padding: 9px 12px; border-radius: var(--radius-sm); background: var(--surface); border: 1px solid var(--line); font-size: .88rem; }
+.lint-icon { flex: 0 0 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: .72rem; font-weight: 800; color: #fff; background: var(--tip); }
+.lint-check.warn .lint-icon { background: var(--warn); }
+.lint-check.fail { border-color: #d9534f; background: color-mix(in srgb, #d9534f 8%, var(--surface)); }
+.lint-check.fail .lint-icon { background: #d9534f; }
+@media (max-width: 520px) { .lint { padding-left: 14px; padding-right: 14px; } .lint-letter b { font-size: 1.2rem; } .lint-letter small { font-size: .56rem; } }
