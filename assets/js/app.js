@@ -573,10 +573,12 @@
       return (glossaryCache[c.id] = terms);
     }).catch(function () { return []; });
   }
+  // "Skill" and "Effort" are also ordinary English words ("the skill of briefing"), so they must keep their capital.
+  var TERM_EXACT_CASE = /^(Skill|Effort)$/;
   function aliasRe(a) {
     var body = a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    // single words must match their capitalisation (Skill, Plugin), phrases match any case
-    return new RegExp("(^|[^\\w-])(" + body + ")(?![\\w-])", /\s/.test(a) ? "i" : "");
+    // any case, plus a plural ("connectors", "worktrees") for terms ending in a letter
+    return new RegExp("(^|[^\\w-])(" + body + (/[a-z]$/i.test(a) ? "(?:e?s)?" : "") + ")(?![\\w-])", TERM_EXACT_CASE.test(a) ? "" : "i");
   }
   function linkTerms(c, id) {
     if (!c.glossary || id === c.glossary) return;

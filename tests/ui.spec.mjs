@@ -86,3 +86,19 @@ test("glossary terms in a lesson open a definition that can join the review deck
   await expect(page.locator("article.lesson h1")).toHaveText("Glossary");
   await expect(page.locator("article.lesson .term")).toHaveCount(0);
 });
+
+test("Claude Code lessons link terms from their own glossary", async ({ page }) => {
+  await page.goto("/#/claude-code/cc-hooks");
+  const term = page.locator("article.lesson .term", { hasText: "PostToolUse" }).first();
+  await expect(term).toBeVisible();
+  await term.click();
+  await expect(page.locator("#termPop .term-def")).toContainText("after a tool runs");
+  await expect(page.locator("#termPop a")).toHaveAttribute("href", "#/claude-code/cc-glossary");
+  await page.goto("/#/claude-code/cc-what");
+  await expect(page.locator("article.lesson .term", { hasText: /context window/i }).first()).toBeVisible();
+});
+
+test("plural and lowercase mentions of a term are linked", async ({ page }) => {
+  await page.goto("/#/cowork/connectors-trust");
+  await expect(page.locator("article.lesson .term").filter({ hasText: /^connectors?$/i }).first()).toBeVisible();
+});

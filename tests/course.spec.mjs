@@ -6,7 +6,7 @@ test("every registered lesson renders without browser errors", async ({ page }) 
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/#/");
   const lessons = await page.evaluate(() => window.COURSES.flatMap((course) => course.modules.flatMap((module) => module.lessons.map((lesson) => ({ course: course.id, id: lesson.id })))));
-  expect(lessons).toHaveLength(70);
+  expect(lessons).toHaveLength(71);
   for (const lesson of lessons) {
     await page.goto(`/#/${lesson.course}/${lesson.id}`);
     await expect(page.locator("article.lesson h1")).toBeVisible();

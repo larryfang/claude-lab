@@ -279,6 +279,7 @@ var CC_COURSE = {
   tagline: "Go from 'I installed it' to agentic engineering — context, plan mode, subagents, hooks, MCP, and automation — with an in-browser terminal you can actually type into.",
   audience: "Engineers · already installed, new to Claude Code",
   level: "Hands-on · terminal",
+  glossary: "cc-glossary",
   fastPaths: [
     { id: "foundations", emoji: "⚡", title: "Foundations in 80 minutes", audience: "Developers new to Claude Code", desc: "Build the core mental model, manage context, plan work, and close the verification loop.", lessons: ["cc-what", "cc-tour", "cc-first", "cc-context", "cc-claudemd", "cc-context-mgmt", "cc-epcc", "cc-verify"] },
     { id: "ship-feature", emoji: "🔁", title: "Ship a feature safely", audience: "Developers ready to use Claude on a real repository", desc: "Go from context and plan mode through permissions, tests, and a complete feature lab.", lessons: ["cc-what", "cc-context", "cc-claudemd", "cc-epcc", "cc-verify", "cc-debug", "cc-permissions", "cc-lab-feature"] },
@@ -434,7 +435,10 @@ var CC_COURSE = {
           keywords: ["faq", "troubleshooting", "errors", "help", "fix", "problems", "safe mode", "usage limits"] },
         { id: "cc-whats-new", file: "cc/93-whats-new.md", title: "What's New in Claude Code", minutes: null, level: "Reference",
           summary: "The dated digest: auto mode, background agents, agent teams, cloud sessions, dynamic workflows, and the ecosystem — verified against v2.1.246.",
-          keywords: ["whats new", "updates", "changelog", "auto mode", "agent teams", "workflows", "ultracode", "cloud", "background agents", "ecosystem", "plugins", "version"] }
+          keywords: ["whats new", "updates", "changelog", "auto mode", "agent teams", "workflows", "ultracode", "cloud", "background agents", "ecosystem", "plugins", "version"] },
+        { id: "cc-glossary", file: "cc/94-glossary.md", title: "Glossary", minutes: null, level: "Reference",
+          summary: "Every Claude Code term in this course — context rot, plan mode, subagents, hooks, worktrees — defined in a sentence.",
+          keywords: ["glossary", "definitions", "terms", "jargon", "context window", "subagent", "hook", "worktree", "plan mode"] }
       ]
     }
   ],
