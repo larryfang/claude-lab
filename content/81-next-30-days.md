@@ -22,7 +22,7 @@ The sending matters. Output nobody receives is practice, not work, and practice 
 - [ ] Run the same thing again. It should be faster and less interesting
 - [ ] Fix the one thing that annoyed you last week — in the Skill, not by hand
 - [ ] Add your second play: pick the next-most-annoying recurring task
-- [ ] Read your scheduled job's output properly. Trace three numbers
+- [ ] Read your scheduled job's output properly. Trace important numbers and sample additional ones
 
 Boring is the goal. The first run is exciting; the fourth run is a capability.
 
@@ -47,13 +47,25 @@ Then put a quarterly reminder in your calendar for that review. Twenty minutes, 
 
 1. **Brief, do not prompt.** When output disappoints, ask which B.R.I.E.F. letter was missing. Fix the brief, not the document.
 2. **Always ask for two artefacts.** Data and narrative. Without the data you cannot verify the narrative.
-3. **Verify three numbers, every time.** Ten minutes. It never stops being worth it.
+3. **Verify according to the consequences.** Check decision-critical claims, reconcile the data, and sample beyond the headline. Three numbers is a practice sample, not a release criterion.
 4. **Skill it after the fourth run.** Not the first — you do not yet know what good looks like.
 5. **Delete what you do not use.** Unread scheduled output and unused Skills are worse than nothing; they create false confidence about how much is automated.
 
 ## Where to keep learning
 
-- **The official docs** are the source of truth for anything that changed since this lab was written: `claude.com/docs`. Cowork ships fast and it moves.
+Choose one resource that matches the skill you want to improve. These are official Anthropic resources, checked on **25 September 2026**; your access and interface may vary by plan and rollout.
+
+| Your next need | Resource and practice |
+|---|---|
+| Collaboration skills | [AI Fluency: Framework & Foundations](https://academy.claude.com/courses/ai-fluency-framework-foundations). Revisit who does what, how you brief, how you judge, and who owns the outcome. |
+| A Cowork demonstration | [Introduction to Claude Cowork](https://academy.claude.com/courses/introduction-to-claude-cowork). Repeat your first file task, then compare your setup and checkpoints. |
+| Better feedback | [Description–Discernment loop](https://academy.claude.com/courses/ai-fluency-framework-foundations/the-description-discernment-loop). Save one weak result, your precise correction, and evidence that the revision improved. |
+| A role-specific example | [Cowork tutorials and use cases](https://academy.claude.com/products/cowork). Adapt one example to your own sources and acceptance checks. |
+
+For changing product behaviour, follow the Help Center links from the [official Cowork resource hub](https://academy.claude.com/products/cowork). For example, check current scheduling access before adapting a desktop workflow to run in the cloud.
+
+Keep learning from your own work too:
+
 - **Read your own outputs critically.** Your best teacher is the error you find in your own deliverable at 9pm before a review.
 - **Talk to whoever else at your company is doing this.** The most useful thing you will exchange is not prompts; it is the definitions and reference files that encode how your company actually works.
 - **The other lanes in this course.** If you did Sales, the GTM lane will tell you why marketing writes what it writes. If you are a PM, the Sales lane will change how you write release notes.

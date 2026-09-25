@@ -38,6 +38,23 @@ The lanes are deliberately different jobs, not the same lab in four costumes. If
 - Put a job **on a schedule** so it happens without you
 - **Verify** the output properly, so you never forward a made-up number to a customer
 
+## Four skills behind every lab
+
+Anthropic's [AI Fluency course](https://academy.claude.com/courses/ai-fluency-framework-foundations/the-4d-framework), developed with Rick Dakan and Joseph Feller, calls these the **4Ds**. Here is how we practise them:
+
+| Skill | Your decision in this lab |
+|---|---|
+| **Delegation** | Which work can Claude do, and which judgment stays with you? |
+| **Description** | What result, sources, method, and checkpoints does Claude need? |
+| **Discernment** | What evidence will show the result is useful and correct? |
+| **Diligence** | Who owns the outcome, reviews it, and decides where it can be used? |
+
+Before your first run, write one sentence for each decision. Revisit them when you review the result. The **B.R.I.E.F.** mnemonic later in this course is our practical writing aid; the 4Ds are the broader collaboration framework.
+
+:::note About this course
+Claude Lab is an independent practice course. Its badges and completion certificate record your activity here; they are not an Anthropic credential or an assessment of your real-world work. For official training, use [Claude Academy](https://academy.claude.com/).
+:::
+
 ## How the interface works
 
 - ✅ **Checklists save automatically.** Tick as you go; they persist.
@@ -53,7 +70,7 @@ Tick each box that is true:
 - [ ] I have **Claude Desktop** installed (macOS or Windows) and I am signed in — Cowork also runs on web and mobile, but this course's local-folder labs need the desktop app
 - [ ] I am on a **paid plan** — Pro, Max, Team or Enterprise
 - [ ] My **message box** shows **Chat** and **Cowork** and I can choose **Cowork** — or I am on Pro or Max with no such choice, so I already have the new Claude (if neither, the next lessons cover it)
-- [ ] I have access to *at least one* real work system — CRM, Jira, Drive, Gmail or Slack
+- [ ] I have approved work data **or will use the fictional practice data supplied by the labs** — connecting a real work system is optional for getting started
 - [ ] I know which **lane** I am doing first
 
 :::warning The one rule

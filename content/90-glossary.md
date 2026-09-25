@@ -74,7 +74,7 @@ Every term used in this lab, in one sentence each.
 
 ## Verification
 
-**The four-check pass** — trace three random numbers to source; compare row counts; verify three quotes and three external claims; read the flag section.
+**The four-check pass** — trace decision-critical numbers plus a sample; account for input records, exclusions, and grouping; verify quotes and claims at source; read the flags. Three is a practice sample, not a guarantee of correctness.
 
 **OBSERVED / INFERRED** — labelling what a source actually says separately from your reading of it, so inference cannot be repeated as fact.
 

@@ -1,6 +1,6 @@
 # Capstone: Clone → PR
 
-The boss level. You'll take a project from **first clone** to an **opened PR**, using the whole stack: `/init`, plan mode, TDD, a custom command, a reviewer subagent, and verification. ~30 minutes. Finish this and you're a genuine Claude Code power user.
+Take a small project from **first clone** to a **reviewable change**, using `/init`, planning, tests, and a fresh-context review. Allow about 30 minutes for a small, familiar change; setup and debugging can take longer. A local commit is a valid finish if you are practising without publishing.
 
 :::concept What you're proving
 That you can drop into a repo and ship a verified change the professional way: **orient → set up memory → plan → build test-first → review in a fresh context → commit & PR.** This is the loop you'll run for real, forever.
@@ -9,7 +9,7 @@ That you can drop into a repo and ship a verified change the professional way: *
 ## Part 1 — Simulator: the full arc
 
 ```claude-sim
-# A fresh clone of an open-source CLI tool. Let's add a feature, end to end.
+# Fictional demonstration repo; use your own repo in Part 2. Start on a feature branch.
 $ git clone https://github.com/acme/tinydate && cd tinydate && claude
 Claude Code — ready. Working directory: ~/code/tinydate
 > /init
@@ -33,21 +33,27 @@ Approve? (Ctrl+G to edit)
   $ pytest -q   →  41 passed  ✓ green (all existing tests still pass)
 > use a subagent to review the diff for edge cases and CLI consistency
 code-reviewer (fresh context): handles bad dates (exit 2 ✓). Suggestion: other commands
-accept `--iso` for output format; `diff` should too for consistency. Otherwise solid.
-> add the --iso flag with a test, re-run, then use /standup to summarize and open a PR
-✎ added --iso (+test)  ·  $ pytest -q → 43 passed ✓
-Running /standup → summary ready.
+validate date formats; test that an impossible date such as 2026-02-30 is rejected.
+> add the impossible-date regression test, fix any failure, re-run, then summarize, commit and open a PR
+✎ added invalid-calendar-date test  ·  $ pytest -q → 42 passed ✓
+Summary ready. Reviewed diff, committed feature, and pushed the feature branch.
   $ gh pr create --fill
-✓ Opened PR #88: feat(cli): add `diff` command (days between dates) with --iso
+✓ Opened PR #88: feat(cli): add `diff` command with date validation
 ```
 
 :::tip Count the techniques you just used
-`/init` · **plan mode** · **test-first (red→green)** · **regression safety** (existing tests stay green) · **adversarial subagent review** · a **custom command** (`/standup`) · **verification with evidence** · **commit + PR**. That's the entire course in one flow.
+`/init` · **plan mode** · **test-first (red→green)** · **regression safety** (existing tests stay green) · **fresh-context review** · **verification with evidence** · **commit + PR**. The simulator is scripted practice, not evidence that those commands ran against a real repository.
 :::
 
 ## Part 2 — Do it for real
 
 Pick a small real repo (yours, or `git clone` a tiny open-source project) and a modest feature or fix.
+
+Use a repository you own, a fork, or a local practice copy. Before editing, create a feature branch, inspect the working tree, and preserve existing changes. If publishing a PR, confirm that your GitHub login and push remote point to the intended repository. Do not copy the fictional `acme/tinydate` URL from the simulator.
+
+## Define success before implementation
+
+Write the expected result and two acceptance cases: one normal input and one failure or boundary input. For the date example, specify the sign convention and how an impossible date should fail. This is the task's contract; do not let an implementation silently redefine it.
 
 :::lab Clone → PR, for real
 **Orient & set up memory:**
@@ -79,7 +85,7 @@ Use a subagent to review the diff against the plan — correctness, edge cases, 
 
 **Ship it:**
 ```prompt
-Summarize the change, then commit with a conventional message and open a PR with `gh pr create`.
+Review the diff against the acceptance cases. Summarize what changed, the checks actually run and their results, and anything unverified. Commit the reviewed change on my feature branch. If this is my publishing run, push that branch to the agreed remote and open a PR with `gh pr create`; otherwise stop at the local commit.
 ```
 - [ ] A PR is open (or a clean commit, if you're not pushing)
 
@@ -90,8 +96,12 @@ Summarize the change, then commit with a conventional message and open a PR with
 - [ ] The result is committed with a clear message / PR
 :::
 
+## Evidence to keep with the change
+
+Record the acceptance cases, the relevant failure before the fix, the passing result after it, and one review finding with its resolution. If the reviewer found none, record what was examined. For a UI change, include a completed user flow and a failed or empty state. Mark mocked integrations and unrun checks explicitly. A green suite with a skipped acceptance test does not meet the capstone.
+
 :::concept You did it
-You took a repo you may have never seen and shipped a verified change the professional way — context first, plan, test, review, ship. That's not "using an AI." That's **agentic engineering**. Most developers never build this muscle. You just did.
+You have practised context first, planning, tests, review, and a documented result. The badge records lesson completion; the evidence above shows what you actually verified. Reuse that evidence format in your next repository.
 :::
 
 ## Reflect

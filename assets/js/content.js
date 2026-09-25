@@ -27,6 +27,10 @@ var COWORK_COURSE = {
     { id: "finance", emoji: "🧾", title: "Finance quick start", audience: "Finance and RevOps", desc: "Create a live-formula variance pack and reconciliation workflow with a strict review pass.", lessons: ["welcome", "what-is-cowork", "lab-setup", "the-brief", "finance-plays", "lab-variance", "lab-reconciliation", "verify"] }
   ],
   freshness: {
+    "the-brief": { verifiedDate: "2026-09-25", sourceLabel: "Claude Academy", sourceUrl: "https://academy.claude.com/courses/ai-fluency-framework-foundations/the-description-discernment-loop" },
+    "steering": { verifiedDate: "2026-09-25", sourceLabel: "Claude Academy", sourceUrl: "https://academy.claude.com/courses/ai-fluency-framework-foundations/the-description-discernment-loop" },
+    "verify": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on" },
+    "next-30-days": { verifiedDate: "2026-09-25", sourceLabel: "Claude Academy", sourceUrl: "https://academy.claude.com/products/cowork" },
     "welcome": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/16761823" },
     "what-is-cowork": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork" },
     "deliverables": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/14729249-use-live-artifacts-in-claude-cowork" },
@@ -49,7 +53,7 @@ var COWORK_COURSE = {
       lessons: [
         { id: "welcome", file: "00-welcome.md", title: "Welcome: Hire Your AI Teammate", minutes: 6, level: "Beginner",
           summary: "How the lab works, the four role lanes, and the one rule for getting value out of it.",
-          keywords: ["intro", "start", "overview", "syllabus", "sales", "gtm", "product", "finance", "lanes"] },
+          keywords: ["intro", "start", "overview", "syllabus", "sales", "gtm", "product", "finance", "lanes", "4D", "AI fluency", "delegation", "discernment", "diligence", "academy"] },
         { id: "what-is-cowork", file: "01-what-is-cowork.md", title: "Cowork in Eight Minutes", minutes: 8, level: "Beginner",
           summary: "Outcome instead of prompt: what Cowork is, what it is not, and when to reach for it.",
           keywords: ["cowork", "what is", "agentic", "agent", "outcome", "chat vs cowork", "claude code"] },
@@ -71,7 +75,7 @@ var COWORK_COURSE = {
           summary: "Folders, the task box, the plan, the activity feed, subagents, schedules and projects — what each one is for.",
           keywords: ["tour", "workspace", "folders", "sandbox", "subagents", "schedule", "projects", "ui"] },
         { id: "the-brief", file: "11-the-brief.md", title: "The B.R.I.E.F. Framework", minutes: 11, level: "Core",
-          summary: "Five parts every good Cowork brief has. Skip one and you get confident, useless work.",
+          summary: "A five-part checklist for clear task descriptions, permitted sources, and observable acceptance checks.",
           keywords: ["brief", "prompting", "framework", "outcome", "constraints", "sources", "format"] },
         { id: "deliverables", file: "12-deliverables.md", title: "Ask for Real Deliverables", minutes: 10, level: "Core",
           summary: "Decks, spreadsheets with live formulas, docs, CSVs — plus interactive artifacts that can read your connected apps.",
@@ -216,8 +220,8 @@ var COWORK_COURSE = {
       title: "Trust, Review & Rollout",
       desc: "The part that keeps you employed: verifying output before it leaves the building, and rolling this out to a team.",
       lessons: [
-        { id: "verify", file: "70-verify.md", title: "Verify Before You Send", minutes: 11, level: "Core",
-          summary: "The four-check review pass, how to force citations, and the claims you must never take on trust.",
+        { id: "verify", file: "70-verify.md", title: "Verify Before You Send", minutes: 14, level: "Core",
+          summary: "Review critical claims, reconcile records, and understand what sampling and a fresh AI review can prove.",
           keywords: ["verify", "review", "hallucination", "citations", "accuracy", "quality", "checklist", "risk"] },
         { id: "failure-clinic", file: "72-failure-clinic.md", title: "The Failure Clinic", minutes: 16, level: "Core",
           summary: "Six case files of broken runs. Diagnose each from its symptom and name the brief line or check that prevents it.",
@@ -236,9 +240,9 @@ var COWORK_COURSE = {
         { id: "capstone", file: "80-capstone.md", title: "Capstone: The Revenue Review Machine", minutes: 40, level: "Core",
           summary: "Hands-on. Build a repeatable, scheduled review pack for your lane and prove it runs cold.",
           keywords: ["capstone", "end to end", "project", "final", "qbr", "review", "automation"] },
-        { id: "next-30-days", file: "81-next-30-days.md", title: "Your Next 30 Days", minutes: 6, level: "Beginner",
+        { id: "next-30-days", file: "81-next-30-days.md", title: "Your Next 30 Days", minutes: 8, level: "Beginner",
           summary: "A week-by-week plan to turn this into a habit, plus where to keep learning.",
-          keywords: ["next steps", "30 day plan", "habits", "resources", "community", "practice"] }
+          keywords: ["next steps", "30 day plan", "habits", "resources", "community", "practice", "academy", "official training", "AI fluency"] }
       ]
     },
     {
@@ -291,6 +295,8 @@ var CC_COURSE = {
     { id: "automation", emoji: "🚀", title: "Automation power path", audience: "Experienced users building repeatable workflows", desc: "Combine skills, subagents, hooks, headless runs, and worktrees without skipping safety.", lessons: ["cc-permissions", "cc-commands", "cc-subagents", "cc-hooks", "cc-mcp-plugins", "cc-headless", "cc-parallel", "cc-lab-automate"] }
   ],
   freshness: {
+    "cc-what": { verifiedDate: "2026-09-25", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/memory" },
+    "cc-verify": { verifiedDate: "2026-09-25", sourceLabel: "Claude Academy", sourceUrl: "https://academy.claude.com/courses/ai-fluency-for-builders/discernment-for-code" },
     "cc-tour": { verifiedDate: "2026-09-25", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/commands" },
     "cc-claudemd": { verifiedDate: "2026-09-25", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/memory" },
     "cc-context-mgmt": { verifiedDate: "2026-09-25", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/commands" },
@@ -352,9 +358,9 @@ var CC_COURSE = {
         { id: "cc-epcc", file: "cc/20-explore-plan-code.md", title: "Explore → Plan → Code → Commit", minutes: 11, level: "Core",
           summary: "The highest-leverage workflow, plus Plan Mode deep dive (Shift+Tab, opusplan, Ctrl+G).",
           keywords: ["explore", "plan", "code", "commit", "plan mode", "opusplan", "workflow"] },
-        { id: "cc-verify", file: "cc/21-verify.md", title: "Give Claude a Way to Verify", minutes: 10, level: "Core",
-          summary: "Tests, builds, screenshots — close the loop so you can walk away. TDD with Claude Code.",
-          keywords: ["verify", "tests", "tdd", "build", "screenshot", "evidence", "goal", "stop hook"] },
+        { id: "cc-verify", file: "cc/21-verify.md", title: "Give Claude a Way to Verify", minutes: 14, level: "Core",
+          summary: "Run meaningful checks, inspect the test changes, and review correctness, quality, fit, experience, and responsibility.",
+          keywords: ["verify", "tests", "tdd", "build", "screenshot", "evidence", "goal", "stop hook", "acceptance", "accessibility", "discernment", "academy"] },
         { id: "cc-debug", file: "cc/24-debugging.md", title: "Debugging With Claude Code", minutes: 14, level: "Core",
           summary: "Reproduce, isolate, prove with a failing test, fix the cause — and never let a try/except pass as a fix.",
           keywords: ["debugging", "bug", "stack trace", "reproduce", "failing test", "root cause", "git bisect", "regression"] },

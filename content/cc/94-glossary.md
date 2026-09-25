@@ -10,9 +10,9 @@ Every term in this course, in one or two sentences, in the words the lessons use
 
 **Context rot** — the drop in quality as the context window fills: Claude starts forgetting earlier instructions and making more mistakes. The reason every best practice protects the context.
 
-**Plan mode** — a mode in which Claude Code blocks file edits until you approve a plan. Claude can still read, search and run exploratory commands. Enter it with `Shift+Tab`; open the plan in your editor with `Ctrl+G`.
+**Plan mode** — research before implementation. Source edits are normally blocked while planning, except in interactive terminal sessions with bypass permissions available. Enter with `Shift+Tab`; edit the plan with `Ctrl+G`. See the [current mode rules](https://code.claude.com/docs/en/permission-modes).
 
-**Auto mode** — the default permission mode on Pro, Max and Team plans. A separate classifier model reviews actions and blocks risky ones; Claude then tries another way, and you are asked only after repeated blocks.
+**Auto mode** — permission handling with classifier review. Explicit ask rules can still prompt. The starting mode depends on the interface, plan, settings, and availability; inspect the active mode. Classifier review does not guarantee safety.
 
 **Permission mode** — how much Claude may do without asking: `auto`, `plan`, `acceptEdits`, `dontAsk`, `manual` or `bypassPermissions`. `Shift+Tab` cycles Manual → Accept edits → Plan → Auto (when available); set `dontAsk` with `--permission-mode`, and `bypassPermissions` joins the cycle only when you start with it enabled.
 

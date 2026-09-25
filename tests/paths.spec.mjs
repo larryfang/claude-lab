@@ -37,14 +37,21 @@ test("every curated route keeps its own lesson order through completion", async 
 });
 
 test("a slow earlier lesson cannot overwrite the current lesson", async ({ page }) => {
+  let releaseWelcome;
+  const welcomeGate = new Promise((resolve) => { releaseWelcome = resolve; });
   await page.route("**/content/00-welcome.md", async (route) => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await welcomeGate;
     await route.continue();
   });
-  await page.goto("/#/cowork/welcome");
+  // Hold the first response until the newer lesson has rendered, regardless of machine load.
+  await page.goto("/#/cowork/welcome", { waitUntil: "domcontentloaded" });
   await expect(page.locator(".loading")).toBeVisible();
   await page.evaluate(() => { location.hash = "#/cowork/what-is-cowork"; });
   await expect(page.locator("article.lesson h1")).toHaveText("Cowork in Eight Minutes");
-  await page.waitForTimeout(600);
+  const welcomeResponse = page.waitForResponse("**/content/00-welcome.md");
+  releaseWelcome();
+  await (await welcomeResponse).finished();
+  // Let response handlers and the next paint finish before checking for a stale overwrite.
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
   await expect(page.locator("article.lesson h1")).toHaveText("Cowork in Eight Minutes");
 });

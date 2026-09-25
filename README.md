@@ -27,6 +27,8 @@ It's built to be **forked**: swap in your company's examples, project keys, and 
 
 63 lessons plus 8 reference pages across both tracks, grounded in current Anthropic docs and community best practices — including worked examples (*Anatomy of a Great Run*), a diagnosis lab (*The Failure Clinic*), *Debugging With Claude Code*, and *Prompt Patterns That Work*.
 
+The [25 September training review](research/training-review-2026-09-25.md) maps official Claude Academy and product documentation to the latest content improvements: the 4D framework, iterative feedback, evidence-based capstones, verification limits, memory, and permission-mode corrections. Claude Lab is independent; its badges and certificates are self-issued completion records.
+
 ## ✨ Features
 
 **New in 2.0 — the learn → practise → check → remember loop**

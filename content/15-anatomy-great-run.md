@@ -156,7 +156,7 @@ Q: Why did Jordan nudge the stage-name problem instead of stopping the run?
 + The goal and approach were right; only a detail of the method was off, so a one-line correction was enough
 - Stopping a run deletes its progress
 - Nudges are always better than restarts
-- The 60-second rule forbids stopping
+- A time limit forbids stopping
 > Match the intervention to the problem: nudge a detail, redirect a method, restart a wrong brief.
 ```
 

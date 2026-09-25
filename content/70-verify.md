@@ -1,6 +1,6 @@
 # Verify Before You Send
 
-Everything in this course produces output that looks finished. This lesson is about the ten minutes between "looks finished" and "is safe to send".
+The labs produce output that can look finished before it has been checked. This lesson gives you a review method whose depth matches the consequences of an error.
 
 :::concept The asymmetry
 Cowork saves you hours. One confidently wrong number in a customer-facing document costs more than a week of those hours — in credibility, in a lost deal, in a decision made on a figure that was never real.
@@ -10,29 +10,29 @@ The maths is not close. Verification is not overhead; it is what makes the time 
 
 ## The four-check pass
 
-Ten minutes, every deliverable that leaves your hands.
+Use all four checks. A small practice sample helps you learn the method; important deliverables need broader coverage. Anthropic's [guidance on inaccurate responses](https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on) recommends checking factual claims against reliable sources.
 
-### Check 1 — Trace three numbers
+### Check 1 — Trace the important numbers, then sample
 
-Pick three numbers at random from the narrative. Not the headline number — random ones, because those are the ones nobody checks. Follow each to the data artefact, then to the source row.
+Start with every number that drives the decision: the headline total, a price, a forecast, or a material variance. Follow each to its calculation and source records. Then select three additional numbers from different sections as a practice sample. If fewer exist, check all of them. For a high-stakes pack, define wider coverage with the responsible reviewer.
 
 - Does it reconcile exactly?
 - Was it rounded? By how much?
 - Is it the metric it claims to be?
 
-This is why every lab asked for a data artefact alongside the narrative. Without it, this check is impossible.
+A clean sample does not establish that the other numbers are correct. If one fails, investigate the cause and expand the check to every affected calculation. Keep a data artefact alongside the narrative so the calculation is inspectable.
 
 ### Check 2 — Count the rows
 
-Compare records in against records out. If they differ, the deliverable must say why.
+Account for every input record. In a one-record-per-row transformation, included records plus documented exclusions must reconcile to the input. Deduplication and aggregation change output row counts; keep record IDs and a mapping or group counts so those transformations can be reconciled too.
 
-This is the fastest and highest-yield check there is. Silent exclusions are the most common serious error and they are invisible in the narrative.
+For example: **100 input records = 94 included + 4 excluded + 2 duplicate records removed**. A summary may have only five rows, one per region; its group counts should still account for the 94 included records. Equal row counts alone do not prove the records or values are right.
 
-### Check 3 — Verify three quotes and three claims
+### Check 3 — Verify quotes and claims at the source
 
-For quotes: find each in the source, **word for word**. A paraphrase in quotation marks is a misrepresentation of a real person, and you will repeat it with quotation marks in your voice.
+For quotes you will publish: find each in the source, **word for word**, with the right speaker and surrounding context. In a practice lab, start with three. A paraphrase should be labelled as a paraphrase, without quotation marks.
 
-For external claims — a competitor's price, a market figure, a company's headcount — open the source and check. Web-sourced facts go stale within weeks.
+For external claims — a competitor's price, a market figure, a company's headcount — open the source, check its date and scope, and confirm it supports the exact claim. Prioritise claims that affect the decision; three arbitrary citations are not a sign-off. Different facts become stale at different rates.
 
 ### Check 4 — Read the flags
 
@@ -62,13 +62,13 @@ The table above is only useful if you can spot those claims in a fluent paragrap
 Q3 closed with 42 opportunities in the export (source: `pipeline-q3.csv`, rows 2–43). [[Win rate improved to 31% because the new discovery script works.|A causal claim. The data shows the win rate rose while the script was in use; it does not show the script caused it. Ask what else changed in the quarter.]] The three largest open deals are in the table on page 2, with close dates taken from the CRM. [[Northwind cut its list price by 40% last month, so expect pressure on renewals.|A competitor price with no source and no date. Open the page, check the date and cite it, or cut the sentence.]] [[Average deal size was about $48k.|A number going to an executive with no source row, and "about" hides whether it was rounded, derived or estimated. Trace it before it is repeated.]] Two opportunities were excluded from the totals because their amount field is blank; both are listed in the Issues tab. [[The trend is statistically significant, so it will continue into Q4.|A significance claim on 42 deals, and a forecast stated as a fact. Check the sample yourself and label the forecast as an inference.]] [[Priya Shah, CFO at Acme, confirmed they will sign in October.|A commitment attributed to a named person. Verify her title and find the commitment in the CRM or in email before it becomes a promise in your forecast.]]
 ```
 
-Notice what the good sentences have in common: a named source, a stated exclusion, a pointer to where the evidence is. That is what your briefs should ask for.
+The unmarked sentences provide evidence locations or disclose exclusions. They are easier to verify, not automatically true: open those sources too before using the report. This exercise spots missing support; it does not verify the fictional underlying data.
 
 ## Forcing verifiability up front
 
 Verification is far easier if you designed for it. Three instructions, in every brief that matters:
 
-**1. Restrict the sources.** *"Use only these files. Do not use the web. Do not use general knowledge."* If a claim could only have come from a source you also have, it is checkable. If it could have come from anywhere, it is not.
+**1. Define the permitted sources.** *"Use only these files as evidence. Do not use the web. Flag unsupported claims."* This gives you a bounded evidence set, but does not prevent invention or misreading. Inspect the cited source yourself.
 
 **2. Demand citations inline.** *"Every factual claim needs its source — a filename and row, or a URL and the date read — stated in the text, not in a bibliography."* Citations at the end get skimmed. Citations inline get checked.
 
@@ -85,16 +85,16 @@ Be exhaustive. I would rather have a long list than a clean-looking document.
 ```
 
 :::warning Why self-audit is not enough
-A self-audit will find real problems — genuinely, it is worth running. It cannot find the error where Cowork misread a source and remains confident about it, because the misreading is what it will audit against.
-
-Your three-number trace catches that. Nothing else does.
+A self-audit can find real problems, but it can also repeat the same mistaken reading. A confident answer or confidence score is not evidence. Reopen the original source, recompute important totals independently, and involve a qualified reviewer where the work requires one.
 :::
 
 ## The fresh-eyes upgrade
 
-The strongest version of the self-audit is not to let the same session mark its own homework. Start a **new** Cowork session — one with no memory of building the deliverable — point it at the output and the sources, and run the same audit brief. The builder session re-reads its own reasoning as confirmation; a fresh instance can only see what an outside reviewer sees.
+Start a **new** task with the output, original sources, and acceptance criteria. Ask it to test the claims without giving it the builder's explanation first. This reduces dependence on the earlier conversation, but it is still an AI review and can repeat the same mistakes.
 
-Anthropic's marketing-ops team uses this builder-plus-independent-auditor pattern: a fresh Claude instance actually **test-registers for the event and checks Gmail for the confirmation email** before the task is marked complete, built because cloned event pages could ship bugs like the wrong city name in a confirmation email ([claude.com](https://claude.com/blog/how-anthropics-marketing-operations-team-uses-claude-cowork-to-automate-reporting-and-campaign-builds)). It costs one extra prompt. The finance lane's board-pack lab walks through it end to end — and in Module 8, that audit brief is worth turning into your first Skill, so the proofread happens by name, every time, before anything goes out.
+A new task is not necessarily a blank slate. Project instructions can recur, and [Claude's memory features](https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context) share context between chat and cloud Cowork tasks when enabled. That shared memory is not available in local Cowork sessions. Check the task's environment, settings, and supplied context; retain the human review and direct source checks.
+
+Anthropic's marketing-ops team describes a separate auditor that **test-registers for an event and checks Gmail for the confirmation email**, helping catch problems such as a cloned page's wrong city name ([case study](https://claude.com/blog/how-anthropics-marketing-operations-team-uses-claude-cowork-to-automate-reporting-and-campaign-builds)). The useful pattern is to test the actual outcome. The finance lane's board-pack lab applies a separate source-tracing pass, which you can later package as a Skill. Allow time for that review and for resolving its findings.
 
 ## The red-team pass, for high-stakes work
 
@@ -115,10 +115,10 @@ Then answer the awkward question before the meeting rather than during it.
 :::lab Your standing checklist
 Save this somewhere you will see it before sending anything.
 
-- [ ] Traced three random numbers to source
-- [ ] Row count in equals row count out, or the difference is explained
-- [ ] Three quotes matched word for word
-- [ ] Three external claims checked at source, with dates
+- [ ] Traced decision-critical numbers and an additional sample to source; expanded coverage after any error
+- [ ] Accounted for input records, exclusions, duplicates, and any aggregation
+- [ ] Quotes intended for publication match their sources and context
+- [ ] Decision-relevant external claims checked at source, with dates
 - [ ] Read the flag section and resolved every item
 - [ ] Every number I could not verify is either removed or marked unverified
 - [ ] Anything compliance, legal or security related has a named human reviewer
@@ -127,10 +127,8 @@ Save this somewhere you will see it before sending anything.
 
 That last box is the real test. If you cannot explain a conclusion without the document open, you are forwarding someone else's reasoning with your name on it.
 
-:::tip Ten minutes, and it gets faster
-The first time this feels slow. By the fifth deliverable you will do it in four minutes, because you learn where errors cluster in your particular kind of work — usually one or two specific places.
-
-And you will find things. Everyone does. That is what tells you the check is working.
+:::tip Keep a short review record
+Record what you checked, the source version or date, what failed, and what remains unverified. Review time depends on complexity and consequences. Repeated work can become faster when the same reconciliations are automated and you inspect exceptions.
 :::
 
 ## Lock it in
@@ -139,38 +137,38 @@ Flip each card, recall the answer *before* you look, and grade yourself honestly
 
 ```flashcards
 Q: What are the four checks in the four-check pass?
-A: Trace three numbers, count the rows, verify three quotes and three claims, and read the flags.
+A: Trace important numbers plus a sample, account for input records, verify quotes and claims, and read the flags.
 
-Q: Which three numbers should you trace?
-A: Three picked at random, not the headline number. The random ones are the ones nobody checks.
+Q: Is checking three numbers enough to approve a report?
+A: No. Check the numbers driving the decision, then sample additional numbers. Expand the review if an error appears or the consequences require it.
 
 Q: Why is counting the rows worth doing every time?
-A: It is the fastest, highest-yield check. Silent exclusions are the most common serious error, and they are invisible in the narrative.
+A: It exposes missing or duplicated records. Reconcile inclusions, exclusions, and group counts; a summary legitimately has fewer rows than its input.
 
 Q: Which three instructions make a deliverable verifiable by design?
 A: Restrict the sources, demand citations inline, and separate OBSERVED from INFERRED.
 
-Q: What can a self-audit not catch?
-A: A source Cowork misread and is still confident about. It audits against its own misreading; your three-number trace catches that.
+Q: What can a self-audit miss?
+A: A misread source or faulty assumption it repeats. Check the original evidence and independently recompute important calculations.
 
 Q: What is the fresh-eyes upgrade?
-A: Run the same audit brief in a **new** Cowork session with no memory of building the deliverable. The builder session re-reads its own reasoning as confirmation.
+A: Give a new task the output, sources, and acceptance criteria. Check shared memory and instructions, and treat its findings as additional review rather than proof.
 ```
 
 ```quiz
-Q: What is the fastest, highest-yield check on any data deliverable?
+Q: A report groups 94 included records into five regions. What record check is useful?
 - Reading it twice
-+ Comparing record count in against record count out
++ Reconcile group counts to included records, then account for exclusions and duplicates against the input
 - Asking Cowork to verify it
 - Checking the formatting
-> Silent exclusions are the most common serious error and are invisible in the narrative.
+> Aggregation legitimately changes row counts. The mapping and totals must still account for every source record.
 
 Q: Why is a self-audit insufficient on its own?
 - It is too slow
-+ It cannot catch a source Cowork misread and remains confident about — it audits against its own misreading
++ It may repeat the same source misreading or mistaken assumption
 - It only checks formatting
 - It requires connectors
-> Worth running, but your own three-number trace is what catches that class of error.
+> A second pass can help. Direct source inspection and independent recalculation provide stronger evidence than confidence alone.
 
 Q: Which three instructions make a deliverable verifiable by design?
 - Be accurate, be concise, be honest

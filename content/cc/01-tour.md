@@ -23,15 +23,15 @@ Press **Shift+Tab** to cycle the permission/working mode: **Manual → Accept ed
 
 | Mode | What it does |
 |---|---|
-| **Manual** | Asks permission before every edit and command — the classic, most cautious mode |
+| **Manual** | Prompts for actions requiring approval; in-scope reads and pre-approved actions can run without a prompt |
 | **Accept edits** | Applies file edits without asking (faster when you trust the task) |
-| **Plan mode** | **No edits.** Claude can explore, run exploratory commands, and propose a plan, but *cannot* edit files until you approve the plan |
-| **Auto** | A classifier model reviews actions and blocks risky ones (Claude then tries another way); you're asked only after repeated blocks — the **default** on Pro/Max/Team plans |
+| **Plan mode** | Research and propose changes; source edits are normally blocked while planning. See the bypass exception below |
+| **Auto** | A classifier reviews actions; explicit ask rules can still prompt. The usual starting mode on supported Pro/Max/Team terminal and VS Code sessions; settings and availability can change it |
 
 (The full set, including `dontAsk` and `bypassPermissions`, is in the [permission-modes docs](https://code.claude.com/docs/en/permission-modes) — more in the Permissions lesson.)
 
-:::concept Plan mode is enforced, not suggested
-In plan mode, Claude Code **blocks file edits** until you approve a plan. Claude can still read, search, and run exploratory shell commands: read-only ones run freely, and others go to the auto-mode classifier or a permission prompt. That's why it's the safe way to let Claude loose on an unfamiliar codebase. We'll go deep on it in the workflow module.
+:::concept Use Plan without bypass permissions for these labs
+Plan normally blocks source edits. The current docs describe an exception for interactive terminal sessions where bypass permissions are available, including sessions launched with `--allow-dangerously-skip-permissions`. Keep bypass unavailable for these exercises. Permission modes govern approval; [sandboxing](https://code.claude.com/docs/en/sandboxing) limits what commands can reach.
 :::
 
 ## The keys that matter
@@ -112,8 +112,8 @@ Flip each card, recall the answer *before* you look, and grade yourself honestly
 Q: What does **Shift+Tab** do?
 A: It cycles the permission/working mode: Manual → Accept edits → Plan mode → Auto (Auto only when it's available).
 
-Q: What is Claude blocked from doing in plan mode?
-A: Editing files, until you approve a plan. It can still read, search, and run exploratory commands; ones that aren't read-only go to the classifier or a prompt.
+Q: What does Plan normally block, and which exception matters?
+A: Source edits while planning. Interactive terminal sessions with bypass permissions available are an exception; keep bypass unavailable for these labs.
 
 Q: How do you interrupt Claude mid-action without losing context?
 A: Press `Esc`. Context is preserved, so you can redirect.
@@ -131,10 +131,10 @@ A: `claude --continue` resumes the most recent session; `claude --resume` lets y
 ```quiz
 Q: You're about to let Claude work in a codebase you don't know well. Which mode is safest to start in?
 - Auto-accept edits
-+ Plan mode (Shift+Tab) — no file edits until you approve a plan, so it can explore and plan without changing your code
++ Plan mode with bypass permissions unavailable, so it can explore before you approve edits
 - Manual mode with permissions disabled
 - There is no safe mode
-> Plan mode blocks edits until you approve the plan — Claude can read, search, and run exploratory commands. Ideal for exploring unfamiliar code.
+> Check the mode and permissions before starting. For commands that run, isolation is a separate control from permission prompts.
 
 Q: You finished one task and want to start something totally unrelated. Best move?
 + /clear to reset the context window

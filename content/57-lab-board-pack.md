@@ -61,7 +61,7 @@ FLAG on a final hidden slide: every number you were tempted to round or simplify
 Anthropic's finance team checks its board materials the same way: Claude is asked to *"validate that every number and claim reconciles to a single source of truth"* ([Anthropic](https://claude.com/blog/how-anthropics-finance-team-uses-claude-to-shape-the-narrative-behind-the-numbers)). Here you make it a **separate pass, fresh eyes, that traces every number to a verified source**. Run it as its own task so it is not marking its own homework.
 
 :::lab Step 4 — Fresh-eyes audit
-Start a **new** Cowork session (or task) so it has no memory of building the deck, and run:
+Start a **new** Cowork task with the deck, source files, and review criteria. Check shared project instructions and, for cloud tasks, enabled memory; a new task may still receive prior context. Then run:
 
 ```prompt
 You are a proofreader with no stake in this deck being right. In `output/` you will find `board-pack.pptx` and its three sources: `variance-pack.xlsx`, `reconciliation-summary.md`, `forecast.xlsx`.
@@ -76,7 +76,7 @@ Produce `output/proofread-report.md`: the mismatches and unsupported claims firs
 :::
 
 :::concept Why a fresh session
-The session that built the deck will defend the deck — it re-reads its own reasoning as confirmation. A fresh instance has no such loyalty; all it can see is the deliverable and the sources, which is exactly what your CFO's eye will see. This two-agent pattern — builder plus independent auditor — is the strongest verification habit in this course, and it costs one extra prompt.
+A separate task reduces the influence of the builder's conversation. It can still share context and repeat the same model errors. Treat its trace table as review assistance: reconcile important figures yourself and retain the finance owner's sign-off. See [Claude's memory documentation](https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context) for what can carry across chats.
 :::
 
 ## Make it permanent
@@ -93,7 +93,7 @@ What did the fresh-session proofread catch that the session which built the deck
 ```
 
 ```reflect
-Which slide in your real board pack would most tempt you to smooth a limitation, and what line in your brief will forbid it?
+Which slide in your real board pack would most tempt you to smooth a limitation, and what line in your brief will make that limitation explicit?
 ```
 
 ```quiz
@@ -111,12 +111,12 @@ Q: What is the test that the forecast model is actually alive?
 - The sensitivity tab exists
 > An editable assumption that changes nothing is the tell for hard-coded values.
 
-Q: Why must the proofreading pass run in a fresh session?
+Q: Why use a separate task for the proofreading pass?
 - To save context space
-+ The session that built the deck defends the deck — an instance with no memory of building it traces numbers the way an outside reviewer would
++ It reduces reliance on the builder's conversation, while direct source checks and a finance reviewer remain necessary
 - Fresh sessions are faster
 - The pptx cannot be read twice in one session
-> Builder and auditor should never be the same pair of eyes. That is as true for AI as for people.
+> Fresh context can help, but it does not guarantee independent reasoning or correct results.
 
 Q: Slide 4 must state the reconciliation exceptions "plainly". What failure mode is that guarding against?
 - Overly long slides

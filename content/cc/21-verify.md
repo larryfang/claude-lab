@@ -4,7 +4,7 @@ Here's the difference between a session you have to babysit and one you can walk
 
 ## Why this is the whole ballgame
 
-Claude stops when the work **looks done**. Without a check it can run, "looks done" is the only signal — and *you* become the verification loop, catching every mistake by hand. Give Claude something that returns **pass/fail**, and the loop closes on its own: Claude does the work, runs the check, reads the result, and **iterates until it passes**.
+A runnable check gives Claude concrete feedback: implement, run the check, inspect failures, and revise. You still decide whether the check covers the requirement and whether unresolved problems allow the change to ship.
 
 :::concept A "check" is anything that returns a signal
 - a **test suite** (the gold standard)
@@ -30,13 +30,42 @@ The simplest version: ask for the work *and* the verification in one breath.
 
 ## TDD pairs beautifully with agents
 
-Tests are the perfect check because they're unambiguous. A reliable recipe:
+Tests give a repeatable pass/fail signal for the cases they cover. A useful recipe for a behaviour change:
 
 ```prompt
 Let's do this test-first. Write failing tests for [behavior], including edge cases [list]. Don't write the implementation yet — show me the tests and run them so I can see them fail (red). Then implement until they pass (green), and show the passing output.
 ```
 
-Red → green, with Claude reading the test output each loop. You get correctness *and* a safety net for the next change.
+Red → green, with Claude reading the test output each loop. Confirm that red failed for the intended reason, not an unrelated setup error. Green proves those assertions passed; it does not prove the requirements or test cases are complete.
+
+## Check the test as well as the code
+
+Agree on expected behaviour before implementation. Afterward, inspect the diff for deleted assertions, skipped tests, broad mocks, or changed fixtures that merely make the result pass. Keep a regression case the implementation did not get to redefine. For a content-only change, a render or link check may be more useful than a new unit test.
+
+```scenario
+S: Claude fixes a validation bug. The suite is green, but the diff replaces a rejected-input test with test.skip.
+Q: Is the change ready?
++ Restore the acceptance check, confirm it fails on the bug, fix the implementation, and rerun the relevant tests.
+> The green result excluded the behaviour you needed to verify. Review the test diff as part of the fix.
+~ Ask another AI reviewer whether the code looks reasonable.
+> A review can help, but it does not restore the missing behavioural evidence.
+- Ship it because the test command succeeded.
+> A successful command can include skipped tests. Read what ran and what it actually proved.
+```
+
+## Review beyond a green suite
+
+Anthropic's [AI Fluency for builders](https://academy.claude.com/courses/ai-fluency-for-builders/discernment-for-code) uses five review lenses. Apply them to your change:
+
+| Lens | Evidence to collect |
+|---|---|
+| **Correctness** | Expected behaviour and a relevant failure case both pass |
+| **Quality** | The diff is understandable and follows the project's conventions |
+| **Fit** | It solves the requested user problem without unrelated work |
+| **Experience** | Someone can finish the task and recover from an error |
+| **Responsibility** | Access, data handling, and any release limitations are reviewed |
+
+For UI changes, test a complete keyboard path, a narrow screen, and an empty or failed response. Check accessible names and visible focus as well as appearance. The [Academy's UX lesson](https://academy.claude.com/courses/ai-fluency-for-builders/discernment-for-user-experience) reinforces specifying accessibility and feedback explicitly.
 
 ## Gate harder when you walk away
 
@@ -53,7 +82,7 @@ The longer Claude runs unattended, the harder you want the stop gated:
 ## Demand evidence, not assertions
 
 :::warning "It works" is not evidence
-Have Claude **show the proof**: the test output, the command it ran and what it returned, the screenshot. Reviewing evidence is faster than re-running checks yourself — and it's the only way to trust a session you weren't watching. If you can't verify it, don't ship it.
+Have Claude show the command, result, relevant test cases, and any skipped or unrun checks. A screenshot supports a visual claim; it does not prove an interaction works. A mocked test is not evidence that a live service succeeded. Match each claim in the handover to what was actually checked.
 :::
 
 ## See TDD in the loop
@@ -82,7 +111,7 @@ Flip each card, recall the answer *before* you look, and grade yourself honestly
 
 ```flashcards
 Q: Why does Claude need a check it can run itself?
-A: Claude stops when the work **looks done**. With a pass/fail check, it runs the check, reads the result, and iterates until it passes.
+A: A runnable check provides feedback for correction. You still review whether its assertions cover the requirement and what remains untested.
 
 Q: What counts as a "check"?
 A: Anything that returns a signal: a test suite (the gold standard), a build exit code, a linter or type-checker, an output diff, a screenshot compared to a design.

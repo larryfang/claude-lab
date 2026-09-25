@@ -22,7 +22,7 @@ Everything you'll reach for, on one page. Bookmark it. Every command below is ve
 | `claude --teleport` | Pull a cloud session down to your local terminal |
 | `claude --fallback-model sonnet -p "…"` | Auto-fallback when the primary model is overloaded |
 | `claude --safe-mode` | Start with ALL customizations off — debug a broken config |
-| `claude --dangerously-skip-permissions` | Skip all prompts — **only** in isolated/trusted envs |
+| `claude --dangerously-skip-permissions` | Bypass routine permission checks; some exceptions remain — **only** in isolated environments |
 | `claude -p "root cause?" < error.log` | Feed a file in (redirect avoids quoting a pipe) |
 
 ## Useful subcommands (your shell)

@@ -1,8 +1,8 @@
 # The B.R.I.E.F. Framework
 
-The difference between people who love Cowork and people who bounce off it is not access, plan, or technical skill. It is that one group writes briefs and the other writes prompts.
+A useful brief makes the task, sources, and review criteria explicit. It reduces avoidable back-and-forth, though access to the right data and tools still matters.
 
-A brief has five parts. Miss one and you get output that is confident, well-formatted, and not what you needed.
+This course uses **B.R.I.E.F.** as a checklist for that description. It is a course mnemonic, not an official Claude command or a guarantee of quality. For small tasks, one clear sentence can cover several parts.
 
 :::concept B.R.I.E.F.
 | Letter | Means | The question it answers |
@@ -43,7 +43,7 @@ Be explicit about what to read — and, when it matters, what to ignore.
 > ✅ "Use only the transcripts in `discovery/` and the ticket export `support-tickets.csv`. Do not use the web. Do not use anything in `archive/` — that data is from a different product."
 
 :::tip "Do not use the web" is a real instruction
-For anything where accuracy is checkable, restricting sources is how you make output verifiable. If Cowork can only have learned something from three files you also have, you can check it. If it could have come from anywhere, you cannot.
+Restricting sources gives you a defined evidence set to check. Claude can still infer or invent a claim, so ask for a source location and verify that it actually supports the claim. The instruction does not switch off the model's general knowledge.
 :::
 
 ### E — Edges
@@ -62,7 +62,7 @@ The five that earn their place in almost every brief:
 
 The most-skipped letter, and the one that turns output from a document into a decision aid.
 
-Cowork will resolve ambiguity silently unless told not to. Tell it not to.
+Cowork may resolve ambiguity without asking. Say which decisions need your input.
 
 > ✅ "Flag separately, rather than deciding for me: anywhere two sources contradict each other; anywhere you had to infer rather than read; any row you excluded from a total and why; anything that looks like a data-entry error."
 
@@ -97,7 +97,13 @@ Flag separately rather than resolving: any two customers who contradicted each o
 Show me your plan before you start.
 ```
 
-Longer? Yes — about 200 words. It replaces roughly two hours of back-and-forth and produces something you can actually take into a leadership review.
+This version names the inputs, output, and unresolved decisions. You can inspect its result against those requirements; time saved will depend on the task and the quality of the inputs.
+
+## Define what would count as done
+
+Add one observable acceptance check before you run the brief. For the discovery report above: **every theme has traceable evidence; unsupported themes stay in an open-questions section; the report does not decide the roadmap for you.**
+
+When the method matters, describe it too: deduplicate by customer before counting, separate quotations from interpretation, and ask before changing the grouping. This applies the [Description–Discernment loop](https://academy.claude.com/courses/ai-fluency-framework-foundations/the-description-discernment-loop): describe, inspect, give specific feedback, and inspect again.
 
 :::tip Have Claude write your brief
 Genuinely the fastest way to get good at this. In ordinary chat:
@@ -114,7 +120,7 @@ For anything built from scattered sources, one sentence at the top of the brief 
 ## Three habits that compound
 
 1. **Save your good briefs.** A brief that worked is an asset. Keep a note file. Module 8 turns the best of them into Skills.
-2. **Iterate on the brief, not the output.** When a run disappoints, resist fixing the document by hand. Ask "which letter was missing?" and fix that. The next hundred runs get better.
+2. **Improve the result and the reusable brief.** Give specific feedback on a weak result. If the cause was a missing requirement, add it to the saved brief; if it was bad data or a tool failure, fix that cause.
 3. **Ask for the thing you actually want.** People ask for a summary when they want a decision, a report when they want a list of what is broken. Say the real thing.
 
 ## Lock it in
@@ -127,9 +133,9 @@ A: **B**ackground, **R**esult, **I**nputs, **E**dges, **F**lag.
 Q: Which letter is skipped most often, and what does it do?
 A: **Flag.** It tells Cowork what to surface to you instead of deciding silently.
 Q: Why write "do not use the web" in a brief?
-A: If a claim can only come from files you also have, you can check every claim.
-Q: A run disappoints. What do you fix first?
-A: The brief. Find the missing letter. A hand-fixed document improves once; a fixed brief improves every future run.
+A: It defines the permitted evidence set. You must still check the cited source; the instruction does not prevent unsupported claims.
+Q: A run disappoints. What do you inspect first?
+A: Compare the result with your acceptance checks. Diagnose the cause: missing instruction, bad data, tool failure, or a specific output error. Save reusable corrections in the brief.
 Q: What does a good **Result** name?
 A: The artefact, its sections in order, and the file name and format.
 Q: What is the gap-analysis opener?
@@ -146,10 +152,10 @@ Q: Which part of B.R.I.E.F. prevents Cowork silently resolving an ambiguity it s
 
 Q: Why is "do not use the web; use only these three files" a useful constraint?
 - It makes runs cheaper
-+ It makes the output verifiable — if a claim could only have come from sources you also have, you can check it
++ It defines a permitted evidence set whose citations you can check
 - Web access is unreliable
 - It avoids copyright issues
-> Restricting sources is the practical foundation of a review pass.
+> Source limits help you review. They do not guarantee the model used only those sources or interpreted them correctly.
 
 Q: A run produces a report with a total that quietly excluded four rows with blank values. Which instruction would have caught it?
 - "Be accurate"

@@ -6,13 +6,15 @@ Claude Code can edit files and run commands — that's the power, and the respon
 
 Claude Code gates anything that could modify your system — file writes, Bash commands, MCP tool calls. The classic behavior is **ask before acting**: safe, but tedious, because after the tenth approval you're not reviewing, you're just clicking.
 
-That's why **auto mode is now the default** on Pro, Max and Team plans ([permission modes](https://code.claude.com/docs/en/permission-modes)): a separate classifier model reviews actions and blocks the genuinely risky ones — Claude then tries another way, and you're asked only after repeated blocks. In a study Anthropic ran, dangerous commands were hidden inside realistic sessions — 1,053 professional developers manually approving caught **13.6%** of them; auto mode's classifier caught **89%** ([@adocomplete, 2026-08-13](https://x.com/adocomplete/status/2087957562859913525)). Cycle modes any time with **Shift+Tab**.
+**Auto mode is the built-in starting mode for supported Pro, Max, and Team terminal and VS Code sessions**, subject to settings and availability. Enterprise, API-key, and non-interactive runs have different defaults. Check the mode indicator and [current starting-mode table](https://code.claude.com/docs/en/permission-modes) rather than assuming the default.
+
+Auto uses a classifier to review actions, but it does not guarantee safety. Explicit ask rules and some other actions still require your input ([permission rules](https://code.claude.com/docs/en/permissions)). Cycle modes with **Shift+Tab**.
 
 ## Three layers that cut the noise
 
 | Approach | What it is | Best when |
 |---|---|---|
-| **Auto mode** | A classifier reviews actions and blocks only risky things (scope escalation, unknown infra, hostile-content-driven actions) | Day-to-day work — it's the default for a reason |
+| **Auto mode** | A classifier checks actions against the request and configured boundaries; it can make mistakes | Work with a clear scope that you can review |
 | **Permission allowlists** | Pre-approve specific safe tools/commands with `/permissions` or in `settings.json` | Repetitive safe commands like `npm run lint`, `git commit` |
 | **Sandboxing** | OS-level isolation (`/sandbox`): a filesystem boundary plus a **network egress allowlist**, and optional credential masking you configure with `sandbox.credentials` ([sandboxing](https://code.claude.com/docs/en/sandboxing)) | Letting Claude work freely inside hard boundaries |
 
@@ -63,21 +65,21 @@ Pre-approve a handful of read-only/test commands; deny secrets and destructive o
 
 ## The YOLO flag (handle with care)
 
-You'll hear about `--dangerously-skip-permissions` (a.k.a. "YOLO mode"), which skips all prompts.
+You'll hear about `--dangerously-skip-permissions` (a.k.a. "YOLO mode"), which bypasses routine permission checks. Some actions still prompt or are denied in non-interactive runs; it is not a promise of zero interruptions.
 
 :::warning When (and when not) to skip permissions
 **Legit uses:** a throwaway sandbox, a disposable container/VM, or CI where the environment is isolated and the repo is trusted.
 
 **Never** use it on **untrusted code or content.** Claude can be steered by **prompt injection** — malicious instructions hidden in a file, dependency, issue, or web page it reads — into running harmful commands. With permissions off and real filesystem access, that's a genuine risk. On any repo you don't fully trust, keep permissions on (or sandbox).
 
-Anthropic reports its stacked defenses (model training, input probes, an intent classifier) now catch close to 100% of *unseen* injection attacks in its evals ([@bcherny, 2026-08-07](https://x.com/bcherny/status/2085860677990883454)) — but independent researchers remain cautious about treating any such number as solved-problem territory ([Simon Willison's response](https://x.com/simonw/status/2086220154468442496)). Treat the defenses as seatbelts, not permission to drive blind.
+Anthropic's [security guidance](https://code.claude.com/docs/en/security) describes multiple defenses against prompt injection. Those controls reduce risk; they do not establish that an unfamiliar repository or a particular action is safe.
 :::
 
 ## A sane default setup
 
 For most day-to-day work on **your own** repo:
 
-1. Stay in **auto mode** (the default), or switch to **Manual mode** for sensitive work.
+1. Check the current mode. Use **auto mode** for a clearly scoped task you can review, or **Manual mode** when you need to inspect approvals yourself.
 2. Allowlist your common safe commands (test, lint, build, `git add`/`commit`).
 3. **Deny** reads of `.env`/secrets and destructive commands (`rm -rf`, `git push`, force operations). Deny rules match command text, so pair them with sandboxing for a hard boundary.
 4. Reach for **sandboxing** when working with anything unfamiliar.
@@ -112,7 +114,7 @@ Flip each card, recall the answer *before* you look, and grade yourself honestly
 
 ```flashcards
 Q: What does auto mode do?
-A: A separate classifier model reviews actions and blocks the risky ones; Claude tries another way, and you're asked only after repeated blocks. It's the default on Pro, Max and Team plans.
+A: A classifier reviews actions against scope and configured rules. It can make mistakes, and explicit ask rules still prompt. Check the active mode rather than assuming your plan always starts in Auto.
 
 Q: allow, deny, ask — what does each do?
 A: **allow** runs without a prompt; **deny** blocks in every mode; **ask** always prompts, even in auto mode. Anything unmatched goes to the classifier (auto) or a prompt (Manual).

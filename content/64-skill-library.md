@@ -16,7 +16,7 @@ They are deliberately not finished. Each has `[BRACKETS]` where your company's s
 
 Skills **fire on their own** when your request matches the description — that is the main path, and the cold test from the last lab proves it works. But every installed skill is also an explicit command: type **`/`** in Cowork and your skills appear as `/skill-name` — Cowork sessions run on the same engine as Claude Code, where skills and slash commands are one mechanism ([slash-commands docs](https://code.claude.com/docs/en/slash-commands)). Plugin skills namespace by function, like `/sales:call-prep` ([knowledge-work-plugins](https://github.com/anthropics/knowledge-work-plugins)).
 
-Explicit invocation is the right choice when the job has **side effects** or you want a guaranteed, exact run — `/variance-pack` on close day, not "hey, do the variance thing".
+Explicit invocation selects the intended skill — for example, `/variance-pack` on close day. It does **not** guarantee identical execution or correct output. Keep tool permissions, review steps, and acceptance checks for jobs with side effects.
 
 :::tip Plugin first, custom second — same rule as the lanes
 Anthropic open-sourced complete plugins for **common job functions** — sales, marketing, finance, product, legal, HR, engineering and more — installable from the marketplace that ships enabled by default: **Customize → Plugins → Browse plugins** ([use plugins in Claude](https://support.claude.com/en/articles/13837440-use-plugins-in-claude) · [source](https://github.com/anthropics/knowledge-work-plugins)). Even better: select an installed plugin and hit **Customize** — Claude opens a session, inspects your connected tools, interviews you, and rewrites the plugin's skills for *your* stack ([Academy tutorial](https://academy.claude.com/tutorials/how-to-customize-plugins-in-cowork)).
@@ -220,7 +220,7 @@ Q: What are the two ways to get a Skill installed?
 A: **Upload the file**: zip the Skill's folder and upload it. Or **have Claude build it**: it interviews you in a Cowork session and produces the installable folder.
 
 Q: When is `/skill-name` better than letting a Skill auto-fire?
-A: When the job has side effects, or you want a guaranteed, exact run: `/variance-pack` on close day, not "hey, do the variance thing".
+A: When you want to select a particular skill explicitly, such as `/variance-pack`. This selects the instructions; it does not guarantee the result or replace permissions and review.
 
 Q: What should you check before adapting a template?
 A: Whether the official plugin for your function already covers the job. The templates earn their keep where the plugin misses your standards.

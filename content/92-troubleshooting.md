@@ -46,7 +46,7 @@ Fastest fix: in ordinary chat, paste your brief and ask *"Rewrite this as a prop
 :::details It invented a number
 The Confident Gap. Prevention is the instruction *"Never estimate a missing value — write 'not recorded'."* Add it to every brief that touches data.
 
-Detection: trace three random numbers to source, and compare row count in against row count out.
+Detection: trace decision-critical numbers and an additional sample to source. Reconcile included, excluded, and deduplicated records against the input; explain grouping when output has fewer rows.
 
 When you find one, ask it to show the working: *"Walk me through that calculation row by row from the source file, and tell me which rows you included and excluded."* Notice whether it corrects itself or defends the number.
 :::
@@ -160,7 +160,7 @@ This is the quietest failure in the whole course, which is why the quarterly rev
 ## Judgement and risk
 
 :::details How do I know when to trust the output?
-You do not trust the output. You verify it — the four checks in Module 9, every time something leaves your hands. Trace three random numbers, compare row counts, check three quotes and three external claims, read the flag section.
+Use the four checks in Module 9 whenever work leaves your hands. Trace decision-critical numbers plus an additional sample, reconcile input records, check quotes and claims at source, and read the flags. Three checks of a given type are a practice sample; expand coverage for important decisions or any error you find.
 
 The test that matters: can you explain every conclusion in your own words without re-reading the document? If not, you are forwarding someone else's reasoning with your name on it.
 :::

@@ -1,6 +1,6 @@
 # Plans, Steering & When to Stop
 
-A Cowork run is not a vending machine. It is closer to briefing a capable new hire who will not ask you a follow-up question unless you told them they could.
+A Cowork run benefits from clear checkpoints. Claude may ask follow-up questions, but you should specify which decisions require your input and inspect the work as it develops.
 
 This lesson is about the twenty minutes in the middle.
 
@@ -35,10 +35,12 @@ You do not have to wait for the end. Three interventions, in increasing order of
 
 **Stop and re-brief** — the brief was wrong.
 
-> Hit stop. Do not try to patch it. Rewrite the brief with the missing B.R.I.E.F. element and start again. A run steered five times produces a worse document than a run briefed once properly, and you will not be able to reconstruct why it said what it said.
+> Pause the work. If the goal or permitted sources changed, save any verified output and write a corrected brief. Restart the affected work; a new task can help when conflicting instructions or accumulated context are getting in the way.
 
-:::tip The 60-second rule
-If you have been steering for more than a minute, you are debugging your brief, not the run. Stop, fix the brief, restart. This feels wasteful and is always faster.
+:::tip Judge progress, not elapsed time
+Continue when each correction improves the result against a clear check. Pause when the same error recurs, fixes break previously correct work, or the goal is unclear. Diagnose whether the cause is the brief, data, tool access, or context before choosing a restart. A minute is a useful moment to reassess, not a deadline.
+
+This follows Anthropic's [Description–Discernment loop](https://academy.claude.com/courses/ai-fluency-framework-foundations/the-description-discernment-loop): inspect what came back, give specific feedback, and repeat while the work improves.
 :::
 
 ## The four ways a run goes wrong
@@ -49,13 +51,13 @@ Learn to name these and you will diagnose problems in seconds rather than sessio
 It needed a number that was not there and produced a plausible one anyway. Totals that do not reconcile, a "typical industry benchmark", a date that was inferred.
 
 **Prevention:** *"Never estimate a missing value — write 'not recorded'."*
-**Detection:** trace three numbers from the deliverable back to a source row. Always three, always at random.
+**Detection:** trace decision-critical numbers to source, then sample additional numbers. Three is a useful practice sample, not proof that the rest are correct.
 
 ### 2. The Silent Exclusion
 Four rows had blank fields, so it dropped them. The total is now wrong and nothing says so.
 
 **Prevention:** *"Flag every row you excluded from any calculation, and why."*
-**Detection:** does the row count in the output match the row count in the input?
+**Detection:** can every input record be accounted for as included, excluded with a reason, or merged into a documented group? Aggregated reports legitimately have fewer rows.
 
 ### 3. The Drift
 Long run, many files. By file thirty it is applying subtly different criteria than at file three, or scoring inconsistently across parallel subagents.
@@ -69,8 +71,8 @@ You asked it to organise a folder. It also renamed your files, "improved" a docu
 **Prevention:** *"Write only to `output/`. Do not modify, rename, or delete anything in the source folders."* Plus: work on copies.
 **Detection:** an overwrite or rename is very hard to detect after the fact. Prevent it.
 
-:::warning The Eager Rewrite is the only one that is not recoverable
-The other three cost you a re-run. This one costs you data. Copies, narrow scope, explicit write boundaries — every time, even when you are in a hurry. Especially when you are in a hurry.
+:::warning Protect the source before you run
+An overwrite may be recoverable from a backup or version history, but recovery is not guaranteed. Copies, narrow scope, and explicit write boundaries reduce the risk. Incorrect analysis can also cause lasting harm once someone acts on it, so review before sharing.
 :::
 
 ## When to let it run and when to watch
@@ -104,8 +106,8 @@ Q: The goal is right; the approach is wrong. Which intervention?
 
 S: You have steered the same run four times in three minutes. Each fix creates a new small problem.
 Q: What now?
-+ Stop the run, find the missing B.R.I.E.F. element, rewrite the brief, and start again.
-> The 60-second rule. Past a minute of steering, you are debugging your brief. A run briefed once beats a run steered five times, and you can explain its output.
++ Pause, diagnose why the corrections conflict, and restart affected work if the brief or accumulated context is the cause.
+> Each fix is breaking something else, so this run is no longer converging. Save verified work, diagnose the cause, and restart with a corrected brief if the goal or instructions were the problem.
 ~ Steer once more with a longer, more detailed correction.
 > Sometimes it works. Usually you get a patchwork document whose reasoning you cannot reconstruct.
 - Keep steering. You have already put three minutes into it.
@@ -116,32 +118,32 @@ Q: What now?
 
 Next time you run a lab in this course:
 
-- [ ] Read the plan and find at least one thing to change — even a small one
+- [ ] Read the plan against the four checks; approve it if it meets them, or name a specific correction
 - [ ] Interrupt a run once, deliberately, just to feel the control
 - [ ] After it finishes, trace three numbers back to their source
-- [ ] Check the output row count against the input row count
+- [ ] Account for input records, exclusions, and any grouping that changes the output row count
 
 ```quiz
-Q: You have been correcting a run for three minutes and it is still not on track. What should you do?
+Q: Repeated corrections are creating new errors, and you discover the brief names the wrong source. What should you do?
 - Keep steering; you are nearly there
-+ Stop, fix the brief, restart — you are debugging the brief, not the run
++ Pause, correct the source in the brief, and redo the affected work
 - Switch models
 - Split it into smaller tasks
-> Beyond about a minute of steering, restarting from a corrected brief is both faster and produces a better artefact.
+> The wrong source is the cause. Correct it and recheck affected outputs. Elapsed time alone does not tell you whether to restart.
 
-Q: A report's totals do not reconcile with the source data, and nothing in the report mentions why. Which failure mode is this most likely to be?
+Q: Four records with blank amounts disappeared from a report without an exclusion note. Which failure mode is this?
 - The Eager Rewrite
 + The Silent Exclusion — rows with missing values were dropped from the calculation without being reported
 - The Drift
 - A connector failure
-> Check row counts in against row counts out. It is the fastest test there is.
+> Reconcile included and excluded record IDs against the input. If the report groups records, inspect the group counts too.
 
-Q: Which failure mode cannot be fixed after the fact?
+Q: Which failure mode directly risks destroying the original source files?
 - The Confident Gap
 - The Silent Exclusion
 + The Eager Rewrite — it has already modified or deleted your source files
 - The Drift
-> The other three cost a re-run. This one costs data. Prevent it with copies, narrow scope, and explicit write boundaries.
+> Overwrites and deletion can destroy source data. Backups may allow recovery; protect the originals before running the task.
 
 Q: When reviewing a plan, which problem is most expensive to miss?
 - A step in a slightly odd order

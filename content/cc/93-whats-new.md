@@ -5,7 +5,7 @@ Claude Code ships fast — this page pins the course to a date so you always kno
 ## The headline shifts (Mar–Sep 2026)
 
 ### Permissions grew a brain
-**Auto mode is now the default** on Pro/Max/Team: a classifier model reviews actions and blocks risky ones; Claude then tries another way, and you're asked only after repeated blocks. In Anthropic's study, humans clicking "approve" caught 13.6% of hidden dangerous commands; the classifier caught 89% ([@adocomplete, 2026-08-13](https://x.com/adocomplete/status/2087957562859913525)). Tune it in plain English and audit your rules with `claude auto-mode critique` ([permission modes](https://code.claude.com/docs/en/permission-modes)). Sandboxing matured alongside it: network egress allowlists and automatic credential masking ([sandboxing](https://code.claude.com/docs/en/sandboxing)).
+**Auto mode is the usual starting mode on supported Pro/Max/Team terminal and VS Code sessions**, subject to settings and availability. Its classifier reviews actions; explicit ask rules still prompt, and a classifier decision is not a safety guarantee. Check the [current mode rules](https://code.claude.com/docs/en/permission-modes), including the different defaults for non-interactive and Enterprise/API sessions. Audit custom classifier rules with `claude auto-mode critique`. Separately, [sandboxing](https://code.claude.com/docs/en/sandboxing) provides filesystem and network boundaries, with credential masking available through configuration.
 
 ### One session became a fleet
 - **Background agents** — `claude --bg "task"`, with **`claude agents`** as the control tower for every running/blocked/done background session.

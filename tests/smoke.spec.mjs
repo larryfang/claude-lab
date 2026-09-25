@@ -3,6 +3,8 @@ import { test, expect } from "@playwright/test";
 // Uses every interactive block on every lesson once, on a phone-sized screen, and fails on any browser error.
 test("every interactive block on every lesson works without errors", async ({ page }) => {
   test.setTimeout(240000);
+  // Check the controls without making smooth-scroll duration part of the timing budget.
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));

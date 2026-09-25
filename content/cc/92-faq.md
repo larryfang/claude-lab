@@ -33,7 +33,7 @@ Only in an **isolated sandbox/container or trusted CI**. Never on untrusted code
 ## Plan mode, subagents, hooks
 
 :::details Plan mode won't let Claude edit anything
-That's by design — plan mode blocks file edits until you approve a plan. Approve it (**Yes, and use auto mode** or **Yes, manually approve edits**), or press **Shift+Tab** to leave plan mode without approving.
+That's the normal behaviour: approve the plan (**Yes, and use auto mode** or **Yes, manually approve edits**), or press **Shift+Tab** to leave Plan. Do not rely on the edit block in an interactive terminal where bypass permissions are available; see the [documented exception](https://code.claude.com/docs/en/permission-modes).
 :::
 
 :::details My subagent ignores project rules

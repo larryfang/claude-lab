@@ -46,9 +46,15 @@ Nearly every best practice in this course exists to manage this one constraint. 
 
 ## The mindset that makes it click
 
-> Treat Claude Code like a **fast, capable engineer who just joined your team**: brilliant, tireless, and literal — but with **no memory of your project** beyond what you give it, and a tendency to look "done" before it's verified.
+> Treat Claude Code like a capable teammate who needs current project context and reviewable acceptance criteria. It can carry instructions and auto memory across sessions, but those notes can be incomplete or stale.
+
+Check what has loaded with `/context` and inspect memory with `/memory`. A fresh conversation is not necessarily an empty project memory ([official memory guide](https://code.claude.com/docs/en/memory)).
 
 Your job is to give it context (next module), a plan (the workflow module), and a way to check its work (the verification lesson). Do that and you can hand off real work and walk away.
+
+## Official training to pair with this lab
+
+Use [Claude Code 101](https://academy.claude.com/courses/claude-code-101) for Anthropic's introduction and [AI Fluency for builders](https://academy.claude.com/courses/ai-fluency-for-builders) for the human decisions around AI-assisted work. Here you will practise those decisions on a repository and keep evidence of the result. Claude Lab is independent; its completion certificate is self-issued and is not an Anthropic credential.
 
 ## Lock it in
 
@@ -68,7 +74,7 @@ Q: Vibe coding vs agentic engineering — what is the difference?
 A: Vibe coding is one-shot "just build it" with no plan and no tests. Agentic engineering runs research → plan → execute → review, with you as oversight.
 
 Q: What mental model should you hold for Claude Code?
-A: A fast, capable engineer who just joined your team: brilliant, tireless and literal, with no memory of your project beyond what you give it.
+A: A capable teammate that needs current context and explicit checks. Review persistent instructions and auto memory rather than assuming a new conversation starts with no project knowledge.
 
 Q: What three things must you give Claude to hand off real work?
 A: Context, a plan, and a way to check its work.

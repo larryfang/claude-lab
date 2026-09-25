@@ -71,13 +71,13 @@ Write and run a brief that produces `output/weekly/reality-YYYY-MM-DD.md`:
 - [ ] The exact query run: systems, filters, date range, records matched, records returned
 - [ ] Every data quality problem, itemised with its record ID
 - [ ] Every record excluded from downstream analysis, and why
-- [ ] A trust score out of 10 with reasoning
+- [ ] A data-quality summary with evidence: completeness, freshness, reconciliation failures, and unresolved issues
 - [ ] A status line at the top: date, record counts, and OK or PROBLEM
 
-Rules to include: never estimate a missing value; do not drop a record without flagging it; row count out must equal row count in and both must be stated.
+Rules to include: never estimate a missing value; account for every input record as included, excluded, or deduplicated with a reason; state input and output counts and explain any grouping. A model-generated confidence score is not a substitute for these checks.
 :::
 
-- [ ] It found problems I did not know about
+- [ ] I checked the reported issues against the source; if none were found, the report shows which checks ran
 - [ ] The status line is glanceable
 
 ## Stage 3 — The model (8 min)
@@ -156,9 +156,9 @@ The rule from Module 8 says three runs by hand before you trust a schedule: the 
 ## Stage 8 — Verify and hand over (final)
 
 :::lab The four-check pass
-- [ ] Traced three random numbers to source
-- [ ] Row count in equals row count out
-- [ ] Three quotes and three external claims checked at source
+- [ ] Traced every decision-critical number plus an additional sample to source
+- [ ] Included records, exclusions, duplicates, and group counts reconcile to the input
+- [ ] Quotes for publication and decision-relevant external claims checked at source
 - [ ] Read every flag and resolved it
 - [ ] Every unverifiable number removed or marked
 - [ ] I can explain every conclusion in my own words
@@ -171,7 +171,20 @@ Generate `output/HANDOVER.md` covering: what this does, the Skill and its trigge
 - [ ] Given to one colleague who ran it without me
 :::
 
-## You are done
+## Show the evidence
+
+Keep a short `output/REVIEW.md` with these four items. These are this lab's assessment criteria; ticking Complete records your progress, not an independent assessment.
+
+| Evidence | Ready when |
+|---|---|
+| **One normal run** | The required files exist, open correctly, and reconcile to the source data |
+| **One failure rehearsal** | On a copy of the practice inputs, a missing or empty source produces an explicit PROBLEM report rather than a reassuring summary |
+| **One correction** | A specific finding is fixed and the affected check is rerun; if no fault was found, record the checks instead of inventing one |
+| **One handover** | A colleague can run the workflow and knows which outputs still need human review |
+
+If a required check is missing or failing, keep the workflow in supervised practice. For the failure rehearsal, use copied inputs or a dedicated test task; do not remove a production connector or alter shared source data.
+
+## What you built
 
 Look at what you built. Every concept in this course is in there:
 

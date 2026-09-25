@@ -12,7 +12,7 @@ This is the canonical workflow from Anthropic's own [best-practices guide](https
 ```
 
 ### 1. Explore (in plan mode)
-Enter **plan mode** (Shift+Tab) so Claude can read, search and reason but **not edit your code**. Have it understand the relevant code first:
+Enter **plan mode** (Shift+Tab), with bypass permissions unavailable, to explore before allowing source edits. Have Claude understand the relevant code first:
 
 ```prompt
 Read src/auth and explain how we handle sessions and login. Also check how we manage env vars for secrets. Don't write code yet.
@@ -25,7 +25,7 @@ Ask for a concrete implementation plan:
 I want to add Google OAuth. What files change, what's the session flow, and what are the edge cases? Write a step-by-step plan with a test for each step.
 ```
 
-Press **`Ctrl+G`** to open the plan in your editor and tweak it before Claude proceeds. A plan you can read and edit is a plan you can trust.
+Press **`Ctrl+G`** to open the plan in your editor and tweak it before Claude proceeds. Check its assumptions and tests; readability alone does not make a plan correct.
 
 ### 3. Code
 Switch **out** of plan mode (approve the plan, or press Shift+Tab) and let Claude implement — **verifying against the plan**:
@@ -54,8 +54,8 @@ Commit with a descriptive message and open a PR.
 
 ## Plan mode, deeper
 
-:::concept Why plan mode is the biggest unlock
-Plan mode is **enforced, not advisory** — Claude Code blocks file edits until you approve a plan. Claude can still read, search, and run exploratory commands (read-only ones freely; others through the auto-mode classifier or a prompt). So you get fearless exploration of unfamiliar code and a reviewable plan *before* a single line changes.
+:::concept Know Plan's boundary
+Plan normally blocks source edits while Claude investigates. Interactive terminal sessions with bypass permissions available are an exception. Do not enable bypass for these labs; see the [current permission-mode rules](https://code.claude.com/docs/en/permission-modes). Inspect the plan and the permissions of any commands that run.
 :::
 
 Two dials pair naturally with planning:
@@ -110,8 +110,8 @@ Flip each card, recall the answer *before* you look, and grade yourself honestly
 Q: What are the four phases of the canonical workflow?
 A: Explore → Plan → Code → Commit. Separate *figuring out what to do* from *doing it*.
 
-Q: What does plan mode prevent?
-A: Editing files, until you approve a plan. Claude can still read, search, and run exploratory commands; ones that aren't read-only go to the classifier or a prompt.
+Q: What does Plan normally prevent?
+A: Source edits while planning. This assumes bypass permissions are unavailable; exploratory commands still have their own permission handling.
 
 Q: How do you edit Claude's plan before it proceeds?
 A: Press `Ctrl+G` to open the plan in your editor.
@@ -141,12 +141,12 @@ Q: When should you SKIP planning?
 - Only on Fridays
 > Planning has overhead. Small, obvious changes (typo, log line, rename) don't need it. Plan for uncertainty/multi-file/unfamiliar code.
 
-Q: What does plan mode guarantee?
-+ Claude Code blocks file edits until you approve a plan; Claude can still read, search, and run exploratory commands
+Q: Which description of Plan is accurate for these labs?
++ Source edits are normally blocked while planning; keep bypass permissions unavailable and check command permissions
 - Claude works faster
 - Claude writes tests automatically
 - Nothing; it's advisory
-> Plan mode is enforced, not a suggestion — edits stay blocked until you approve, making it the safe way to explore unfamiliar code and produce a reviewable plan.
+> Plan is useful for exploring first, but an unconditional no-edits guarantee would ignore the documented bypass exception.
 
 Q: For a large, fuzzy feature, a great first step is to…
 + Have Claude interview you, then write a SPEC.md, then implement from it in a fresh session
