@@ -49,10 +49,17 @@ test("search finds words inside lesson bodies and jumps to the section", async (
 
 test("? opens the keyboard shortcut sheet and Escape closes it", async ({ page }) => {
   await page.goto("/#/cowork/welcome");
+  await page.locator("#searchBtn").focus();
   await page.keyboard.press("Shift+Slash");
   await expect(page.locator("#shortcutsModal")).toBeVisible();
+  await expect(page.locator(".shortcuts-close")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.locator(".shortcuts-close")).toBeFocused();
+  await page.keyboard.press("ArrowRight");
+  await expect(page).toHaveURL(/#\/cowork\/welcome$/);
   await page.keyboard.press("Escape");
   await expect(page.locator("#shortcutsModal")).toBeHidden();
+  await expect(page.locator("#searchBtn")).toBeFocused();
 });
 
 for (const width of [390, 320]) {

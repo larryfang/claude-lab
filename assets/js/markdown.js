@@ -193,7 +193,7 @@
     return '<div class="ccsim" data-ccsim data-steps="' + data + '" data-intro="' + introTxt + '">' +
       '<div class="ccsim-bar"><span class="ccsim-dots"><i></i><i></i><i></i></span><span class="ccsim-title">claude — simulated session</span><button class="ccsim-reset" type="button">↻ Reset</button></div>' +
       '<div class="ccsim-screen" data-screen></div>' +
-      '<div class="ccsim-inputline"><span class="ccsim-prompt" data-prompt>❯</span><input class="ccsim-input" data-input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder=""><button class="ccsim-run" data-run type="button">Run ▶</button></div>' +
+      '<div class="ccsim-inputline"><span class="ccsim-prompt" data-prompt aria-hidden="true">❯</span><input class="ccsim-input" data-input type="text" name="simulator-command" aria-label="Command to try in simulator" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder=""><button class="ccsim-run" data-run type="button">Run ▶</button></div>' +
       '<div class="ccsim-note">Guided simulation — type the suggested command exactly, or leave the field blank and choose Run. Always run real commands in your own terminal.</div>' +
       "</div>";
   }

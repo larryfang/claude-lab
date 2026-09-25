@@ -21,6 +21,12 @@ test("every registered lesson renders without browser errors", async ({ page }) 
 test("progress, checklist, quiz, search, theme, and keyboard navigation work", async ({ page }) => {
   await page.goto("/#/cowork/welcome");
   const check = page.locator('.check-item input[type="checkbox"]').first();
+  await check.focus();
+  await expect(check).toBeFocused();
+  await page.keyboard.press("Space");
+  await expect(check).toBeChecked();
+  await page.keyboard.press("Space");
+  await expect(check).not.toBeChecked();
   await page.locator(".check-item").first().click();
   await expect(check).toBeChecked();
   await page.reload();
@@ -47,6 +53,7 @@ test("progress, checklist, quiz, search, theme, and keyboard navigation work", a
 test("guided simulator rejects mismatches and completes expected steps", async ({ page }) => {
   await page.goto("/#/claude-code/cc-tour");
   const sim = page.locator(".ccsim").first();
+  await expect(sim.locator("[data-input]")).toHaveAttribute("aria-label", "Command to try in simulator");
   await sim.locator("[data-input]").fill("not the expected command");
   await sim.locator("[data-run]").click();
   await expect(sim.locator(".ccsim-mismatch")).toBeVisible();

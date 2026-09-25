@@ -12,6 +12,7 @@
   COURSES.forEach(function (c) { byId[c.id] = c; });
   var bodyCache = {};
   var currentCourseId = null;
+  var routeVersion = 0;
 
   /* ---------- Store (with v1 → v2 migration) ---------- */
   function loadRaw(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
@@ -57,6 +58,7 @@
     });
   }
   function lessonHref(cid, lid) { return "#/" + cid + "/" + lid; }
+  function pathLessonHref(cid, lid, pid) { return lessonHref(cid, lid) + (pid ? "?path=" + encodeURIComponent(pid) : ""); }
   function courseHref(cid) { return "#/" + cid; }
   function fastPathHref(cid, pid) { return "#/" + cid + "/path/" + pid; }
   function fastPathMinutes(c, path) {
@@ -362,13 +364,13 @@
     var s = cstate(cid);
     var firstOpen = path.lessons.filter(function (id) { return !s.completed[id]; })[0] || path.lessons[0];
     var html = '<div class="lesson-top"><a class="crumb" href="#/">All courses</a><span>›</span><a class="crumb" href="' + courseHref(c.id) + '">' + c.emoji + ' ' + c.title + '</a><span>›</span><span class="crumb">' + path.emoji + ' ' + esc(path.title) + '</span></div>';
-    html += '<section class="path-hero"><span class="hero-eyebrow">' + path.emoji + ' Curated learning route</span><h1>' + esc(path.title) + '</h1><p class="hero-sub">' + esc(path.desc) + '</p><p class="path-audience"><strong>Best for:</strong> ' + esc(path.audience) + '</p><div class="hero-cta"><a class="btn btn-primary" href="' + lessonHref(cid, firstOpen) + '">' + (s.completed[firstOpen] ? 'Review route' : 'Start or resume') + ' →</a><a class="btn btn-ghost" href="' + courseHref(cid) + '">← Course home</a></div></section>';
+    html += '<section class="path-hero"><span class="hero-eyebrow">' + path.emoji + ' Curated learning route</span><h1>' + esc(path.title) + '</h1><p class="hero-sub">' + esc(path.desc) + '</p><p class="path-audience"><strong>Best for:</strong> ' + esc(path.audience) + '</p><div class="hero-cta"><a class="btn btn-primary" href="' + pathLessonHref(cid, firstOpen, pid) + '">' + (s.completed[firstOpen] ? 'Review route' : 'Start or resume') + ' →</a><a class="btn btn-ghost" href="' + courseHref(cid) + '">← Course home</a></div></section>';
     html += '<div class="path-summary"><strong>' + path.lessons.length + ' lessons</strong><span>·</span><strong>about ' + fastPathMinutes(c, path) + ' minutes</strong><span>·</span><span>complete in this order</span></div>';
     html += '<ol class="path-list">';
     path.lessons.forEach(function (id, index) {
       var info = lessonInfo(c, id); if (!info) return;
       var done = !!s.completed[id];
-      html += '<li><a href="' + lessonHref(cid, id) + '"><span class="path-step">' + (done ? '✓' : index + 1) + '</span><span class="path-copy"><strong>' + esc(info.lesson.title) + '</strong><small>' + esc(info.module.title) + ' · ' + info.lesson.minutes + ' min</small></span><span class="path-arrow">→</span></a></li>';
+      html += '<li><a href="' + pathLessonHref(cid, id, pid) + '"><span class="path-step">' + (done ? '✓' : index + 1) + '</span><span class="path-copy"><strong>' + esc(info.lesson.title) + '</strong><small>' + esc(info.module.title) + ' · ' + info.lesson.minutes + ' min</small></span><span class="path-arrow">→</span></a></li>';
     });
     html += '</ol>';
     $("#content").innerHTML = html;
@@ -549,14 +551,16 @@
     return fetch("content/" + file, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); }).then(function (t) { bodyCache[file] = t; return t; });
   }
 
-  function renderLesson(cid, id, section) {
+  function renderLesson(cid, id, section, pathId) {
     var c = byId[cid]; if (!c) { location.hash = "#/"; return; }
     var info = lessonInfo(c, id); if (!info) { location.hash = courseHref(cid); return; }
     currentCourseId = cid;
     var l = info.lesson, m = info.module;
-    var order = flatOrder(c), pos = order.indexOf(id);
+    var path = (c.fastPaths || []).filter(function (x) { return x.id === pathId && x.lessons.indexOf(id) !== -1; })[0];
+    var order = path ? path.lessons : flatOrder(c), pos = order.indexOf(id);
     var prevId = pos > 0 ? order[pos - 1] : null;
     var nextId = pos < order.length - 1 ? order[pos + 1] : null;
+    var requestVersion = routeVersion;
 
     $("#content").innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading lesson…</p></div>';
     window.scrollTo(0, 0);
@@ -565,6 +569,7 @@
     document.title = l.title + " · " + c.title;
 
     fetchBody(l.file).then(function (md) {
+      if (requestVersion !== routeVersion) return;
       var bodyHtml = MD.render(md, { lessonId: id });
       var s = cstate(cid);
       var html = "";
@@ -579,20 +584,21 @@
       var modIdx = c.modules.indexOf(m) + 1, lessonIdx = m.lessons.indexOf(l) + 1;
       html += '<div class="lesson-pos">' + (isRef(m) ? "Reference" : "Module " + modIdx) + " · Lesson " + lessonIdx + " of " + m.lessons.length + '<span class="lesson-pos-dots" aria-hidden="true">' +
         m.lessons.map(function (x) { return '<i class="' + (x.id === id ? "now" : s.completed[x.id] ? "done" : "") + '"></i>'; }).join("") + "</span></div>";
+      if (path) html += '<div class="path-context"><span>' + path.emoji + ' <strong>' + esc(path.title) + '</strong></span><span class="path-step-count">Step ' + (pos + 1) + ' of ' + order.length + '</span><a href="' + fastPathHref(cid, path.id) + '">View route</a></div>';
       html += '<div class="lesson-grid"><div class="lesson-main">';
       html += '<article class="lesson">' + bodyHtml + "</article>";
 
       html += '<div class="lesson-foot">';
       if (!isRef(m)) {
         var done = !!s.completed[id];
-        html += '<div class="complete-row"><button class="complete-btn' + (done ? " done" : "") + '" id="completeBtn">' + completeLabel(done, !!nextId) + "</button>";
+        html += '<div class="complete-row"><button class="complete-btn' + (done ? " done" : "") + '" id="completeBtn">' + completeLabel(done, !!nextId, !!path) + "</button>";
         html += '<span class="complete-hint">' + completeHint(done, !!nextId) + "</span></div>";
       }
       html += '<div class="pager">';
-      if (prevId) { var pi = lessonInfo(c, prevId); html += '<a href="' + lessonHref(c.id, prevId) + '"><span class="dir">← Previous</span><span class="ptitle">' + pi.lesson.title + "</span></a>"; }
-      else { html += '<a href="' + courseHref(c.id) + '"><span class="dir">← Back</span><span class="ptitle">Course home</span></a>'; }
-      if (nextId) { var ni = lessonInfo(c, nextId); html += '<a class="next" href="' + lessonHref(c.id, nextId) + '"><span class="dir">Next →</span><span class="ptitle">' + ni.lesson.title + "</span></a>"; }
-      else { html += '<a class="next" href="' + courseHref(c.id) + '"><span class="dir">Done →</span><span class="ptitle">Course home</span></a>'; }
+      if (prevId) { var pi = lessonInfo(c, prevId); html += '<a href="' + pathLessonHref(c.id, prevId, path && path.id) + '"><span class="dir">← Previous</span><span class="ptitle">' + pi.lesson.title + "</span></a>"; }
+      else { html += '<a href="' + (path ? fastPathHref(c.id, path.id) : courseHref(c.id)) + '"><span class="dir">← Back</span><span class="ptitle">' + (path ? "Route overview" : "Course home") + "</span></a>"; }
+      if (nextId) { var ni = lessonInfo(c, nextId); html += '<a class="next" href="' + pathLessonHref(c.id, nextId, path && path.id) + '"><span class="dir">Next →</span><span class="ptitle">' + ni.lesson.title + "</span></a>"; }
+      else { html += '<a class="next" href="' + (path ? fastPathHref(c.id, path.id) : courseHref(c.id)) + '"><span class="dir">Done →</span><span class="ptitle">' + (path ? "Route overview" : "Course home") + "</span></a>"; }
       html += "</div></div>";
       html += '</div><aside class="toc-rail"></aside></div>';
 
@@ -600,13 +606,13 @@
       $("#content").classList.add("with-toc");
       setActiveNav(id);
       wireLesson(cid, id);
-      buildToc(cid, id);
-      linkTerms(c, id);
+      buildToc(cid, id, path && path.id);
+      linkTerms(c, id, requestVersion);
       store.last = { c: cid, l: id, t: Date.now() }; save();
       if (section) { var target = document.getElementById(section); if (target) target.scrollIntoView(); }
       updateReadProgress();
-      var cb = $("#completeBtn"); if (cb) cb.addEventListener("click", function () { toggleComplete(cid, id); });
-    }).catch(function (err) { $("#content").innerHTML = errorHtml(l.file, err); });
+      var cb = $("#completeBtn"); if (cb) cb.addEventListener("click", function () { toggleComplete(cid, id, path && path.id); });
+    }).catch(function (err) { if (requestVersion === routeVersion) $("#content").innerHTML = errorHtml(l.file, err); });
   }
 
   /* ---------- Glossary terms: first mention in a lesson opens its definition ---------- */
@@ -635,10 +641,10 @@
     // any case, plus a plural ("connectors", "worktrees") for terms ending in a letter
     return new RegExp("(^|[^\\w-])(" + body + (/[a-z]$/i.test(a) ? "(?:e?s)?" : "") + ")(?![\\w-])", TERM_EXACT_CASE.test(a) ? "" : "i");
   }
-  function linkTerms(c, id) {
+  function linkTerms(c, id, requestVersion) {
     if (!c.glossary || id === c.glossary) return;
     loadGlossary(c).then(function (terms) {
-      var article = $("article.lesson"); if (!article || !terms.length || currentCourseId !== c.id) return;
+      var article = $("article.lesson"); if (!article || !terms.length || requestVersion !== routeVersion) return;
       var skip = "h1,h2,h3,h4,code,pre,a,button,textarea,label,.quiz,.flash,.scenario,.order,.spot,.lint,.reflect,.ccsim,.prompt-card,.codeblock,.callout-title,.lab-head";
       var linked = 0;
       terms.slice().sort(function (a, b) { return b.aliases[0].length - a.aliases[0].length; }).forEach(function (t) {
@@ -695,14 +701,14 @@
 
   /* ---------- On this page + reading progress ---------- */
   var tocObserver = null;
-  function buildToc(cid, id) {
+  function buildToc(cid, id, pathId) {
     if (tocObserver) { tocObserver.disconnect(); tocObserver = null; }
     var rail = $(".toc-rail"), heads = $all("article.lesson h2");
     if (!rail || heads.length < 2) return;
     var kit = [[".quiz-q", "🧩", "quiz question"], [".flash", "🃏", "flashcard deck"], [".lab-box", "🧪", "lab"], [".ccsim", "⌨️", "simulation"], ["[data-scn]", "🧭", "scenario"], [".order, .spot, .lint", "🎯", "exercise"], [".reflect", "🪞", "reflection"]]
       .map(function (k) { var n = $all(k[0], $("article.lesson")).length; return n ? '<li><span aria-hidden="true">' + k[1] + "</span>" + n + " " + k[2] + (n === 1 ? "" : "s") + "</li>" : ""; }).join("");
     rail.innerHTML = '<nav class="toc" aria-label="On this page"><p class="toc-title">On this page</p><ol>' +
-      heads.map(function (h) { return '<li><a href="' + lessonHref(cid, id) + '" data-target="' + h.id + '">' + esc(h.textContent) + "</a></li>"; }).join("") + "</ol>" +
+      heads.map(function (h) { return '<li><a href="' + pathLessonHref(cid, id, pathId) + '" data-target="' + h.id + '">' + esc(h.textContent) + "</a></li>"; }).join("") + "</ol>" +
       (kit ? '<p class="toc-title">In this lesson</p><ul class="toc-kit">' + kit + "</ul>" : "") + "</nav>";
     $all(".toc a", rail).forEach(function (a) {
       a.addEventListener("click", function (e) { e.preventDefault(); var t = document.getElementById(a.dataset.target); if (t) t.scrollIntoView({ behavior: "smooth" }); });
@@ -737,25 +743,27 @@
         : "<p>Tried <code>content/" + file + "</code> → <code>" + (err && err.message ? err.message : err) + "</code>.</p>") + "</div>";
   }
 
-  function completeLabel(done, hasNext) { return done ? "✓ Completed — nice!" : hasNext ? "✓ Complete and continue →" : "✓ Complete the course"; }
+  function completeLabel(done, hasNext, onPath) { return done ? "✓ Completed — nice!" : hasNext ? "✓ Complete and continue →" : onPath ? "✓ Complete this route" : "✓ Complete the course"; }
   function completeHint(done, hasNext) { return done ? "Select it again to mark the lesson not done." : "Do the activities above first. This records your progress" + (hasNext ? " and opens the next lesson." : "."); }
-  function toggleComplete(cid, id) {
+  function toggleComplete(cid, id, pathId) {
     var c = byId[cid], s = cstate(cid);
     var was = !!s.completed[id];
     var prev = earnedBadges(c).map(function (b) { return b.id; });
     if (was) delete s.completed[id]; else { s.completed[id] = true; touch(); }
     if (!was && progressPct(c).pct === 100 && !s.doneAt) s.doneAt = WIDGETS.srs.today();
     save();
-    var order = flatOrder(c), nextId = order[order.indexOf(id) + 1] || null;
+    var path = (c.fastPaths || []).filter(function (x) { return x.id === pathId && x.lessons.indexOf(id) !== -1; })[0];
+    var order = path ? path.lessons : flatOrder(c), nextId = order[order.indexOf(id) + 1] || null;
     var cb = $("#completeBtn");
-    if (cb) { cb.classList.toggle("done", !was); cb.textContent = completeLabel(!was, !!nextId); var hint = $(".complete-hint"); if (hint) hint.textContent = completeHint(!was, !!nextId); }
+    if (cb) { cb.classList.toggle("done", !was); cb.textContent = completeLabel(!was, !!nextId, !!path); var hint = $(".complete-hint"); if (hint) hint.textContent = completeHint(!was, !!nextId); }
     var navA = $('.nav-link[data-lesson="' + id + '"]'); if (navA) navA.classList.toggle("done", !was);
     refreshTopProgress(cid); refreshNavMeters(c);
     if (!was) {
       var fresh = earnedBadges(c).filter(function (b) { return prev.indexOf(b.id) === -1; });
       if (fresh.length) { burstConfetti(); toast("🎉 Badge unlocked: " + fresh[0].emoji + " " + fresh[0].label); }
       else toast("✓ Lesson complete");
-      if (nextId) location.hash = lessonHref(cid, nextId);
+      if (nextId) location.hash = pathLessonHref(cid, nextId, path && path.id);
+      else if (path) location.hash = fastPathHref(cid, path.id);
     }
   }
 
@@ -1010,22 +1018,42 @@
   });
 
   /* ---------- Shortcuts sheet ---------- */
-  function openShortcuts() { var m = $("#shortcutsModal"); m.hidden = false; $(".shortcuts-close", m).focus(); }
-  function closeShortcuts() { var m = $("#shortcutsModal"); if (m && !m.hidden) m.hidden = true; }
+  var shortcutsReturnFocus = null;
+  function openShortcuts() {
+    var m = $("#shortcutsModal");
+    if (m.hidden) shortcutsReturnFocus = document.activeElement;
+    m.hidden = false;
+    $(".shortcuts-close", m).focus();
+  }
+  function closeShortcuts() {
+    var m = $("#shortcutsModal");
+    if (!m || m.hidden) return;
+    m.hidden = true;
+    if (shortcutsReturnFocus && shortcutsReturnFocus.isConnected) shortcutsReturnFocus.focus();
+    shortcutsReturnFocus = null;
+  }
   $all("[data-close-shortcuts]").forEach(function (el) { el.addEventListener("click", closeShortcuts); });
+  $("#shortcutsModal").addEventListener("keydown", function (e) {
+    if (e.key !== "Tab") return;
+    e.preventDefault();
+    $(".shortcuts-close", e.currentTarget).focus();
+  });
 
   /* ---------- Keyboard ---------- */
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") { var wasOpen = openTerm; closeTerm(); if (wasOpen) wasOpen.focus(); closeSearch(); closeNav(); closeShortcuts(); return; }
+    if (!$("#shortcutsModal").hidden || !$("#searchModal").hidden) return;
     var typing = /input|textarea|select/i.test(e.target.tagName || "") || e.target.isContentEditable;
     if (e.key === "/" && !typing) { e.preventDefault(); openSearch(); return; }
     if (typing) return;
     if (e.key === "?") { e.preventDefault(); openShortcuts(); return; }
     var m = location.hash.split("?")[0].match(/#\/([^/]+)\/(.+)$/);
     if (m && byId[m[1]]) {
-      var c = byId[m[1]], order = flatOrder(c), pos = order.indexOf(m[2]);
-      if (e.key === "ArrowRight" && pos > -1 && pos < order.length - 1) location.hash = lessonHref(c.id, order[pos + 1]);
-      if (e.key === "ArrowLeft" && pos > 0) location.hash = lessonHref(c.id, order[pos - 1]);
+      var c = byId[m[1]], pathId = new URLSearchParams(location.hash.split("?")[1] || "").get("path");
+      var path = (c.fastPaths || []).filter(function (x) { return x.id === pathId && x.lessons.indexOf(m[2]) !== -1; })[0];
+      var order = path ? path.lessons : flatOrder(c), pos = order.indexOf(m[2]);
+      if (e.key === "ArrowRight" && pos > -1 && pos < order.length - 1) location.hash = pathLessonHref(c.id, order[pos + 1], path && path.id);
+      if (e.key === "ArrowLeft" && pos > 0) location.hash = pathLessonHref(c.id, order[pos - 1], path && path.id);
     }
   });
 
@@ -1045,8 +1073,9 @@
 
   /* ---------- Router ---------- */
   function route() {
+    routeVersion++;
     var raw = location.hash.replace(/^#\/?/, "");
-    var query = raw.split("?")[1] || "", section = (query.match(/(?:^|&)s=([^&]+)/) || [])[1];
+    var query = new URLSearchParams(raw.split("?")[1] || ""), section = query.get("s"), pathId = query.get("path");
     raw = raw.split("?")[0];
     var parts = raw.split("/").filter(Boolean);
     $("#content").classList.remove("with-toc");
@@ -1063,7 +1092,7 @@
       if (parts[1] === "path" && parts[2]) { renderFastPath(c.id, parts.slice(2).join("/")); return; }
       if (parts[1] === "certificate") { renderCertificate(c.id); return; }
       if (parts[1] === "lesson" && parts[2]) { renderLesson(c.id, parts.slice(2).join("/")); return; }
-      if (parts[1]) { renderLesson(c.id, parts.slice(1).join("/"), section && decodeURIComponent(section)); return; }
+      if (parts[1]) { renderLesson(c.id, parts.slice(1).join("/"), section, pathId); return; }
       renderCourseHome(c.id); return;
     }
     renderHub();
