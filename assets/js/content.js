@@ -18,6 +18,7 @@ var COWORK_COURSE = {
   tagline: "Stop prompting. Start delegating. A hands-on lab that turns Cowork into a teammate who does your account research, launch kits, PRDs, and variance packs — no code required.",
   audience: "AEs · GTM & PMM · Product managers · Finance",
   level: "No code required",
+  glossary: "glossary",
   fastPaths: [
     { id: "essentials", emoji: "⚡", title: "90-minute essentials", audience: "Anyone new to Cowork", desc: "Learn the safe delegation loop: set up, brief, steer, produce a real deliverable, and verify it.", lessons: ["welcome", "what-is-cowork", "lab-setup", "lab-first-run", "the-brief", "deliverables", "steering", "verify"] },
     { id: "sales", emoji: "💼", title: "Sales quick start", audience: "AEs and sales engineers", desc: "Get from safe setup to a defensible pre-call brief and pipeline review.", lessons: ["welcome", "what-is-cowork", "lab-setup", "the-brief", "connectors-trust", "sales-plays", "lab-account-brief", "lab-pipeline", "verify"] },

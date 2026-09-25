@@ -66,3 +66,23 @@ for (const width of [390, 320]) {
     }
   });
 }
+
+test("glossary terms in a lesson open a definition that can join the review deck", async ({ page }) => {
+  await page.goto("/#/cowork/connectors-trust");
+  const term = page.locator("article.lesson .term", { hasText: "MCP" }).first();
+  await expect(term).toBeVisible();
+  await expect(page.locator("article.lesson :is(h1, h2, h3, code, a, .quiz, .flash, .scenario) .term")).toHaveCount(0);
+  await term.click();
+  const pop = page.locator("#termPop");
+  await expect(pop).toBeVisible();
+  await expect(pop).toContainText("open standard");
+  await expect(term).toHaveAttribute("aria-expanded", "true");
+  await pop.locator(".term-add").click();
+  const cards = await page.evaluate(() => JSON.parse(localStorage.getItem("claudelab.v2")).cards);
+  expect(Object.keys(cards).some((k) => k.startsWith("glossary:"))).toBe(true);
+  await page.keyboard.press("Escape");
+  await expect(pop).toBeHidden();
+  await page.goto("/#/cowork/glossary");
+  await expect(page.locator("article.lesson h1")).toHaveText("Glossary");
+  await expect(page.locator("article.lesson .term")).toHaveCount(0);
+});

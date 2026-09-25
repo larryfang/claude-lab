@@ -546,12 +546,93 @@
       setActiveNav(id);
       wireLesson(cid, id);
       buildToc(cid, id);
+      linkTerms(c, id);
       store.last = { c: cid, l: id, t: Date.now() }; save();
       if (section) { var target = document.getElementById(section); if (target) target.scrollIntoView(); }
       updateReadProgress();
       var cb = $("#completeBtn"); if (cb) cb.addEventListener("click", function () { toggleComplete(cid, id); });
     }).catch(function (err) { $("#content").innerHTML = errorHtml(l.file, err); });
   }
+
+  /* ---------- Glossary terms: first mention in a lesson opens its definition ---------- */
+  var TERM_SKIP = /^(cowork|brief|deliverable|the plan|project|decay|the drift|claude\.ai|claude desktop|claude code|claude for excel|web and mobile|observed)/i;
+  var glossaryCache = {};
+  function loadGlossary(c) {
+    var info = c.glossary && lessonInfo(c, c.glossary);
+    if (!info) return Promise.resolve([]);
+    if (glossaryCache[c.id]) return Promise.resolve(glossaryCache[c.id]);
+    return fetchBody(info.lesson.file).then(function (md) {
+      var terms = [];
+      md.replace(/^\*\*(.+?)\*\*\s+—\s+(.+)$/gm, function (m, name, def) {
+        if (TERM_SKIP.test(name)) return m;
+        var aliases = [], paren = name.match(/^(.+?)\s*\((.+)\)$/);
+        if (paren) aliases.push(paren[1].trim(), paren[2].trim()); else aliases.push(name.replace(/^The\s+/, ""));
+        def = def.trim(); terms.push({ name: name, def: def.charAt(0).toUpperCase() + def.slice(1), aliases: aliases });
+        return m;
+      });
+      return (glossaryCache[c.id] = terms);
+    }).catch(function () { return []; });
+  }
+  function aliasRe(a) {
+    var body = a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    // single words must match their capitalisation (Skill, Plugin), phrases match any case
+    return new RegExp("(^|[^\\w-])(" + body + ")(?![\\w-])", /\s/.test(a) ? "i" : "");
+  }
+  function linkTerms(c, id) {
+    if (!c.glossary || id === c.glossary) return;
+    loadGlossary(c).then(function (terms) {
+      var article = $("article.lesson"); if (!article || !terms.length || currentCourseId !== c.id) return;
+      var skip = "h1,h2,h3,h4,code,pre,a,button,textarea,label,.quiz,.flash,.scenario,.order,.spot,.lint,.reflect,.ccsim,.prompt-card,.codeblock,.callout-title,.lab-head";
+      var linked = 0;
+      terms.slice().sort(function (a, b) { return b.aliases[0].length - a.aliases[0].length; }).forEach(function (t) {
+        if (linked >= 12) return;
+        var walker = document.createTreeWalker(article, NodeFilter.SHOW_TEXT, { acceptNode: function (n) { return n.parentElement.closest(skip) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; } });
+        var node, done = false;
+        while (!done && (node = walker.nextNode())) {
+          t.aliases.some(function (a) {
+            var m = aliasRe(a).exec(node.nodeValue); if (!m) return false;
+            var start = m.index + m[1].length, range = document.createRange();
+            range.setStart(node, start); range.setEnd(node, start + m[2].length);
+            var btn = document.createElement("button");
+            btn.type = "button"; btn.className = "term"; btn.dataset.term = t.name; btn.setAttribute("aria-expanded", "false"); btn.setAttribute("aria-controls", "termPop");
+            range.surroundContents(btn);
+            linked++; done = true; return true;
+          });
+        }
+      });
+      article.dataset.terms = String(linked);
+    });
+  }
+  function termPop() {
+    var pop = $("#termPop");
+    if (!pop) { pop = document.createElement("div"); pop.id = "termPop"; pop.className = "term-pop"; pop.setAttribute("role", "dialog"); pop.hidden = true; document.body.appendChild(pop); }
+    return pop;
+  }
+  var openTerm = null;
+  function closeTerm() { var pop = $("#termPop"); if (pop) pop.hidden = true; if (openTerm) { openTerm.setAttribute("aria-expanded", "false"); openTerm = null; } }
+  function showTerm(btn) {
+    var c = byId[currentCourseId]; if (!c) return;
+    var t = (glossaryCache[c.id] || []).filter(function (x) { return x.name === btn.dataset.term; })[0]; if (!t) return;
+    if (openTerm === btn) { closeTerm(); return; }
+    closeTerm();
+    var pop = termPop(), cardId = "glossary:" + MD.hash(c.id + ":" + t.name), has = !!(store.cards || {})[cardId];
+    pop.setAttribute("aria-label", t.name);
+    pop.innerHTML = '<p class="term-name">' + MD.parseInline(t.name) + '</p><p class="term-def">' + MD.parseInline(t.def) + '</p><div class="term-actions"><button class="term-add btn-sm" type="button"' + (has ? " disabled" : "") + ">" + (has ? "✓ In your review deck" : "＋ Add to review deck") + '</button><a href="' + lessonHref(c.id, c.glossary) + '">Full glossary →</a></div>';
+    pop.hidden = false; openTerm = btn; btn.setAttribute("aria-expanded", "true");
+    var r = btn.getBoundingClientRect(), w = Math.min(340, window.innerWidth - 24);
+    pop.style.width = w + "px";
+    pop.style.left = Math.max(12, Math.min(r.left + window.scrollX, window.scrollX + window.innerWidth - w - 12)) + "px";
+    pop.style.top = (r.bottom + window.scrollY + 8) + "px";
+    $(".term-add", pop).addEventListener("click", function (e) {
+      WIDGETS.saveCard({ store: store, save: save, touch: touch, course: c.id, lesson: c.glossary }, { id: cardId, f: MD.parseInline(t.name), b: MD.parseInline(t.def), c: c.id, l: c.glossary }, "good");
+      e.target.disabled = true; e.target.textContent = "✓ In your review deck"; buildHubNavIfNeeded(); toast("🃏 " + t.name + " added to your review deck");
+    });
+  }
+  function buildHubNavIfNeeded() { var c = byId[currentCourseId]; if (c) { var active = $(".nav-link.active"); buildCourseNav(c, active ? active.dataset.lesson : null); } }
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest(".term"); if (t) { showTerm(t); return; }
+    if (openTerm && !e.target.closest("#termPop")) closeTerm();
+  });
 
   /* ---------- On this page + reading progress ---------- */
   var tocObserver = null;
@@ -866,7 +947,7 @@
 
   /* ---------- Keyboard ---------- */
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") { closeSearch(); closeNav(); closeShortcuts(); return; }
+    if (e.key === "Escape") { var wasOpen = openTerm; closeTerm(); if (wasOpen) wasOpen.focus(); closeSearch(); closeNav(); closeShortcuts(); return; }
     var typing = /input|textarea|select/i.test(e.target.tagName || "") || e.target.isContentEditable;
     if (e.key === "/" && !typing) { e.preventDefault(); openSearch(); return; }
     if (typing) return;
@@ -902,6 +983,7 @@
     $("#content").classList.remove("with-toc");
     if (tocObserver) { tocObserver.disconnect(); tocObserver = null; }
     closeShortcuts();
+    closeTerm();
     if (!parts.length) { renderHub(); return; }
     if (parts[0] === "review") { renderReview(); return; }
     if (parts[0] === "notebook") { renderNotebook(); return; }
