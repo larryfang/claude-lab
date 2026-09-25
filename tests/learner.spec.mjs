@@ -71,3 +71,35 @@ test("certificate is locked until the course is complete, then personalised", as
   await page.locator("#certName").fill("Sam Rivera");
   await expect(page.locator(".cert-name")).toHaveText("Sam Rivera");
 });
+
+test("daily 3 draws questions from completed lessons, stays stable, and records the score", async ({ page }) => {
+  await seed(page, { courses: {} });
+  await page.goto("/#/");
+  await expect(page.locator(".daily")).toHaveCount(0);
+  await seed(page, { courses: { cowork: { completed: { "the-brief": true, steering: true } } } });
+  const qs = page.locator(".daily .quiz-q");
+  await expect(qs).toHaveCount(3);
+  const hrefs = await page.locator(".daily .quiz-from a").evaluateAll((els) => els.map((a) => a.getAttribute("href")));
+  expect(hrefs).toHaveLength(3);
+  for (const h of hrefs) expect(["#/cowork/the-brief", "#/cowork/steering"]).toContain(h);
+  const first = await qs.allInnerTexts();
+  for (let i = 0; i < 3; i++) await qs.nth(i).locator('.quiz-opt[data-correct="1"]').click();
+  await expect(page.locator(".daily .quiz-score")).toContainText("3 / 3");
+  const day = await page.evaluate(() => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); });
+  expect((await stored(page)).daily[day]).toMatchObject({ c: 3, t: 3 });
+  await page.reload();
+  await expect(page.locator(".daily .quiz-q")).toHaveCount(3);
+  expect(await page.locator(".daily .quiz-q").allInnerTexts()).toEqual(first);
+  await expect(page.locator(".daily-done")).toContainText("3 / 3");
+});
+
+test("progress page lists weak spots: low quiz scores and shaky cards", async ({ page }) => {
+  await seed(page, { courses: { cowork: { quiz: { "steering:0": { c: 1, t: 4 }, "the-brief:0": { c: 4, t: 4 } } } },
+    cards: { "verify:a": { f: "F", b: "B", c: "cowork", l: "verify", box: 1, due: "2000-01-01" } } });
+  await page.goto("/#/me");
+  const items = page.locator(".weak-item");
+  await expect(items).toHaveCount(2);
+  await expect(items.first()).toHaveAttribute("href", "#/cowork/steering");
+  await expect(items.first()).toContainText("1 / 4");
+  await expect(items.nth(1)).toHaveAttribute("href", "#/review");
+});

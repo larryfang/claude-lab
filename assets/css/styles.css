@@ -1022,3 +1022,21 @@ a { color: var(--link); text-underline-offset: 2px; }
 .term-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: .82rem; }
 .term-actions .btn-sm { font-size: .78rem; padding: 6px 11px; }
 .term-actions .btn-sm:disabled { opacity: .7; cursor: default; filter: none; }
+
+/* Daily 3 + weak spots */
+.daily-slot:empty { display: none; }
+.daily { margin: 26px 0 8px; padding: 18px 20px 6px; border-radius: var(--radius-lg); border: 1px solid color-mix(in srgb, var(--clay) 35%, var(--line)); background: radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--clay) 12%, transparent), transparent 60%), var(--surface); box-shadow: var(--shadow-sm); }
+.daily-head { display: flex; flex-direction: column; gap: 3px; }
+.daily-head span:last-child { font-size: .86rem; color: var(--muted); }
+.daily .quiz { border: none; box-shadow: none; padding: 0; margin: 4px 0 12px; background: none; }
+.daily .quiz-head { display: none; }
+.daily-done { margin: 10px 0 0; padding: 8px 12px; border-radius: 10px; background: var(--tip-bg); color: var(--tip); font-weight: 600; font-size: .86rem; }
+.quiz-from { margin: 8px 0 0; font-size: .78rem; color: var(--muted); }
+.quiz-from a { text-decoration: none; font-weight: 600; }
+.weak-list { display: flex; flex-direction: column; gap: 8px; }
+.weak-item { display: flex; align-items: center; gap: 14px; padding: 13px 16px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); color: inherit; text-decoration: none; transition: border-color .15s, transform .15s; }
+.weak-item:hover { border-color: var(--clay); transform: translateX(3px); }
+.weak-icon { font-size: 1.3rem; }
+.weak-item > span:nth-child(2) { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.weak-item small { color: var(--muted); font-size: .8rem; }
+.weak-go { color: var(--clay-deep); font-weight: 700; }

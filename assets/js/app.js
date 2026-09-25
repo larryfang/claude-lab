@@ -197,6 +197,7 @@
       '<div data-stat="hours"><b>' + Math.round(minutes / 60) + "</b><span>hours of practice</span></div>" +
       '<div data-stat="tracks"><b>' + COURSES.length + "</b><span>tracks</span></div></div>";
 
+    html += '<section class="daily-slot" id="dailySlot" aria-live="polite"></section>';
     html += '<h2 class="section-title">Choose your track</h2><p class="section-desc">Two hands-on courses. Start wherever fits you today — progress in each is saved separately.</p>';
     html += '<div class="course-grid">';
     COURSES.forEach(function (c) {
@@ -228,6 +229,56 @@
     html += '<footer class="hub-foot"><span>Open source &amp; built to be remixed. <a href="' + SITE.repo + '" target="_blank" rel="noopener">Fork it on GitHub</a> to make an internal edition for your team.</span><span class="kbd-hint">Press <kbd>?</kbd> for shortcuts</span></footer>';
     $("#content").innerHTML = html;
     window.scrollTo(0, 0);
+    fillDaily();
+  }
+
+  /* ---------- Daily 3: retrieval practice from finished lessons ---------- */
+  function fillDaily() {
+    var slot = $("#dailySlot"); if (!slot) return;
+    var done = [];
+    COURSES.forEach(function (c) { countable(c).forEach(function (x) { if (cstate(c.id).completed[x.lesson.id]) done.push({ c: c, lesson: x.lesson }); }); });
+    if (!done.length) { slot.remove(); return; }
+    Promise.all(done.map(function (d) { return fetchBody(d.lesson.file).then(function (md) { return { d: d, md: md }; }, function () { return null; }); })).then(function (list) {
+      if (!slot.isConnected) return;
+      var pool = [], re = /```quiz\s*\n([\s\S]*?)```/g;
+      list.forEach(function (item) {
+        if (!item) return;
+        var m; re.lastIndex = 0;
+        while ((m = re.exec(item.md))) m[1].split(/^(?=Q:)/m).forEach(function (block) { if (/^Q:/.test(block)) pool.push({ text: block.trim(), c: item.d.c, lesson: item.d.lesson }); });
+      });
+      if (!pool.length) { slot.remove(); return; }
+      // same three questions all day: shuffle with a seed taken from today's date
+      var day = WIDGETS.srs.today(), seed = parseInt(MD.hash(day), 36) % 2147483647 || 7;
+      for (var k = pool.length - 1; k > 0; k--) { seed = (seed * 16807) % 2147483647; var j = seed % (k + 1), t = pool[k]; pool[k] = pool[j]; pool[j] = t; }
+      var picked = pool.slice(0, 3), prev = (store.daily || {})[day];
+      slot.innerHTML = '<div class="daily"><div class="daily-head"><span class="widget-kicker">🎯 Your daily ' + picked.length + '</span><span>Questions from lessons you have finished. Recalling an answer is what makes it stick. New questions tomorrow.</span></div>' +
+        (prev ? '<p class="daily-done">Done today: ' + prev.c + " / " + prev.t + ". Try again if you like — your best score counts.</p>" : "") +
+        MD.render("```quiz\n" + picked.map(function (p) { return p.text; }).join("\n\n") + "\n```") + "</div>";
+      $all(".daily .quiz-q").forEach(function (q, i) {
+        var p = picked[i], from = document.createElement("p");
+        from.className = "quiz-from"; from.innerHTML = 'From <a href="' + lessonHref(p.c.id, p.lesson.id) + '">' + p.c.emoji + " " + esc(p.lesson.title) + "</a>";
+        q.appendChild(from);
+      });
+    });
+  }
+
+  /* ---------- Weak spots: what to practise next ---------- */
+  function weakSpots() {
+    var quizzes = [], shaky = {};
+    COURSES.forEach(function (c) {
+      var s = cstate(c.id);
+      Object.keys(s.quiz).forEach(function (k) {
+        var q = s.quiz[k], lid = k.split(":")[0], info = lessonInfo(c, lid);
+        if (info && q.c < q.t) quizzes.push({ ratio: q.c / q.t, href: lessonHref(c.id, lid), icon: "🧩", title: "Retry the quiz — " + info.lesson.title, detail: "Best score " + q.c + " / " + q.t + ". Reread the explanations first." });
+      });
+    });
+    objVals(store.cards).forEach(function (card) { if (card.box === 1) { var key = card.c + "/" + card.l; shaky[key] = (shaky[key] || 0) + 1; } });
+    var cards = Object.keys(shaky).map(function (key) {
+      var bits = key.split("/"), c = byId[bits[0]], info = c && lessonInfo(c, bits[1]), n = shaky[key];
+      return { href: "#/review", icon: "🃏", title: n + (n === 1 ? " shaky card" : " shaky cards") + " — " + (info ? info.lesson.title : bits[1]), detail: n === 1 ? "Still in box 1. Review it today and it starts to stick." : "Still in box 1. Review them today and they start to stick." };
+    });
+    quizzes.sort(function (a, b) { return a.ratio - b.ratio; });
+    return quizzes.slice(0, 5).concat(cards.slice(0, 3));
   }
 
   /* ---------- Course home ---------- */
@@ -339,7 +390,7 @@
     objVals(store.notes).forEach(function (n) { if (n.c === c.id) xp += 10; });
     return xp;
   }
-  function totalXp() { return COURSES.reduce(function (t, c) { return t + courseXp(c); }, 0); }
+  function totalXp() { return COURSES.reduce(function (t, c) { return t + courseXp(c); }, 0) + objVals(store.daily).reduce(function (t, d) { return t + d.c * 5; }, 0); }
   function levelOf(xp) {
     var i = 0; LEVELS.forEach(function (l, k) { if (xp >= l.xp) i = k; });
     var next = LEVELS[i + 1];
@@ -443,8 +494,12 @@
       '<div class="stat"><span class="stat-num">' + (q.t ? Math.round(q.c / q.t * 100) + "%" : "—") + '</span><span class="stat-lbl">quiz accuracy</span></div>' +
       '<div class="stat"><span class="stat-num">' + ex + '</span><span class="stat-lbl">exercises solved</span></div>' +
       '<div class="stat"><span class="stat-num">' + cards.length + '</span><span class="stat-lbl">cards in deck</span></div></div>';
+    var weak = weakSpots();
+    html += '<h2 class="section-title">Practise next</h2><p class="section-desc">Built from your quiz scores and your flashcard boxes — the fastest way to turn "I read it" into "I know it".</p>';
+    html += weak.length ? '<div class="weak-list">' + weak.map(function (w) { return '<a class="weak-item" href="' + w.href + '"><span class="weak-icon" aria-hidden="true">' + w.icon + '</span><span><strong>' + esc(w.title) + "</strong><small>" + esc(w.detail) + '</small></span><span class="weak-go" aria-hidden="true">→</span></a>'; }).join("") + "</div>"
+      : '<div class="empty-state weak-empty"><span class="empty-emoji">💪</span><h3>No weak spots yet.</h3><p>Missed quiz questions and cards you grade "Again" show up here, so you know exactly what to practise.</p></div>';
     html += '<h2 class="section-title">Last 16 weeks</h2><p class="section-desc">Each square is a day. Any lesson, checklist, quiz, card or reflection counts.</p>' + heatmap();
-    html += '<p class="xp-rules">XP: 20 per lesson · 15 per exercise solved · 10 per reflection · 5 per quiz answer right · 2–14 per flashcard as it climbs the boxes · 2 per checklist item.</p>';
+    html += '<p class="xp-rules">XP: 20 per lesson · 15 per exercise solved · 10 per reflection · 5 per quiz answer right (daily 3 included) · 2–14 per flashcard as it climbs the boxes · 2 per checklist item.</p>';
     html += '<h2 class="section-title">Courses</h2><div class="course-stats">';
     COURSES.forEach(function (c) {
       var p = progressPct(c), earned = earnedBadges(c);
@@ -818,11 +873,17 @@
   // When every question in a quiz is answered: show the score, keep the best one, offer a retry.
   function scoreQuiz(quiz) {
     var qs = $all(".quiz-q", quiz), answered = qs.filter(function (q) { return q.classList.contains("answered"); });
-    if (answered.length !== qs.length || !currentCourseId) return;
+    var daily = !!quiz.closest(".daily");
+    if (answered.length !== qs.length || (!currentCourseId && !daily)) return;
     var right = qs.filter(function (q) { return q.classList.contains("got-it"); }).length;
-    var lessonId = (location.hash.match(/#\/[^/]+\/([^/?]+)/) || [])[1] || "";
-    var key = lessonId + ":" + $all(".quiz", $("#content")).indexOf(quiz), s = cstate(currentCourseId);
-    if (!s.quiz[key] || right > s.quiz[key].c) s.quiz[key] = { c: right, t: qs.length };
+    if (daily) {
+      var day = WIDGETS.srs.today(); store.daily = store.daily || {};
+      if (!store.daily[day] || right > store.daily[day].c) store.daily[day] = { c: right, t: qs.length };
+    } else {
+      var lessonId = (location.hash.match(/#\/[^/]+\/([^/?]+)/) || [])[1] || "";
+      var key = lessonId + ":" + $all(".quiz", $("#content")).indexOf(quiz), s = cstate(currentCourseId);
+      if (!s.quiz[key] || right > s.quiz[key].c) s.quiz[key] = { c: right, t: qs.length };
+    }
     save();
     var msg = right === qs.length ? "Perfect score. That idea is yours now." : right >= qs.length / 2 ? "Solid. Read the explanations for the ones you missed, then retry." : "Worth another pass — reread the section, then retry.";
     var row = $(".quiz-score", quiz) || document.createElement("div");
