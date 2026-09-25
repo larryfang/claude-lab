@@ -57,7 +57,7 @@ Section 4 — **complaints with no issue** — is the one that finds the real ga
 **Why it works:** public changelogs and release notes are structured and boring, which makes them ideal for a schedule.
 
 ```prompt
-Every Monday: read the public changelogs and release notes for [COMPETITORS] and compare against the snapshots in this Project's files. Write `competitor-changelog-YYYY-MM-DD.md` to the Project covering only what is new, with a quote and URL for each item, and for each: which of our roadmap items it relates to, and whether it closes or widens a gap. Save fresh snapshots there. If nothing shipped, say so in one line. Never infer a release you cannot show with quoted text.
+Every Monday: read the public changelogs and release notes for [COMPETITORS] and compare against the snapshots in the `Cowork-Reports/snapshots/` folder of my connected Google Drive (or OneDrive or SharePoint). Write `competitor-changelog-YYYY-MM-DD.md` to `Cowork-Reports/` covering only what is new, with a quote and URL for each item, and for each: which of our roadmap items it relates to, and whether it closes or widens a gap. Save fresh snapshots to `Cowork-Reports/snapshots/`. If nothing shipped, say so in one line. Never infer a release you cannot show with quoted text.
 ```
 
 ## Play 6 — Release notes and the feedback loop

@@ -16,7 +16,7 @@ Claude has three ways onto the web, and most people reach for the most powerful 
 |---|---|---|
 | **1. Web search** | Built-in quick lookups, available on every plan (Team/Enterprise: admin enables it once) | A fact, a price, a date — one or two searches' worth ([when to use what](https://support.claude.com/en/articles/11095361-when-should-i-use-web-search-extended-thinking-and-research)) |
 | **2. Research** | Paid plans: a multi-step investigation over a few minutes that searches the web **and your connected tools** (mail, docs, calendar), returning a **cited report** ([guide](https://support.claude.com/en/articles/11088861-use-research-on-claude)) | "Build me a competitive picture of X" — breadth, citations, no babysitting |
-| **3. A browser Claude drives** | Cowork's **built-in browser** (in Claude Desktop, with none of your logins) or the **Claude in Chrome** extension (acting in **your logged-in browser**) | Only what rungs 1–2 cannot reach: multi-step navigation, acting on a page — and, in Chrome only, a page behind a login that holds no sensitive company data |
+| **3. A browser Claude drives** | Cowork's **built-in browser** (in Claude Desktop; it has none of your logins unless you import them or sign in there) or the **Claude in Chrome** extension (acting in **your logged-in browser**) | Only what rungs 1–2 cannot reach: multi-step navigation, acting on a page — and a page behind a login that holds no sensitive company data |
 
 Cowork sessions have their own web search and web fetch, and on desktop a built-in browser, so a Cowork research brief needs no extension ([Cowork guide](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)). The built-in browser is rolling out from September 2026. If you already use Claude in Chrome, Cowork uses Chrome instead; you choose in the Claude Desktop app under **Settings > Cowork**, **Preferred browser** ([built-in browser guide](https://support.claude.com/en/articles/16607400-use-the-built-in-browser-in-claude-cowork)).
 
@@ -67,7 +67,7 @@ So:
 :::tip The separate-profile trick
 Create a dedicated Chrome profile for Cowork research. Log it into nothing except what a given research task needs. It takes two minutes, and it converts "browser control has access to my entire work identity" into "browser control has access to a research browser". Do this.
 
-Cowork's built-in browser gives you the same separation with nothing to set up: it is separate from your own browser, and Claude does not see your saved logins unless you choose to import them. Use it for public research, and keep Chrome for the page that truly needs your session.
+Cowork's built-in browser gives you the same separation with nothing to set up: it is separate from your own browser, and Claude does not see your saved logins unless you choose to import them. The first time it opens, it offers **Import cookies**: skip that, and do not sign in to work accounts there — anything you sign in to stays available to Claude in later Cowork sessions on that computer. Use it for public research, and keep Chrome for the page that truly needs your session.
 :::
 
 ## Briefing a research run
@@ -130,7 +130,7 @@ Q: Why default to rung 2, Research?
 A: It gives you **citations** by default and does not fill in web forms. It can still call your connectors' tools without asking, so block their write tools first.
 
 Q: What is the single best control for browser research?
-A: A browser with none of your sensitive logins: Cowork's **built-in browser**, or a **separate Chrome profile** logged into nothing except what the task needs.
+A: A browser with none of your sensitive logins: Cowork's **built-in browser** (skip **Import cookies**, and do not sign in to work accounts there), or a **separate Chrome profile** logged into nothing except what the task needs.
 
 Q: Why never combine web browsing with write access in one run?
 A: Web pages can carry instructions aimed at an agent. Research, then review, then act — as separate steps.
@@ -145,7 +145,7 @@ A: Ask it to **list the URLs it intends to visit** before it starts. You see whe
 ```quiz
 Q: What is the single most effective control when using browser automation for research?
 - Using incognito mode
-+ A browser with none of your sensitive logins — Cowork's built-in browser, or a dedicated Chrome profile logged into nothing but what the task needs
++ A browser with none of your sensitive logins — Cowork's built-in browser with no imported logins, or a dedicated Chrome profile logged into nothing but what the task needs
 - Slowing the run down
 - Only visiting HTTPS sites
 > Claude in Chrome is not sandboxed and acts in your real session. The built-in browser or a separate profile shrinks what "your session" means.

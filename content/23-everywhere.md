@@ -1,6 +1,6 @@
 # Claude Where You Already Work
 
-The Cowork window is headquarters. But your actual day happens in Excel, PowerPoint, Outlook, Slack, and on your phone between meetings — and Claude now works in all of them: in Office and on your phone with the same skills and connectors you have already set up, and in Slack with connections your admin sets per channel. This lesson is the map, so you stop copy-pasting between Claude and the tool the work actually lives in.
+The Cowork window is headquarters. But your actual day happens in Excel, PowerPoint, Outlook, Slack, and on your phone between meetings — and Claude now works in all of them: in Office and on your phone with the same skills and connectors you have already set up, and in Slack with the connections your admin attaches to each channel (plus, on Team plans, your own connectors for the requests you make). This lesson is the map, so you stop copy-pasting between Claude and the tool the work actually lives in.
 
 ## The Microsoft 365 add-ins
 
@@ -49,9 +49,9 @@ The old "Claude in Slack" app was replaced on **2026-08-03** by **Claude Tag** �
 Tag `@Claude` in a channel and hand it actual work: it posts its checklist in the thread, does the job (turn this decision thread into a doc; chase these three owners; investigate this customer report), and follows up on its own. An org Owner sets it up and controls which credentials and resources it can use per channel — so if you want it, this is a request to your admin naming a specific job, exactly like a missing connector in Module 3.
 
 :::concept Same data rules, new doors
-The Office add-ins and Cowork on your phone run on your own account: the same skills, the same connectors, the same permissions and data rules you set in Module 3. Claude Tag is different. It works from connections an Owner sets per channel, not from your account, so what it can reach depends on the channel, not on who you are — and anyone in that channel can use it ([overview](https://claude.com/docs/claude-tag/overview)).
+The Office add-ins and Cowork on your phone run on your own account: the same skills, the same connectors, the same permissions and data rules you set in Module 3. Claude Tag is different. It works from connections an Owner attaches to each channel, so what it can reach there depends on the channel, not on who you are — and anyone in that channel can use it ([overview](https://claude.com/docs/claude-tag/overview)). On Team plans (Enterprise to follow), it can also use your own connectors for a request you make — and anything it posts is visible to the whole channel ([personal connectors](https://claude.com/blog/claude-tag-now-supports-personal-connectors-in-channels)).
 
-So each door is a new trust decision, and your security team will want to know about each one: Tag's per-channel access, Outlook's Microsoft Graph consent, and add-in activity that does not appear in Enterprise audit logs ([work across apps](https://claude.com/docs/office-agents/work-across-apps)). Name them when you ask. Your data rules still apply everywhere.
+So each door is a new trust decision, and your security team will want to know about each one: Tag's per-channel access and personal connectors, Outlook's Microsoft Graph consent, and add-in activity that does not appear in Enterprise audit logs ([work across apps](https://claude.com/docs/office-agents/work-across-apps)). Name them when you ask. Your data rules still apply everywhere.
 :::
 
 ## Lock it in
@@ -66,16 +66,16 @@ Q: How do you reach your Skills inside an Office add-in?
 A: Type **`/`** in the add-in sidebar and the skills you turned on in **Customize → Skills** appear, if they fit that app. Skills also fire automatically when relevant.
 
 Q: Which two approvals does the add-in need at work?
-A: Your **Claude plan** (Anthropic side) *and* IT's **add-in deployment** (Microsoft side; Outlook also needs a one-time Microsoft Graph consent). Until IT says yes, export the file into Cowork.
+A: Your **Claude plan** (Anthropic side) *and* the **add-in deployment** (Microsoft side: IT allows self-install from the Office Store or deploys it centrally; Outlook also needs a one-time Microsoft Graph consent). Until IT says yes, export the file into Cowork.
 
 Q: What happens to an email Claude for Outlook writes?
 A: It lands as an **unsent draft** for your review. The send gate stays yours.
 
 Q: What do Cowork sessions on web and mobile work from?
-A: **Connectors and uploaded files.** Local folders, browser use and computer use need your desktop app open.
+A: **Connectors and uploaded files.** Local folders, browser use and computer use need your desktop app open — and local folders work only in sessions started on desktop.
 
 Q: Is using Claude in Office, Slack or mobile a new trust decision?
-A: Yes, in part. Office and mobile run on your account, skills and connectors — but Outlook needs its own Microsoft Graph consent, and add-in activity is not in Enterprise audit logs. Claude Tag runs on connections an Owner sets per channel, not on your account. Your data rules still apply everywhere.
+A: Yes, in part. Office and mobile run on your account, skills and connectors — but Outlook needs its own Microsoft Graph consent, and add-in activity is not in Enterprise audit logs. Claude Tag runs on connections an Owner attaches to each channel; on Team plans it can also use your own connectors for your requests, and what it posts is visible to the whole channel. Your data rules still apply everywhere.
 ```
 
 ```quiz
@@ -84,14 +84,14 @@ Q: You spend close week inside a 40-tab workbook. Where should Claude meet you?
 - Export the workbook and upload it to chat every time
 - Screenshots of each tab
 - Retype the numbers into Cowork
-> The add-in works on the live file — where IT has deployed it. Until then, the export-to-Cowork path does the same jobs on a copy.
+> The add-in works on the live file — once it is installed, by you from AppSource or by IT. Until then, the export-to-Cowork path does the same jobs on a copy.
 
 Q: The Claude add-in does not appear in Excel at work, though your colleague at another company has it. Most likely cause?
-+ Your tenant's IT has not deployed the add-in — it is admin-controlled on company M365, so this is a policy request, not a troubleshooting session
++ You have not installed it, or your tenant blocks the Office Store so IT must deploy it — install it from AppSource if you can; if you cannot, it is a policy request, not a troubleshooting session
 - Claude does not support Excel at all
 - Skills do not work in Excel
 - You need to reinstall Windows
-> Two approvals: the Claude plan (Anthropic side) and the add-in deployment (Microsoft side). Ask IT with a specific job, and use file exports meanwhile. (If the add-in opens but `/` lists no skills, turn the skill on in Customize → Skills.)
+> Two approvals: the Claude plan (Anthropic side) and the add-in deployment (Microsoft side) — a self-install from AppSource where IT allows the Office Store, otherwise a central deployment by IT. Ask IT with a specific job, and use file exports meanwhile. (If the add-in opens but `/` lists no skills, turn the skill on in Customize → Skills.)
 
 Q: What happens when Claude for Outlook writes an email for you?
 + It lands as an unsent draft for your review — the human send gate stays yours
@@ -101,11 +101,11 @@ Q: What happens when Claude for Outlook writes an email for you?
 > Drafts, not sends. The same review-before-it-leaves rule the whole course teaches, enforced by the surface.
 
 Q: You start a Cowork task from your phone on the train. What is the key constraint?
-+ Cloud sessions work from connectors and uploads — your laptop's local folders need the desktop app open
++ A task started on your phone cannot reach your laptop's folders at all — it works from connectors and uploads
 - Mobile can only read, never start tasks
 - Skills don't work on mobile
 - There is no constraint
-> Mobile Cowork is real, but local-folder and full browser/computer work still depend on an open Desktop app. Use cloud surfaces to start, steer and review; use Desktop when the job must reliably touch the machine.
+> Mobile Cowork is real, but local folders work only in sessions started on desktop, with the app left open, and browser and computer use also depend on an open Desktop app. Use cloud surfaces to start, steer and review; use Desktop when the job must reliably touch the machine.
 
 Q: Your team wants Claude Tag in Slack. What is the correct move?
 + Ask your org admin, naming a specific job — it is Team/Enterprise only and admin-provisioned per channel

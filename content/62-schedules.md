@@ -35,7 +35,7 @@ The difference from an interactive brief: it has to handle the boring cases, bec
 ```prompt
 Every Monday at 8am.
 
-Produce a file `pipeline-hygiene-YYYY-MM-DD.md` in this Project's files, from the CRM, listing only what needs attention: deals with no logged activity in 21 days, deals with a close date in the past, deals with no next step, and deals where the amount or stage changed since last week's file in this Project.
+Produce a file `pipeline-hygiene-YYYY-MM-DD.md` in the `Cowork-Reports` folder of my connected Google Drive (or OneDrive or SharePoint), from the CRM, listing only what needs attention: deals with no logged activity in 21 days, deals with a close date in the past, deals with no next step, and deals where the amount or stage changed since last week's file in that folder.
 
 Compare against last week's file. Report only the DELTA — what is newly a problem, and what has been fixed since last week. If the folder has no previous file, say "first run, no comparison available".
 
@@ -49,7 +49,7 @@ Read-only. Never modify the CRM. Write only the report file, nothing else.
 ```
 
 :::warning Cloud runs cannot see your local folders
-By default, scheduled tasks run in the cloud — they work with your **connectors and the files saved in your Claude account**, and they *cannot* read or write a folder on your computer, like `output/weekly/`. A task that needs local files or apps runs only on your computer, so the computer must be awake and the desktop app open. So: create the schedule **inside a Project** made with **Start from scratch**, which is saved to your Claude account (a Project made from a folder on your computer stays on that computer), and have it write its report to the Project's files, as the brief above does. Check this after the first run: if the next run cannot see last week's file, have the job write to a connected Drive, OneDrive or SharePoint folder instead.
+By default, scheduled tasks run in the cloud — they work with your **connectors and the files saved in your Claude account**, and they *cannot* read or write a folder on your computer, like `output/weekly/`. A task that needs local files or apps runs only on your computer, so the computer must be awake and the desktop app open. (On Enterprise plans the cloud is off until an Owner turns on **Run Cowork in the cloud**; until then, sessions, Projects and scheduled tasks run on your computer, so it must be awake with Desktop open.) So: create the schedule **inside a Project** made with **Start from scratch**, which is saved to your Claude account (a Project made from a folder on your computer stays on that computer). The Project holds the instructions and knowledge only — Cowork does not change a Project's contents. The report goes to a cloud folder the job reaches through its connector — a `Cowork-Reports` folder in Google Drive, OneDrive or SharePoint — as the brief above does. In that connector's **Tool permissions**, unblock only its create-file tool (the exact name may vary). After the second run, confirm it read the first run's file.
 :::
 
 Four things there earn their place:
@@ -148,7 +148,7 @@ Q: What goes in a scheduled report's status line?
 A: The date, the number of records queried, the number returned, and OK or PROBLEM. It is your failure detection at a glance.
 
 Q: Where does a scheduled task run, and what changes if it needs local files?
-A: By default it runs in the cloud, with your connectors and the files in your Claude account. Create it inside a **Project** saved to your account and write to the Project's files. (A task that needs local files runs only on your computer, while it is awake and Claude Desktop is open.)
+A: By default it runs in the cloud, with your connectors and the files in your Claude account. Create it inside a **Project** saved to your account, and have it write to a connected Drive, OneDrive or SharePoint folder — Cowork does not change a Project's files. (A task that needs local files runs only on your computer, while it is awake and Claude Desktop is open.)
 
 Q: When should you delete a scheduled job?
 A: When you have not read its last three outputs. It is not saving you time; it is generating unread files and false confidence.

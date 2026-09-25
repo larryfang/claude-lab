@@ -150,7 +150,7 @@ Q: What's the #1 reason to use a subagent?
 > Investigation/review reads lots of files. Subagents quarantine that token cost and report back a distilled result.
 
 Q: Which built-in subagents deliberately skip CLAUDE.md and git status to keep research lean?
-+ Explore and Plan; custom and general-purpose subagents load the normal memory hierarchy
++ Explore and Plan; custom and general-purpose subagents load the CLAUDE.md hierarchy (not your auto memory)
 - Every subagent
 - Only custom reviewer agents
 - No subagent ever skips project memory

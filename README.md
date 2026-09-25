@@ -95,7 +95,7 @@ npm test              # content structure + unit tests + all browser interaction
 npm run check:links   # live external-link check
 ```
 
-The browser suite renders every registered lesson and checks progress persistence, quizzes and scores, every learning block, the review deck, notebook export, progress export/import, the certificate, full-text search, keyboard navigation, guided simulations, route pages, accessibility state, and 390 px / 320 px layouts. Unit tests cover the checker heuristics and the link-check rules. GitHub Actions runs the main suite on every push and pull request, plus a weekly external-link check.
+The browser suite renders every registered lesson and checks progress persistence, quizzes and scores, every learning block, the review deck, notebook export, progress export/import, the certificate, full-text search, keyboard navigation, guided simulations, route pages, accessibility state, and 390 px / 320 px layouts. A smoke test uses every interactive block on every lesson at phone width and fails on any browser error. Unit tests cover the checker heuristics, the link-check rules, and WCAG AA colour contrast for every text/background pair in both themes. GitHub Actions runs the main suite on every push and pull request, plus a weekly external-link check.
 
 ## 📁 Project structure
 
@@ -126,6 +126,8 @@ The browser suite renders every registered lesson and checks progress persistenc
 ## ⚠️ A note on accuracy
 
 Claude's products and Claude Code evolve quickly. This lab teaches **stable mental models** and frames steps resiliently, but a flag or menu may shift over time. For current specifics, the [Claude docs](https://claude.com/docs) and [Claude Code docs](https://code.claude.com/docs) are the source of truth. PRs that keep the lab current are very welcome.
+
+**Last full source audit: 25 Sep 2026.** Every lesson, quiz key and lab step was checked against the Claude Help Center, claude.com docs and blog, code.claude.com docs and the Claude Code changelog (v2.1.282), then re-checked by a second, independent review. Lessons that describe fast-moving features show their verification date and source at the top of the page.
 
 ## 📜 License
 

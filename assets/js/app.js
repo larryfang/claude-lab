@@ -164,7 +164,7 @@
         '<p class="hv-line" style="--d:4"><b>F</b><span>Flag every row you exclude, and why.</span></p>' +
         '<div class="hv-score"><span>5 / 5</span> signals present</div></div>' +
       '<div class="hv-card hv-term"><span class="p">$</span> npm test<span class="ok">✓ 42 passed</span></div>' +
-      '<div class="hv-card hv-flash"><div class="hv-flip"><span class="f"><small>Question</small>What does <b>F</b> stand for?</span><span class="b"><small>Answer</small>Flag — surface it, don\'t decide it.</span></div></div>' +
+      '<div class="hv-card hv-flash"><div class="hv-flip"><span class="f"><small>Question</small><span>What does <b>F</b> stand for?</span></span><span class="b"><small>Answer</small><span>Flag — surface it, don\'t decide it.</span></span></div></div>' +
       '<div class="hv-chip">🔥 3-day streak <b>+20 XP</b></div></div>';
   }
   function renderHub() {

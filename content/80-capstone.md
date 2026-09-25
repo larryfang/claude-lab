@@ -49,7 +49,7 @@ Not a one-off deliverable. A thing that keeps producing.
 :::lab Build the Project
 - [ ] Create a Cowork **Project** for this work with **Start from scratch**, so it is saved to your Claude account (a Project made with **Use an existing folder** stays on this computer, which breaks the cloud schedule in Stage 7)
 - [ ] Write its instructions: who you are, what you sell or build, your definitions (weightings, thresholds, taxonomies, currency), your **unreliable fields list**, standing rules, and your tone preferences
-- [ ] Grant the workspace folder with subfolders: `sources/`, `reference/`, `output/weekly/`, `snapshots/`
+- [ ] For the hand-built stages, create a local workspace folder with subfolders `sources/`, `reference/`, `output/weekly/`, `snapshots/`, and grant it to each task — do not attach it to the Project, because a Project tied to a local folder works on desktop only. The Stage 7 schedule cannot read this folder, so plan for its inputs to come from connectors and its reports and snapshots to go to a `Cowork-Reports` folder in Google Drive, OneDrive or SharePoint
 - [ ] Connect the systems you need and run a **read-only smoke test** on each — a query whose answer you already know
 - [ ] Record everything in `ACCESS-LOG.md`
 :::
@@ -143,10 +143,10 @@ One file per item that needs individual attention — per at-risk deal, per comp
 - [ ] Add the delta instruction: compare against last week's file and report only what changed
 - [ ] Add the empty case: *"If nothing needs attention, say so in one line and stop."*
 - [ ] Confirm it is **read-only** on every source system and writes only its own report file
-- [ ] Edit the Skill (or the scheduled prompt) so its outputs go to the Project's files, not `output/weekly/` — cloud scheduled tasks run against connectors and files in your Claude account, and **cannot reach a local folder**. Create the schedule inside the Project from Stage 1
+- [ ] Edit the Skill (or the scheduled prompt) so it reads its inputs from connectors and writes its reports and snapshots to your `Cowork-Reports` folder in Google Drive, OneDrive or SharePoint, not `output/weekly/` — cloud scheduled tasks run against connectors and files in your Claude account, and **cannot reach a local folder**. Cowork does not change a Project's contents, so the Project holds only the instructions and knowledge. In that connector's Tool permissions, unblock only its create-file tool. Create the schedule inside the Project from Stage 1
 - [ ] Run it **manually** twice more and read each output in full
 - [ ] Then schedule it for Monday 8am
-- [ ] After the first scheduled run, check that the next run can see last week's file; if not, have it write to a connected Drive, OneDrive or SharePoint folder
+- [ ] After the second scheduled run, confirm it read the first run's file in `Cowork-Reports`
 :::
 
 :::warning Three runs by hand, then the schedule

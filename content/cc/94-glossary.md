@@ -10,11 +10,11 @@ Every term in this course, in one or two sentences, in the words the lessons use
 
 **Context rot** — the drop in quality as the context window fills: Claude starts forgetting earlier instructions and making more mistakes. The reason every best practice protects the context.
 
-**Plan mode** — a mode, enforced at the tool level, in which Claude can read and reason but cannot edit files or run destructive commands. Enter it with `Shift+Tab`; open the plan in your editor with `Ctrl+G`.
+**Plan mode** — a mode in which Claude Code blocks file edits until you approve a plan. Claude can still read, search and run exploratory commands. Enter it with `Shift+Tab`; open the plan in your editor with `Ctrl+G`.
 
-**Auto mode** — the default permission mode on Pro, Max and Team plans. A separate classifier model reviews each action and interrupts you only for the risky ones.
+**Auto mode** — the default permission mode on Pro, Max and Team plans. A separate classifier model reviews actions and blocks risky ones; Claude then tries another way, and you are asked only after repeated blocks.
 
-**Permission mode** — how much Claude may do without asking: `auto`, `plan`, `acceptEdits`, `dontAsk`, `manual` or `bypassPermissions`. Cycle through them with `Shift+Tab`.
+**Permission mode** — how much Claude may do without asking: `auto`, `plan`, `acceptEdits`, `dontAsk`, `manual` or `bypassPermissions`. `Shift+Tab` cycles Manual → Accept edits → Plan → Auto (when available); set `dontAsk` with `--permission-mode`, and `bypassPermissions` joins the cycle only when you start with it enabled.
 
 **Effort** — how deeply Claude reasons: `low`, `medium`, `high`, `xhigh` or `max`, set with `/effort`. Raise it for hard problems; lower it for mechanical work.
 
@@ -32,7 +32,7 @@ Every term in this course, in one or two sentences, in the words the lessons use
 
 **Auto memory** — notes Claude keeps for itself in `~/.claude/projects/<project>/memory/`.
 
-**Checkpoint** — a restore point Claude records as it works. `/rewind` (or `Esc` `Esc`) rolls the conversation, the code, or both back to one.
+**Checkpoint** — a restore point Claude records as it works. `/rewind` (or `Esc` `Esc` on an empty prompt) rolls the conversation, the code, or both back to one.
 
 **Compaction** — `/compact` summarises a long session to reclaim context while keeping the thread. `/clear` is the full reset between unrelated tasks.
 

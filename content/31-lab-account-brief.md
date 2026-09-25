@@ -8,7 +8,7 @@ If your CRM connector is live, use it. If not, export your opportunities to CSV 
 
 ## Part 1 — One account, done properly (8 min)
 
-Pick a real account you have a call with soon. If you would rather not use real data, use one of the fictional accounts from your Module 1 practice CSV — the brief is identical, except: delete "and their public website" from INPUTS (here and in Step 2), because an invented name can match a real company.
+Pick a real account you have a call with soon. If you would rather not use real data, use one of the fictional accounts from your Module 1 practice CSV — the brief is identical, except: delete "and their public website" from INPUTS here, and "and each company's public website" from INPUTS in Step 2, because an invented name can match a real company.
 
 :::lab Step 1 — The single-account brief
 ```prompt

@@ -66,7 +66,7 @@ For workflows easier to *do* than to explain, Cowork on **Claude for Mac** has *
 - [ ] Save `SKILL.md` inside it
 - [ ] Create any supporting `reference/` files it mentions — your FX rates, segment definitions, template
 - [ ] **Zip the folder**, then upload it: **Customize → Skills → + → Create skill → Upload a skill**
-- [ ] Confirm it appears in the Skills list with its toggle **on**, then type `/` in Cowork — installed skills show up there too. No Skills section, or skills greyed out? Turn on code execution in Settings → Capabilities
+- [ ] Confirm it appears in the Skills list with its toggle **on**, then type `/` in Cowork — installed skills show up there too. A skill greyed out in the list is not turned on yet — toggle it on. No Skills section at all? Turn on **Code execution and file creation** in Settings → Capabilities (on Team or Enterprise, ask your Owner: it is an organisation setting)
 :::
 
 :::details If the upload flow looks different

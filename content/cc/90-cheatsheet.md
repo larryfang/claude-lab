@@ -42,9 +42,9 @@ Everything you'll reach for, on one page. Bookmark it. Every command below is ve
 
 | Key | Does |
 |---|---|
-| `Shift+Tab` | Cycle the permission mode (auto / accept-edits / **plan** …) |
+| `Shift+Tab` | Cycle the permission mode (Manual → Accept edits → **Plan** → Auto) |
 | `Esc` | Interrupt Claude (context preserved) |
-| `Esc` `Esc` | Open the rewind/checkpoint menu |
+| `Esc` `Esc` | Open the rewind/checkpoint menu (with an empty prompt) |
 | `Ctrl+G` | Open the current plan in your editor (plan mode) |
 | `Ctrl+C` | Cancel / exit |
 | `@path` | Add a file to context (`@src/auth.ts`) |

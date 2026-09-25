@@ -9,7 +9,7 @@ Check in order:
 
 1. **Plan** — Cowork needs Pro, Max, Team or Enterprise. Not available on Free.
 2. **Entry point** — where the **message box** shows a **Chat / Cowork** choice, select **Cowork** there; it is not a sidebar item. No choice at all means you have the new Claude, where chat and Cowork are one: describe the task in any conversation. If you see neither on desktop, quit fully and reopen, or reinstall from `claude.com/download`. It also runs on web and mobile (still rolling out in beta), but these labs are taught on Desktop because cloud access to connected local folders works only while that Desktop app is open and for sessions started on desktop.
-3. **Admin policy** — on Team or Enterprise a seat admin may not have enabled it. That is a one-line ask.
+3. **Admin policy** — on Team or Enterprise an admin may have turned it off (or, on Enterprise web and mobile, not turned it on yet). That is a one-line ask.
 
 You can read every lesson and write every brief without access.
 :::
@@ -32,7 +32,7 @@ Four causes, in likelihood order:
 :::
 
 :::details It says it cannot access a connector mid-run
-The auth token expired — commonly every 30 to 90 days. Reconnect under Customize → Connectors. If a scheduled task started producing nothing, this is usually why, which is the argument for the status-line pattern in Module 8.
+Sign-ins expire or get revoked — a password change, an admin policy, or the service's own token lifetime. Disconnect and reconnect under Customize → Connectors. If a scheduled task started producing nothing, this is usually why, which is the argument for the status-line pattern in Module 8.
 :::
 
 ## Output quality
@@ -122,7 +122,7 @@ Interrupt, and add scope: *"Only the files in `X/`. Only records from [DATE] onw
 ## Skills and schedules
 
 :::details My Skill does not fire
-First check that the Skill is toggled on in Customize → Skills and that code execution is enabled (Settings → Capabilities). After that, it is the description, in almost every case. Ask:
+First check that the Skill is toggled on in Customize → Skills (a greyed-out skill is not on yet) and that code execution is enabled (Settings → Capabilities; on Team or Enterprise, ask your Owner). After that, it is the description, in almost every case. Ask:
 
 > "I have a Skill called [name]. I asked '[your phrasing]' and it did not activate. Here is the description: [paste]. Why did it not match, and rewrite it around the 4–6 most common phrasings someone might use for this job, within 200 characters."
 

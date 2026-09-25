@@ -64,7 +64,7 @@ Long run, many files. By file thirty it is applying subtly different criteria th
 **Detection:** compare the first and last items it produced. They should feel like the same author.
 
 ### 4. The Eager Rewrite
-You asked it to organise a folder. It also renamed your files, "improved" a document, and overwrote a version you needed. (Permanent *deletions* always trigger a permission prompt first — which is one more reason to read prompts before clicking Allow. Edits, moves, renames and overwrites do not.)
+You asked it to organise a folder. It also renamed your files, "improved" a document, and overwrote a version you needed. (Picking a folder authorises Claude to read and write in it, so edits, moves, renames and overwrites there are part of the access you already gave — do not count on a prompt to stop them. Only permanent *deletion* always asks first, in any mode — which is one more reason to read prompts before clicking Allow.)
 
 **Prevention:** *"Write only to `output/`. Do not modify, rename, or delete anything in the source folders."* Plus: work on copies.
 **Detection:** an overwrite or rename is very hard to detect after the fact. Prevent it.

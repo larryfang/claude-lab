@@ -42,7 +42,7 @@ For bigger jobs Cowork splits work across parallel workers — one researching e
 
 ## 6 — Scheduled tasks
 
-Save a job, have it run on a cadence — every Monday 8am, every weekday at 6pm. A one-off chat message cannot do this. Scheduled tasks run remotely, so they run on time even when your computer is asleep or the app is closed — unless the task uses a folder or app on your computer. Then it runs locally, and needs the computer awake and Desktop open.
+Save a job, have it run on a cadence — every Monday 8am, every weekday at 6pm. A one-off chat message cannot do this. Scheduled tasks run remotely, so they run on time even when your computer is asleep or the app is closed — unless the task uses a folder or app on your computer. Then it runs locally, and needs the computer awake and Desktop open. (On Enterprise plans, tasks run remotely only after an Owner turns on **Run Cowork in the cloud**; until then, they run on your computer.)
 
 **Where it matters to you:** a scheduled job runs with **no one reading the plan**. Only schedule jobs that are read-only or write to a scratch folder, and that you have run by hand successfully at least three times. Module 8.
 

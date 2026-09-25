@@ -292,7 +292,7 @@ NEVER force a match. Plausible but not certain goes to Exceptions as suspected, 
 ### Debtors chase drafts
 
 ```prompt
-From [INVOICES FILE], find every open invoice past due and group: 1–30, 31–60, 61–90, 90+ days. Draft one chase email per customer in `output/chase-drafts/` — friendly, firm, escalation, final notice by bucket. Every draft states the exact invoice ids and amounts. Top of each draft: a DO NOT SEND line listing anything to verify first, including any customer appearing in the latest reconciliation exceptions.
+From [INVOICES FILE], find every open invoice past due and group: 1–30, 31–60, 61–90, 91+ days. Draft one chase email per customer in `output/chase-drafts/` — friendly, firm, escalation, final notice by bucket. Every draft states the exact invoice ids and amounts. Top of each draft: a DO NOT SEND line listing anything to verify first, including any customer appearing in the latest reconciliation exceptions.
 
 Do not send anything. Do not connect to email. Drafts on disk only.
 ```
@@ -307,12 +307,12 @@ You are a proofreader with no stake in this being right. Sources: [THE DELIVERAB
 
 ## Scheduled-job wrapper
 
-Add this to any brief you put on a schedule. Remember: cloud scheduled tasks run against your connectors and the files in your Claude account — create the schedule inside a Project saved to your account (made with Start from scratch) and write the report to the Project's files, not to a local folder. After the first run, check that the next run can see the previous file; if not, write to a connected Drive, OneDrive or SharePoint folder.
+Add this to any brief you put on a schedule. Remember: cloud scheduled tasks run against your connectors and the files in your Claude account — create the schedule inside a Project saved to your account (made with Start from scratch), which holds the instructions and knowledge only — Cowork does not change a Project's contents. Write the report to a connected Google Drive, OneDrive or SharePoint folder (unblock only that connector's create-file tool), not to a local folder. After the second run, confirm it read the first run's file.
 
 ```prompt
 Every [DAY] at [TIME].
 
-Compare against the previous report file in this Project and report only the DELTA — what is newly a problem and what has been fixed. If there is no previous file, say "first run, no comparison available".
+Compare against the previous report file in [CONNECTED REPORT FOLDER] and report only the DELTA — what is newly a problem and what has been fixed. If there is no previous file, say "first run, no comparison available".
 
 Start the file with a status line: date, records queried, records returned, and OK or PROBLEM.
 

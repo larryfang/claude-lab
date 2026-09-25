@@ -33,7 +33,7 @@ Only in an **isolated sandbox/container or trusted CI**. Never on untrusted code
 ## Plan mode, subagents, hooks
 
 :::details Plan mode won't let Claude edit anything
-That's correct — plan mode is **read-only by design**. Press **Shift+Tab** to cycle out of it (to normal or auto-accept) when you're ready to implement.
+That's by design — plan mode blocks file edits until you approve a plan. Approve it (**Yes, and use auto mode** or **Yes, manually approve edits**), or press **Shift+Tab** to leave plan mode without approving.
 :::
 
 :::details My subagent ignores project rules

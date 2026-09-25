@@ -71,8 +71,9 @@ claude
 Clean up when done:
 
 ```bash
-# from the main repo root. --force is needed because Claude left uncommitted
-# changes there; it discards them, and -D deletes the experiment branch.
+cd -   # back to the main repo root
+# --force is needed because Claude left uncommitted changes in the worktree;
+# it discards them, and -D deletes the experiment branch.
 git worktree remove --force ../$(basename "$PWD")-experiment
 git branch -D experiment/claude-lab
 ```

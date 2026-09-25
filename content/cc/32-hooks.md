@@ -6,7 +6,7 @@ Everything so far is **advisory** — `CLAUDE.md` rules and skill instructions a
 
 :::concept The key distinction
 - A `CLAUDE.md` rule "always run prettier after edits" is a *suggestion* Claude usually follows.
-- A **PostToolUse hook** that runs prettier after every edit is a *guarantee* — it happens whether Claude remembers or not. (It covers edits made with the Edit and Write tools; a file that a Bash command rewrites needs a `FileChanged` hook.)
+- A **PostToolUse hook** that runs prettier after every edit is a *guarantee* — it happens whether Claude remembers or not. (It covers edits made with the Edit and Write tools; a file that a Bash command rewrites can be caught by a `FileChanged` hook, but only for files named literally in its matcher.)
 
 Use hooks for the things that **must** happen every time: formatting, linting, running tests, blocking edits to protected paths, sending a notification.
 :::
@@ -99,7 +99,7 @@ Q: Which hook event can block a tool before it runs?
 A: **PreToolUse**. Exit code 2 blocks the action and feeds the stderr message back to Claude.
 
 Q: Which event guarantees formatting after every edit?
-A: **PostToolUse**, with a matcher like `Edit|Write` running your formatter. It covers the Edit and Write tools; a file rewritten by Bash needs a `FileChanged` hook.
+A: **PostToolUse**, with a matcher like `Edit|Write` running your formatter. It covers the Edit and Write tools; a file rewritten by Bash needs a `FileChanged` hook, which watches only files named literally in its matcher.
 
 Q: Which event gates completion on a passing build or test?
 A: **Stop**. It fires when Claude tries to end its turn.
@@ -124,7 +124,7 @@ Q: You want to guarantee code is formatted after every edit. Which hook event?
 - SessionStart
 - A CLAUDE.md note
 - UserPromptSubmit
-> PostToolUse fires after a tool runs — perfect for auto-format/lint after Edit and Write calls (a file rewritten by Bash needs a FileChanged hook).
+> PostToolUse fires after a tool runs — perfect for auto-format/lint after Edit and Write calls (a file rewritten by Bash needs a FileChanged hook naming that file literally).
 
 Q: Your CLAUDE.md keeps growing "remember to..." rules that Claude still forgets. Better approach?
 + Convert the must-happen ones into hooks — deterministic enforcement, and it shrinks CLAUDE.md

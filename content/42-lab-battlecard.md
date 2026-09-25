@@ -47,7 +47,7 @@ Show me your plan and the exact list of URLs you intend to visit before you star
 :::
 
 :::tip Save the sources
-Have Cowork save the page text it read into `snapshots/[competitor]/[date]/`. In six weeks the pages will have changed and you will need to know what they actually said. This is also what makes the monitoring play in Module 8 possible — you cannot diff against a snapshot you did not keep. (For that scheduled version, keep the snapshots in a Project's files: scheduled tasks cannot read local folders.)
+Have Cowork save the page text it read into `snapshots/[competitor]/[date]/`. In six weeks the pages will have changed and you will need to know what they actually said. This is also what makes the monitoring play in Module 8 possible — you cannot diff against a snapshot you did not keep. (For that scheduled version, keep the snapshots in a connected Google Drive, OneDrive or SharePoint folder: cloud scheduled tasks cannot read local folders.)
 :::
 
 ## Part 2 — The battlecard (6 min)

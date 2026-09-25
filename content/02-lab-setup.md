@@ -33,7 +33,7 @@ You are going to create a folder that contains nothing you care about, and do al
 :::
 
 :::warning Why "copies, never originals"
-Cowork can create, edit, move and rename files in the folder you grant. That is the whole value. It also means a badly-worded brief can genuinely reorganise or overwrite your work — and unlike deletions, which always trigger a permission prompt before anything is permanently removed, an edit or a rename does not. Grant the narrowest folder that lets the job get done — never your home directory, never `Documents`, never a synced Drive root you have not thought about.
+Cowork can create, edit, move and rename files in the folder you grant. That is the whole value. It also means a badly-worded brief can genuinely reorganise or overwrite your work. Picking a folder authorises Claude to read and write in it, so edits, moves, renames and overwrites there are part of the access you already gave — do not count on a prompt to stop them. Only permanent deletion always asks first, in any mode. Grant the narrowest folder that lets the job get done — never your home directory, never `Documents`, never a synced Drive root you have not thought about.
 
 Cloud-synced folders deserve extra suspicion: iCloud, OneDrive and Dropbox often keep only **placeholder stubs** locally, so a "copy" of a not-downloaded file copies an empty stub — one user lost real documents exactly this way when a reorganisation copied stubs and removed originals ([firsthand account](https://www.reddit.com/r/ClaudeAI/comments/1rwxnxe/claude_cowork_nuked_my_icloud_drive_documents/)). Sync is not backup — Anthropic's own guidance is to give Claude a dedicated working folder and "keep backups of important files" ([Use Claude Cowork safely](https://support.claude.com/en/articles/13364135-use-claude-cowork-safely)). Anything irreplaceable needs a real backup before Cowork touches its folder.
 :::
@@ -48,7 +48,7 @@ Two habits, adopted now, will save you later.
 :::
 
 :::tip Approval modes
-Cowork has three approval modes — **Manually approve**, **Automatically approve**, and **Skip all approvals**. (In the new Claude experience there are only two settings: **Manual**, the default, and **Auto**.) While you are learning, stay on **Manually approve**: Claude asks before actions that reach outside your folder, such as using a connector, sending a message or acting on a website. It does not ask before it edits, moves or renames files in the folder you granted — only permanent deletion always asks. That is why Habit 1 matters: the plan is where you catch a bad edit.
+Cowork has three approval modes — **Manually approve**, **Automatically approve**, and **Skip all approvals**. (In the new Claude experience there are only two settings: **Manual**, the default, and **Auto**.) While you are learning, stay on **Manually approve**: Claude asks before each action you have not already allowed — a connector tool set to *Needs approval*, or a first action on a website. A tool you set to *Always allow* runs without asking. Picking a folder authorises Claude to read and write in it, so edits, moves, renames and overwrites there are part of the access you already gave — do not count on a prompt to stop them. Only permanent deletion always asks first, in any mode. That is why Habit 1 matters: the plan is where you catch a bad edit.
 :::
 
 Try it on something harmless:

@@ -153,7 +153,7 @@ This is the strongest candidate for a schedule in the whole course: read-only, s
 - [ ] Save the two briefs as a sequence
 - [ ] Note your actual project keys, statuses and RAG definitions
 - [ ] Note who each update goes to
-- [ ] Module 8 schedules it for Monday 8am, writing a draft into a Project for you to review
+- [ ] Module 8 schedules it for Monday 8am, writing a draft into a connected Drive, OneDrive or SharePoint folder for you to review
 
 ## Reflect
 

@@ -29,10 +29,10 @@ Two flags turn "several terminals" into a managed fleet:
 # Your shell. Three background sessions are live: backend and frontend (named, then backgrounded) + one started with --bg.
 $ claude agents
 Agent view (interactive; Enter attaches, Esc returns to your shell)
-  Needs input  frontend  a91c  "confirm new field name"                 worktree: proj-web
-  Working      backend   7c1e  fixing order-endpoint validation         worktree: proj-api
-  Working      bg-4f2a   4f2a  --bg: migrate remaining class components
-$ claude attach 7c1e
+  Needs input  frontend  a91c52e0  "confirm new field name"                 worktree: proj-web
+  Working      backend   7c1e9a03  fixing order-endpoint validation         worktree: proj-api
+  Working      migrate-class-components  4f2a61bd  --bg: migrate remaining class components
+$ claude attach 7c1e9a03
 Claude Code — session "backend" (branch: feature/orders)
 > tell frontend the order endpoint now returns amounts in cents, field "amount_cents"
 Message sent to session "frontend". It acknowledged and is updating its formatter util.

@@ -12,7 +12,7 @@ Do the connector audit and write your six data rules from the last lesson. If yo
 
 | Lane | Start with |
 |---|---|
-| 💼 Sales | Your CRM — HubSpot, or Salesforce if your admin has set up its beta connector; otherwise a CSV export |
+| 💼 Sales | Your CRM — HubSpot, or Salesforce if your admin has set up the beta **Salesforce in Claude** plugin (link it under **Settings → Plugins → Salesforce in Claude → Add**, not Customize → Connectors); otherwise a CSV export |
 | 📣 GTM | Your analytics or warehouse; if that is hard, your docs/wiki |
 | 🧭 Product | Jira or Linear |
 | 🧾 Finance | Drive or M365 — wherever your exports live |

@@ -7,7 +7,7 @@
     "check:content": "node scripts/verify-course.mjs",
     "check:browser": "playwright test",
     "check:links": "node scripts/check-links.mjs",
-    "check:unit": "node --test scripts/link-status.test.mjs scripts/checkers.test.mjs",
+    "check:unit": "node --test scripts/link-status.test.mjs scripts/checkers.test.mjs scripts/contrast.test.mjs",
     "test": "npm run check:content && npm run check:unit && npm run check:browser"
   },
   "devDependencies": {

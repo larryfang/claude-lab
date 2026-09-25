@@ -54,7 +54,7 @@ claude -p "Add a license header to this file" --allowedTools "Edit,Bash(git add 
 ```
 
 :::warning Unattended = scope tightly
-With no human in the loop, the permission mode and your pre-approved tools are your safety rails: `--allowedTools` pre-approves tools, `--tools` restricts which tools exist at all, and `--permission-mode dontAsk` denies anything not pre-approved. Allow only what the job needs. Use `--verbose` while developing the prompt, then turn it off in production.
+With no human in the loop, the permission mode and your pre-approved tools are your safety rails: `--allowedTools` pre-approves tools, `--tools` restricts which built-in tools exist, and `--permission-mode dontAsk` denies anything not pre-approved. Allow only what the job needs. Use `--verbose` while developing the prompt, then turn it off in production.
 :::
 
 ## In CI: GitHub Actions
@@ -134,7 +134,7 @@ Q: How do you run Claude Code without an interactive session, for use in a scrip
 > `claude -p` is non-interactive (headless) mode — the basis for CI, pre-commit hooks, and pipelines.
 
 Q: For an unattended batch job, what keeps it safe?
-+ Pre-approve only the needed tools with --allowedTools and pick a strict permission mode such as dontAsk or auto
++ Pre-approve only the needed tools with --allowedTools and pick a locked-down permission mode such as dontAsk, or auto for classifier review
 - Nothing; it's automatically safe
 - Run it as root
 - --dangerously-skip-permissions on a production repo

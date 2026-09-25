@@ -134,7 +134,7 @@ Find out which of these explains your gap **before** you present. "Marketing say
 
 ## Part 5 — Make it a Monday job
 
-This chain — integrity, model, readout — is a strong scheduled task once the campaign data comes from a connector, because it is read-only. Scheduled tasks cannot read local folders, so the scheduled version writes to a Project's files.
+This chain — integrity, model, readout — is a strong scheduled task once the campaign data comes from a connector, because it is read-only. Cloud scheduled tasks cannot read local folders, so the scheduled version writes to a connected Google Drive, OneDrive or SharePoint folder.
 
 - [ ] Save all three briefs as a sequence
 - [ ] Note your actual channel taxonomy and hard-code it, so it does not get re-derived each run

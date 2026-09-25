@@ -2,10 +2,10 @@
 
 Claude Code ships fast — this page pins the course to a date so you always know what's current. **Verified against v2.1.282, 2026-09-24.** The two sources that keep you up to date afterwards: the official [weekly digests](https://code.claude.com/docs/en/whats-new) and the [changelog](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md).
 
-## The headline shifts (Mar–Aug 2026)
+## The headline shifts (Mar–Sep 2026)
 
 ### Permissions grew a brain
-**Auto mode is now the default** on Pro/Max/Team: a classifier model reviews each action and interrupts you only for the risky ones. In Anthropic's study, humans clicking "approve" caught 13.6% of hidden dangerous commands; the classifier caught 89% ([@adocomplete, 2026-08-13](https://x.com/adocomplete/status/2087957562859913525)). Tune it in plain English and audit your rules with `claude auto-mode critique` ([permission modes](https://code.claude.com/docs/en/permission-modes)). Sandboxing matured alongside it: network egress allowlists and automatic credential masking ([sandboxing](https://code.claude.com/docs/en/sandboxing)).
+**Auto mode is now the default** on Pro/Max/Team: a classifier model reviews actions and blocks risky ones; Claude then tries another way, and you're asked only after repeated blocks. In Anthropic's study, humans clicking "approve" caught 13.6% of hidden dangerous commands; the classifier caught 89% ([@adocomplete, 2026-08-13](https://x.com/adocomplete/status/2087957562859913525)). Tune it in plain English and audit your rules with `claude auto-mode critique` ([permission modes](https://code.claude.com/docs/en/permission-modes)). Sandboxing matured alongside it: network egress allowlists and automatic credential masking ([sandboxing](https://code.claude.com/docs/en/sandboxing)).
 
 ### One session became a fleet
 - **Background agents** — `claude --bg "task"`, with **`claude agents`** as the control tower for every running/blocked/done background session.
@@ -31,7 +31,7 @@ Beyond `CLAUDE.md`: **auto memory** (Claude keeps its own per-project notes in `
 | `/checkup` | Audits your setup for config issues and context dead weight |
 | `/effort low…max` | Reasoning depth as a session dial; `ultrathink` in a prompt still deepens a single turn |
 | `claude ultrareview` | Cloud-hosted multi-agent review of a branch or PR |
-| `/rewind` after `/clear` | Checkpoints survive a clear since v2.1.191 |
+| `/rewind` after `/clear` | Since v2.1.191 the rewind menu can resume the conversation from before a `/clear`, in the same process |
 | Hooks beyond shell | HTTP hooks, and prompt hooks judged by a fast LLM ([hooks](https://code.claude.com/docs/en/hooks)) |
 | `claude import` | Migrate your config from another AI coding agent |
 

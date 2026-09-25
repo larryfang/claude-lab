@@ -66,7 +66,7 @@ Anthropic's own finance team runs roughly **150 shared skills from a version-con
 ## The official shortcuts
 
 :::tip Plugin first, custom second
-Before writing anything from scratch, look at what ships ready-made (availability varies by plan; look under **Customize → Plugins** — the finance agent templates install as plugins too):
+Before writing anything from scratch, look at what ships ready-made (availability varies by plan; look under **Customize → Plugins**. The finance agent templates are plugins too, but they appear only after you add the **Financial Services** marketplace in **Browse plugins** — from Anthropic's sources, or from GitHub at `anthropics/financial-services`; the exact labels may vary):
 
 - **Finance plugin** — `/variance-analysis`, `/reconciliation`, `/journal-entry`, `/income-statement`, `/sox-testing`. Anthropic's own caveat applies: outputs require review by qualified financial professionals before use in reporting or filings.
 - **Finance agent templates** — ten of them on paid plans, including a Month-end closer, a general-ledger reconciler and a statement auditor.
@@ -76,7 +76,7 @@ The labs in this lane teach you the underlying briefs, so you understand what th
 :::
 
 :::note Market data vs everyone
-The market-data connectors you may have read about — FactSet, S&P Capital IQ, Moody's, LSEG and friends — work on paid plans, but each one needs **your firm's own subscription to that data provider**. Without one, you work from exported files, your Drive/M365 connectors (where IT has enabled them), and the Excel add-in. Everything in this lane runs on exported files alone.
+The market-data connectors you may have read about — FactSet, S&P Capital IQ, Moody's, LSEG and friends — work on paid plans, but each one may need **your firm's own subscription or API key from that data provider**. Without one, you work from exported files, your Drive/M365 connectors (where IT has enabled them), and the Excel add-in. Everything in this lane runs on exported files alone.
 :::
 
 ## What Cowork must not do in finance

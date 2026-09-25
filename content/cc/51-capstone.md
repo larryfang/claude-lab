@@ -25,8 +25,9 @@ Plan:
   3. register in cli.py
   4. run pytest; update README usage
 Approve? (Ctrl+G to edit)
-> approve. write failing tests first, run them, then implement to green.
-[normal] ✎ tests/test_diff.py
+  1. Yes, and use auto mode   2. Yes, manually approve edits   3. No, keep planning
+> yes, and use auto mode. write failing tests first, run them, then implement to green.
+[auto mode] ✎ tests/test_diff.py
   $ pytest tests/test_diff.py -q   →  3 failed (diff not implemented)  ✓ red
 ✎ tinydate/commands/diff.py, ✎ cli.py
   $ pytest -q   →  41 passed  ✓ green (all existing tests still pass)

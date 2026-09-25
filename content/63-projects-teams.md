@@ -6,7 +6,7 @@ You have Skills for how to do the work. This lesson is about the context the wor
 
 A **Project** in Cowork is a persistent workspace for a body of work. It holds:
 
-- **Files** — the source data, references, previous outputs
+- **Files** — the source data, references and past outputs you add to it yourself (Cowork does not change a Project's contents)
 - **Instructions** — the standing context for everything in this project
 - **Memory** — what has already been established, so you stop re-explaining
 - **Its own Scheduled tasks** — recurring jobs that run against this project's context

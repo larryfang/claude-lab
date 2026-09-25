@@ -67,7 +67,7 @@ That final instruction turns an enablement exercise into a messaging audit. The 
 **Why it works:** it is repetitive, low-judgement, and perfectly suited to a schedule. Module 8.
 
 ```prompt
-Every Monday at 8am: visit the pricing and product pages of [COMPETITOR LIST], compare each against the saved snapshot in this Project's files, and write `competitive-watch-YYYY-MM-DD.md` to the Project listing only what changed, with before-and-after quotes and the URLs. Save fresh snapshots there. If nothing changed, say so in one line. Never infer a change you cannot show with quoted text from both versions.
+Every Monday at 8am: visit the pricing and product pages of [COMPETITOR LIST], compare each against the saved snapshot in the `Cowork-Reports/snapshots/` folder of my connected Google Drive (or OneDrive or SharePoint), and write `competitive-watch-YYYY-MM-DD.md` to `Cowork-Reports/` listing only what changed, with before-and-after quotes and the URLs. Save fresh snapshots to `Cowork-Reports/snapshots/`. If nothing changed, say so in one line. Never infer a change you cannot show with quoted text from both versions.
 ```
 
 ## The two places GTM must not trust Cowork

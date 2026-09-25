@@ -68,7 +68,7 @@ Q: What is the lesson?
 ~ Restore the file from backup and ask Cowork to be more careful.
 > Restore it, yes. But "be careful" is a wish. The next run needs an explicit write boundary.
 - Nothing went wrong — the folder is organised now.
-> The task succeeded and the job failed. Edits, moves, renames and overwrites inside the folder you granted do not trigger a permission prompt; only permanent deletion always asks. That is why this passed silently.
+> The task succeeded and the job failed. Picking a folder authorises Claude to read and write in it, so edits, moves, renames and overwrites there are part of the access you already gave — do not count on a prompt to stop them. Only permanent deletion always asks first, in any mode. That is why this passed silently.
 ```
 
 ## Case 5 — Last year's numbers, this year's pack
