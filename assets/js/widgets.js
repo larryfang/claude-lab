@@ -40,6 +40,7 @@
   }
 
   /* ---------- Flashcard deck ---------- */
+  var TOUCH = !!(window.matchMedia && window.matchMedia("(hover: none), (pointer: coarse)").matches);
   // cards: [{ id, f, b, c?, l? }]. opts.onGrade(card, rate) persists; opts.doneHtml() renders the end panel.
   function deck(root, cards, opts) {
     var stage = $(".flash-stage", root), count = $(".flash-count", root);
@@ -61,7 +62,7 @@
           '<span class="flash-face flash-back" aria-hidden="true"><span class="flash-side">Answer</span><span class="flash-text">' + card.b + "</span></span>" +
         "</button>" +
         '<div class="flash-dots" aria-hidden="true">' + cards.map(function (_, k) { return '<i class="' + (k < i ? "done" : k === i ? "now" : "") + '"></i>'; }).join("") + "</div>" +
-        '<p class="flash-hint">Select the card (or press Space) to flip it. Recall the answer first.</p>' +
+        '<p class="flash-hint">' + (TOUCH ? "Tap the card to flip it." : "Select the card (or press Space) to flip it.") + " Recall the answer first.</p>" +
         '<div class="flash-grades" hidden>' +
           '<button class="flash-grade" type="button" data-rate="again">Again<small>' + dueLabel(box, "again") + "</small></button>" +
           '<button class="flash-grade" type="button" data-rate="good">Got it<small>' + dueLabel(box, "good") + "</small></button>" +

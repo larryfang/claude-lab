@@ -80,10 +80,10 @@ Now it only runs when *you* type `/deploy-prod` — Claude won't trigger it on i
 
 Beyond `name`/`description`, skills accept ([skills reference](https://code.claude.com/docs/en/skills)):
 
-- **`allowed-tools`** — cap what the skill may do while it runs
+- **`allowed-tools`** — pre-approve tools for the turn that runs the skill (it does not restrict them; `disallowed-tools` does)
 - **`model`** / **`effort`** — pin a model or reasoning level for this workflow
 - **`argument-hint`** — what to show after `/name` in the completion menu
-- **`hooks`** — hooks scoped to just this skill's lifetime
+- **`hooks`** — hooks that register when the skill runs and stay active for the rest of the session (`once: true` removes one after its first run)
 
 Iterate fast with **`/reload-skills`** (hot-reload after editing a SKILL.md) and browse what's loaded with **`/skills`**.
 

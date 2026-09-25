@@ -16,8 +16,9 @@ Use it with: "use the code-reviewer subagent".
 ✎ updated .claude/settings.json → PostToolUse(Edit|Write): jq reads the edited path from stdin → prettier --write
 Run /hooks to verify. It'll format every file I edit from now on.
 > /hooks
-Configured hooks:
-  PostToolUse  Edit|Write → jq -r '.tool_input.file_path // empty' | xargs -r npx prettier --write
+Hooks (read-only menu) — PostToolUse: 1 hook
+  Edit|Write → [command] jq -r '.tool_input.file_path // empty' | xargs -r npx prettier --write
+  Source: Project Settings (.claude/settings.json) · Esc to close
 > now try /standup
 Running /standup…
   Auth:   added Google OAuth (oauth.ts), CSRF state check
@@ -46,6 +47,7 @@ Summarize what changed on this branch vs `main`:
 2. Group changes by area (feature/tests/config/docs).
 3. Output concise bullets suitable for a standup. No fluff.
 ```
+(If `/standup` isn't in the `/` menu yet, run `/reload-skills`.)
 - [ ] `/standup` exists and runs
 
 **2) A reviewer subagent.** Ask Claude:
@@ -65,14 +67,16 @@ model: sonnet
 Flag only correctness and security issues. Give file:line and a specific fix.
 Skip style nitpicks. If clean, say so.
 ```
+(If Claude can't find the subagent and `.claude/agents/` didn't exist when this session started, restart `claude`.)
 - [ ] `use the code-reviewer subagent` works
 
 **3) A format-on-edit hook.** Ask Claude:
 
 ```prompt
-Write a PostToolUse hook in .claude/settings.json that runs my formatter (prettier, or my project's format command) on files after every Edit or Write. Then show me /hooks output.
+Write a PostToolUse hook in .claude/settings.json that runs my formatter (prettier, or my project's format command) on files after every Edit or Write.
 ```
-- [ ] Editing a file now auto-formats it (verify with `/hooks`)
+Then run `/hooks` yourself to confirm it's registered.
+- [ ] `/hooks` lists the hook, and editing a file now auto-formats it
 
 **4) See them combine:**
 
@@ -113,5 +117,5 @@ Q: After this lab, how does your team get the same setup?
 ```
 
 :::try Module complete!
-You can now bend Claude Code to your team's exact workflow. Mark it done for your **🛠️ Customizer** badge. Next: scale beyond one session — headless mode, CI, and parallel agents.
+You can now bend Claude Code to your team's exact workflow. Choose **Complete and continue** for your **🛠️ Customizer** badge. Next: scale beyond one session — headless mode, CI, and parallel agents.
 :::

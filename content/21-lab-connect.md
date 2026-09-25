@@ -12,22 +12,25 @@ Do the connector audit and write your six data rules from the last lesson. If yo
 
 | Lane | Start with |
 |---|---|
-| 💼 Sales | Your CRM — Salesforce or HubSpot |
+| 💼 Sales | Your CRM — HubSpot, or Salesforce if your admin has set up its beta connector; otherwise a CSV export |
 | 📣 GTM | Your analytics or warehouse; if that is hard, your docs/wiki |
 | 🧭 Product | Jira or Linear |
+| 🧾 Finance | Drive or M365 — wherever your exports live |
 
 :::lab Step 1 — Add the connector
-- [ ] **Customize → Connectors** (on claude.ai: Settings → Connectors) → find your system → **Connect**
+- [ ] **Customize → Connectors** → **+** → find your system → **Connect** (the exact label may vary)
 - [ ] Complete the OAuth sign-in in the browser window that opens
 - [ ] **Read the consent screen.** Actually read it. Note whether it is asking for read or read-write
 - [ ] Return to Claude and confirm the connector shows as connected
+- [ ] Select the connector in **Customize → Connectors**, open **Tool permissions**, and set its write/delete tools to **Blocked**. Unblock one tool later only when a job needs it
+- [ ] In Cowork, set the mode selector in the message box to **Manual** for this lab — in **Auto** mode, Claude itself decides on tools marked *Needs approval*
 :::
 
 :::details It is not in the list
 Three routes, in order of ease:
 
-1. **Check for an official connector under a different name.** "Atlassian" covers Jira and Confluence; "Google Workspace" covers Drive, Docs and Gmail.
-2. **Look for a community MCP server** for that system. Verify it against the vendor's own repository before installing anything — check the publisher, the star count, and that the URL matches the official docs. An MCP server runs with your credentials.
+1. **Check for an official connector under a different name.** "Atlassian" covers Jira and Confluence; Google's connectors are listed separately — Gmail, Google Calendar and Google Drive (Drive covers Docs and Sheets).
+2. **Check whether the vendor hosts its own remote MCP server.** Its own documentation gives the URL, which you add as a custom connector. Add only servers built and hosted by an organisation you trust — a star count is not a security check. An MCP server runs with your credentials, and on Team/Enterprise only an Owner can add one ([custom connectors guide](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp)).
 3. **Fall back to files.** Export a CSV and drop it in your workspace folder. Less elegant, works today, and every lab in this course is written to work either way.
 
 On a Team or Enterprise plan, a missing connector is usually an admin policy. Ask, naming the job.
@@ -41,8 +44,8 @@ The steps above are generic on purpose. Here are the two connectors this course'
 Atlassian's official **Rovo MCP server** covers Jira, Confluence and JSM, and sits in the connector directory ([claude.com/connectors/atlassian](https://claude.com/connectors/atlassian)).
 
 1. **Customize → Connectors → +** → search **Atlassian** → **Connect**
-2. The OAuth screen lists the sites and scopes — note whether you granted read-only or read-write, per product
-3. Every action then runs **as you**: Atlassian's own docs state the server "respects the user's existing access controls" ([Atlassian's getting-started guide](https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/))
+2. The OAuth screen lists the site and the access it requests. Signing in does not make the connector read-only: to do that, select **Atlassian** in **Customize → Connectors** and set its write tools (such as `createJiraIssue` and `editJiraIssue`) to **Blocked** under **Tool permissions**
+3. Every action then runs **as you**: Atlassian's own docs state that "all actions respect users' existing access controls and permissions" ([Atlassian's getting-started guide](https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/))
 
 Smoke-test it with something you can check in ten seconds:
 
@@ -52,14 +55,14 @@ Using the Atlassian connector only: (1) list every issue in project [YOUR-KEY] t
 
 Then the cross-source move that makes it real: *"Draft next week's sprint update from the Jira changes above, using the format of that Confluence page."*
 
-If your admin has not enabled the directory connector, the same server is reachable as a **custom connector by URL** — `https://mcp.atlassian.com/v1/mcp/authv2` (Atlassian's current recommended endpoint; the older `/v1/sse` form is legacy) ([Atlassian docs](https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/)). On managed plans that still needs an Owner — which is the policy conversation from the last lesson.
+If your admin has not enabled the directory connector, the same server is reachable as a **custom connector by URL** — `https://mcp.atlassian.com/v2/mcp` (Atlassian's current endpoint; existing v1 connections move to v2 tools on 1 March 2027) ([Atlassian docs](https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/)). On managed plans that still needs an Owner — which is the policy conversation from the last lesson. One more thing your admin will want to know: Atlassian draws MCP calls from your organisation's shared pool of Rovo credits.
 :::
 
 :::details Worked example — Gmail
 Gmail is a first-party Google Workspace connector (with Calendar and Drive alongside), available on all plans ([Google Workspace connectors guide](https://support.claude.com/en/articles/10166901-use-google-workspace-connectors)).
 
 1. **Customize → Connectors** → **Gmail** → **Connect** → Google OAuth
-2. Read the consent screen — this one can **read, draft, and (with your approval per action, by default) send, reply and forward**. That approval gate is exactly the "read and write are different grants" rule from the last lesson, enforced by the product; on Team/Enterprise, Owners decide whether members can waive it.
+2. Read the consent screen — this one can **read, draft, send, reply and forward**. By default Claude asks for your approval before each send, reply or forward, and on Team/Enterprise, Owners decide whether members can waive that. But in Cowork's **Auto** mode Claude itself decides on tools marked *Needs approval*. So keep the Cowork mode on **Manual**, and in Gmail's **Tool permissions** set send, reply and forward to **Blocked** — that is the "read and write are different grants" rule from the last lesson, and Blocked is the only setting that holds in every mode.
 
 Smoke-test with a known answer:
 
@@ -67,7 +70,7 @@ Smoke-test with a known answer:
 Using the Gmail connector only, find every email from the [customer-domain.com] domain in the last 14 days. Table: date, sender, subject, one-line gist. Then tell me the date of my single most recent email with them. Read-only — draft nothing, send nothing.
 ```
 
-Then the useful version: *"For each thread above where they asked a question we have not answered, draft (do not send) a reply in my tone."* Drafts land in your Gmail drafts folder — the human-review gate stays yours.
+Then the useful version: *"For each thread above where they asked a question we have not answered, draft (do not send) a reply in my tone."* Unblock only the draft tool for this; send, reply and forward stay Blocked. Drafts land in your Gmail drafts folder — the human-review gate stays yours.
 :::
 
 ## Part 2 — The read-only smoke test (4 min)
@@ -166,7 +169,7 @@ Check, in order: are you querying the right instance or workspace (production ve
 :::
 
 :::details It says it cannot access the connector mid-run
-Auth tokens expire — commonly every 30 to 90 days, sometimes sooner. Reconnect under Customize → Connectors. If a scheduled task started failing silently, this is usually why, which is a good argument for scheduled jobs that report their own failures.
+Sign-ins expire or get revoked — a password change, an admin policy, or the service's own token lifetime. Disconnect and reconnect under Customize → Connectors. If a scheduled task started failing silently, this is usually why, which is a good argument for scheduled jobs that report their own failures.
 :::
 
 :::details It returned fewer records than I expected
@@ -203,9 +206,9 @@ Q: What is the real unlock of having two connectors rather than one?
 Q: A scheduled Cowork task quietly stops producing output. Most likely cause?
 - The model changed
 + A connector's auth token expired and nothing was watching
-- The folder moved
+- Scheduled tasks only run once
 - Too much data
-> Tokens expire. Build scheduled jobs that report their own failures, and check them.
+> Sign-ins expire or get revoked. Build scheduled jobs that report their own failures, and check them.
 
 Q: Why keep an ACCESS-LOG.md?
 - It is required by Claude

@@ -3,7 +3,20 @@
 Twenty minutes. Jira or Linear goes in. Three updates come out — for an exec, for your team, and for customers — because they want three different things and you currently write one and hope.
 
 :::note Data
-Best with your Jira or Linear connector live (Module 3). Without it, export your issues to CSV, or use the practice `product/` data from Module 1 as a stand-in.
+Best with your Jira or Linear connector live (Module 3). Without it, export your issues to CSV into `product/`, or generate a practice tracker export with the prompt below. The Module 1 `product/` data has no tracker in it. Where a brief says "the tracker", it means that file.
+:::
+
+:::details 🧭 No tracker access? Generate a practice export
+```prompt
+In the `product/` subfolder, create realistic but entirely FICTIONAL practice tracker data so I can learn on it. Invent all people, customers and issue keys — do not use any real company. Use dates within the last 60 days.
+
+Create:
+- `tracker-export.csv` with 40 rows and columns: issue_key, type (epic / story / bug), epic_key, summary, status (To Do / In Progress / Done), assignee, created_date, updated_date, due_date, resolution_date
+  Make it deliberately messy: two Done issues with a blank resolution_date, four In Progress issues not updated for more than 10 days, three issues with no assignee, three issues past their due_date and not Done, and one epic marked Done whose child issues are not all Done.
+- `feedback-links.csv` with 12 rows: issue_key, customer, contact, request_quote, date_asked — linking some Done issues to the customer who asked for them. Leave two rows with a blank request_quote.
+
+Leave everything loose in `product/`. Do not organise it.
+```
 :::
 
 ## Part 1 — Ground truth first (6 min)
@@ -73,6 +86,8 @@ RESULT. Three files in `output/updates/`:
 - Any change that requires action from them, stated plainly
 - What is coming next, with no dates unless the tracker actually supports a date
 - No issue keys, no internal team names, no jargon
+
+Also produce `output/updates/update-evidence.csv` with columns item, audience (exec / team / customer), status, issue_key, date_or_no_date.
 
 INPUTS. Only the tracker data and `output/tracker-reality.md`.
 

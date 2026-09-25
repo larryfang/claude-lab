@@ -9,7 +9,7 @@ The task: add input validation to a "create todo" endpoint so empty titles are r
 ```claude-sim
 # A small Express + Jest API is open. Start in plan mode (Shift+Tab → plan).
 > [plan mode] read src/todos.js and __tests__ to see how POST /todos works and how it's tested. don't change anything.
-[plan mode — read only]
+[plan mode — no edits]
   • POST /todos → src/todos.js:createTodo — pushes { id, title } to the in-memory store
   • No validation: an empty or missing title is accepted (bug)
   • Tests use supertest in __tests__/todos.test.js
@@ -19,9 +19,10 @@ Plan:
   1. add __tests__/todos.validation.test.js: empty title → 400; missing → 400; valid → 201
   2. implement validation in createTodo (return 400 before writing to store)
   3. run the full suite; ensure existing tests still pass
-Approve to implement (I'll switch out of plan mode).
-> approve. write the failing tests first and run them.
-[normal mode] ✎ created __tests__/todos.validation.test.js
+Approve?
+  1. Yes, and use auto mode   2. Yes, manually approve edits   3. No, keep planning
+> yes, and use auto mode. write the failing tests first and run them.
+[auto mode] ✎ created __tests__/todos.validation.test.js
   $ npm test -- validation
  FAIL  __tests__/todos.validation.test.js
    ✕ empty title → 400   (received 201)
@@ -43,7 +44,7 @@ treating whitespace-only as empty. Otherwise solid; scope unchanged.
 ```
 
 :::tip Spot the full loop
-**Explore** (plan mode, read-only) → **Plan** (test-per-step) → **Code** (red → green) → **verify** (suite stays green) → **adversarial review** (subagent caught the whitespace edge case) → **Commit**. That's the professional rhythm in one pass.
+**Explore** (plan mode, no edits) → **Plan** (test-per-step) → **Code** (red → green) → **verify** (suite stays green) → **adversarial review** (subagent caught the whitespace edge case) → **Commit**. That's the professional rhythm in one pass.
 :::
 
 ## Part 2 — Do it on your own repo
@@ -67,7 +68,7 @@ Plan [the change] test-first. List the steps, with a test for each. Include edge
 
 - [ ] I reviewed the plan (used **Ctrl+G** to edit it, if needed)
 
-**Code (red → green):** switch out of plan mode (Shift+Tab), then:
+**Code (red → green):** approve the plan (or press Shift+Tab to leave plan mode), then:
 
 ```prompt
 Write the failing tests first and run them so I see red. Then implement until green and show the passing output. Don't break existing tests.
@@ -111,5 +112,5 @@ Q: Why write the tests BEFORE the implementation?
 ```
 
 :::try Module complete!
-You ran the full professional loop. Mark it done for your **🔁 Workflow Pro** badge. Next module: make Claude Code *yours* with custom commands, subagents, and hooks.
+You ran the full professional loop. Choose **Complete and continue** for your **🔁 Workflow Pro** badge. Next module: make Claude Code *yours* with custom commands, subagents, and hooks.
 :::

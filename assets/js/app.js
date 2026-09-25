@@ -569,8 +569,8 @@
       var s = cstate(cid);
       var html = "";
       html += '<div class="lesson-top">';
-      html += '<a class="crumb" href="#/">All courses</a><span>›</span>';
-      html += '<a class="crumb" href="' + courseHref(c.id) + '">' + c.emoji + " " + c.title + "</a><span>›</span>";
+      html += '<a class="crumb crumb-home" href="#/">All courses</a><span class="crumb-sep">›</span>';
+      html += '<a class="crumb crumb-course" href="' + courseHref(c.id) + '" aria-label="' + esc(c.title) + '">' + c.emoji + ' <span class="crumb-text">' + c.title + "</span></a><span>›</span>";
       html += '<span class="crumb">' + m.emoji + " " + m.title + "</span><span style=\"flex:1\"></span>";
       var freshness = c.freshness && c.freshness[id];
       if (freshness) html += '<a class="freshness" href="' + freshness.sourceUrl + '" target="_blank" rel="noopener">Verified ' + formatVerifiedDate(freshness.verifiedDate) + ' · ' + esc(freshness.sourceLabel) + '</a>';
@@ -585,8 +585,8 @@
       html += '<div class="lesson-foot">';
       if (!isRef(m)) {
         var done = !!s.completed[id];
-        html += '<div class="complete-row"><button class="complete-btn' + (done ? " done" : "") + '" id="completeBtn">' + (done ? "✓ Completed — nice!" : "Mark this lesson complete") + "</button>";
-        html += '<span class="complete-hint">' + (done ? "You can revisit any time." : "Finish the activities above, then mark it done to track progress.") + "</span></div>";
+        html += '<div class="complete-row"><button class="complete-btn' + (done ? " done" : "") + '" id="completeBtn">' + completeLabel(done, !!nextId) + "</button>";
+        html += '<span class="complete-hint">' + completeHint(done, !!nextId) + "</span></div>";
       }
       html += '<div class="pager">';
       if (prevId) { var pi = lessonInfo(c, prevId); html += '<a href="' + lessonHref(c.id, prevId) + '"><span class="dir">← Previous</span><span class="ptitle">' + pi.lesson.title + "</span></a>"; }
@@ -679,7 +679,9 @@
     var r = btn.getBoundingClientRect(), w = Math.min(340, window.innerWidth - 24);
     pop.style.width = w + "px";
     pop.style.left = Math.max(12, Math.min(r.left + window.scrollX, window.scrollX + window.innerWidth - w - 12)) + "px";
-    pop.style.top = (r.bottom + window.scrollY + 8) + "px";
+    var h = pop.offsetHeight, below = r.bottom + 8 + h <= window.innerHeight, above = r.top - 8 - h >= 0;
+    pop.style.top = ((below || !above) ? r.bottom + window.scrollY + 8 : r.top + window.scrollY - h - 8) + "px";
+    if (!below && !above) pop.scrollIntoView({ block: "nearest" });
     $(".term-add", pop).addEventListener("click", function (e) {
       WIDGETS.saveCard({ store: store, save: save, touch: touch, course: c.id, lesson: c.glossary }, { id: cardId, f: MD.parseInline(t.name), b: MD.parseInline(t.def), c: c.id, l: c.glossary }, "good");
       e.target.disabled = true; e.target.textContent = "✓ In your review deck"; buildHubNavIfNeeded(); toast("🃏 " + t.name + " added to your review deck");
@@ -735,6 +737,8 @@
         : "<p>Tried <code>content/" + file + "</code> → <code>" + (err && err.message ? err.message : err) + "</code>.</p>") + "</div>";
   }
 
+  function completeLabel(done, hasNext) { return done ? "✓ Completed — nice!" : hasNext ? "✓ Complete and continue →" : "✓ Complete the course"; }
+  function completeHint(done, hasNext) { return done ? "Select it again to mark the lesson not done." : "Do the activities above first. This records your progress" + (hasNext ? " and opens the next lesson." : "."); }
   function toggleComplete(cid, id) {
     var c = byId[cid], s = cstate(cid);
     var was = !!s.completed[id];
@@ -742,14 +746,16 @@
     if (was) delete s.completed[id]; else { s.completed[id] = true; touch(); }
     if (!was && progressPct(c).pct === 100 && !s.doneAt) s.doneAt = WIDGETS.srs.today();
     save();
+    var order = flatOrder(c), nextId = order[order.indexOf(id) + 1] || null;
     var cb = $("#completeBtn");
-    if (cb) { cb.classList.toggle("done", !was); cb.textContent = !was ? "✓ Completed — nice!" : "Mark this lesson complete"; var hint = $(".complete-hint"); if (hint) hint.textContent = !was ? "You can revisit any time." : "Finish the activities above, then mark it done to track progress."; }
+    if (cb) { cb.classList.toggle("done", !was); cb.textContent = completeLabel(!was, !!nextId); var hint = $(".complete-hint"); if (hint) hint.textContent = completeHint(!was, !!nextId); }
     var navA = $('.nav-link[data-lesson="' + id + '"]'); if (navA) navA.classList.toggle("done", !was);
     refreshTopProgress(cid); refreshNavMeters(c);
     if (!was) {
       var fresh = earnedBadges(c).filter(function (b) { return prev.indexOf(b.id) === -1; });
       if (fresh.length) { burstConfetti(); toast("🎉 Badge unlocked: " + fresh[0].emoji + " " + fresh[0].label); }
-      else toast("✓ Marked complete");
+      else toast("✓ Lesson complete");
+      if (nextId) location.hash = lessonHref(cid, nextId);
     }
   }
 

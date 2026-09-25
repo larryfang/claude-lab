@@ -12,9 +12,9 @@ Working on task A, you ask about unrelated thing B, then go back to A. Now A's c
 
 ## /compact — summarize without losing the thread
 
-When you're **deep in one task** but the window is filling, don't clear (you'd lose useful history). Instead **compact**:
+When you're **deep in one task** but the window is filling, don't clear (you'd lose useful history). Instead **compact** — at the Claude prompt, type either:
 
-```bash
+```text
 /compact
 /compact focus on the API changes and the failing test
 ```
@@ -25,12 +25,12 @@ When you're **deep in one task** but the window is filling, don't clear (you'd l
 
 Every **user prompt** you send creates a **checkpoint**. Claude snapshots files before each change, so you can roll back ([checkpointing docs](https://code.claude.com/docs/en/checkpointing)).
 
-- **`Esc` `Esc`** (double-tap) or `/rewind` → open the rewind menu
+- **`Esc` `Esc`** (double-tap, with an empty prompt) or `/rewind` → open the rewind menu
 - Restore **conversation only**, **code only**, **both**, or **summarize from here**
-- Since v2.1.191 you can even restore checkpoints from **before a `/clear`** ([changelog](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md))
+- Since v2.1.191 the rewind menu can even resume the conversation from **before a `/clear`**, while you're still in the same Claude Code process ([changelog](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md))
 
 :::concept Be bold, then rewind
-Because rewinding is cheap, you can tell Claude to **try something risky**. If it goes sideways, rewind and try another angle. Checkpoints persist across sessions. *(They track Claude's changes only — not a replacement for git.)*
+Because rewinding is cheap, you can tell Claude to **try a bold edit**. If it goes sideways, rewind and try another angle. Checkpoints persist across sessions. *(Rewind only undoes edits from Claude's file-editing tools — not changes made by Bash commands like `rm`, `mv` or a migration, and usually not subagent edits. Commit first; it's not a replacement for git.)*
 
 Want to keep the current state *and* explore an alternative? **`/branch`** forks the conversation to try another direction, and **`/fork`** copies the whole session into a new background session that keeps working while you continue here.
 :::
@@ -54,7 +54,7 @@ The subagent explores in its **own context window** and returns just a **summary
 - **`/btw`** — ask a quick side question that *doesn't* enter the conversation history ([commands](https://code.claude.com/docs/en/commands)).
 
 :::tip Audit the standing overhead: /checkup
-Context isn't only what you add mid-session — it's also what loads *every* session: skills, MCP servers, plugins, CLAUDE.md. **`/checkup`** audits that standing setup — flagging unused pieces and duplicated rules — and offers fixes. Claude Code's creator shipped it exactly because most long-time setups accumulate dead weight ([@bcherny, 2026-07-08](https://x.com/bcherny/status/2074997570317779038)).
+Context isn't only what you add mid-session — it's also what loads *every* session: skills, MCP servers, plugins, CLAUDE.md. **`/checkup`** audits that standing setup — flagging unused pieces and duplicated rules — and offers fixes. Claude Code's creator announced it as a way to clean up unused skills, MCP servers and plugins, and to dedupe `CLAUDE.md` ([@bcherny, 2026-07-08](https://x.com/bcherny/status/2074997570317779038)).
 :::
 
 ## Course-correct early
@@ -118,10 +118,10 @@ Q: What does `/compact` keep while it frees space?
 A: Key code, file states, and decisions. Give it a focus, e.g. `/compact focus on the API changes and the failing test`.
 
 Q: What creates a checkpoint, and how do you open the rewind menu?
-A: Every user prompt you send creates a checkpoint. Double-tap `Esc` or run `/rewind` to open the menu.
+A: Every user prompt you send creates a checkpoint. Double-tap `Esc` on an empty prompt, or run `/rewind`, to open the menu.
 
 Q: Do checkpoints replace git?
-A: No. They track Claude's changes only.
+A: No. They track only edits from Claude's file-editing tools — not Bash changes like `rm` or `mv`.
 
 Q: You corrected the same thing twice. What now?
 A: Stop. `/clear` and write a sharper prompt that bakes in what you learned.

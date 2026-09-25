@@ -307,7 +307,7 @@ You are a proofreader with no stake in this being right. Sources: [THE DELIVERAB
 
 ## Scheduled-job wrapper
 
-Add this to any brief you put on a schedule. Remember: scheduled tasks run remotely against your connectors and the files in your Claude account — create the schedule inside a Project and write the report to the Project's files, not to a local folder.
+Add this to any brief you put on a schedule. Remember: cloud scheduled tasks run against your connectors and the files in your Claude account — create the schedule inside a Project saved to your account (made with Start from scratch) and write the report to the Project's files, not to a local folder. After the first run, check that the next run can see the previous file; if not, write to a connected Drive, OneDrive or SharePoint folder.
 
 ```prompt
 Every [DAY] at [TIME].

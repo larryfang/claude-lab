@@ -9,15 +9,16 @@ Two more ways to extend Claude Code — connecting **external tools** (MCP) and 
 ```bash
 # remote server over HTTP (the increasingly common form)
 claude mcp add --transport http sentry https://mcp.sentry.dev/mcp
+claude mcp add --transport http notion https://mcp.notion.com/mcp
 
-# local stdio server
-claude mcp add notion -- npx -y @notionhq/notion-mcp-server
+# local stdio server (everything after -- is the server's own command)
+claude mcp add my-server -e API_KEY=xxx -- npx -y my-mcp-server
 ```
 
 Once connected, you can ask Claude to *"implement the feature described in Notion ticket X,"* *"query the staging DB for users created today,"* or *"pull this Figma frame and build the component."* Manage servers with **`/mcp`** in-session, or `claude mcp list` / `claude mcp login <name>` (OAuth) from the shell. Scope with `-s local` (default), `-s project` (writes committable `.mcp.json`), or `-s user` ([MCP docs](https://code.claude.com/docs/en/mcp)).
 
 :::warning Every connected tool costs context
-Each MCP server's tool definitions load into the context window. Claude Code mitigates this with **tool search** — tool schemas are deferred and fetched on demand, and a server can opt out per-tool with `alwaysLoad` ([MCP docs](https://code.claude.com/docs/en/mcp)). Still: connect the servers you use, not every server you can. `claude plugin details <name>` shows a plugin's projected token cost before you commit to it.
+Each MCP server's tool definitions load into the context window. Claude Code mitigates this with **tool search** — tool schemas are deferred and fetched on demand, and a server can opt out per-tool with `alwaysLoad` ([MCP docs](https://code.claude.com/docs/en/mcp)). Still: connect the servers you use, not every server you can. Once a plugin is installed (or loaded with `--plugin-dir`), `claude plugin details <name>` shows its always-on token cost, so you can see what it adds and remove it if it's heavy.
 :::
 
 :::tip CLI tools are often simpler than MCP
@@ -40,7 +41,7 @@ claude plugin install superpowers@claude-plugins-official
 Anthropic curates an official directory ([anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official)) and mirrors community submissions ([anthropics/claude-plugins-community](https://github.com/anthropics/claude-plugins-community)); any GitHub/GitLab repo or zip can be a marketplace, so **teams host their own**. A plugin is just files — `.claude-plugin/plugin.json` plus the usual `commands/`, `agents/`, `skills/`, `hooks/`, `.mcp.json`.
 
 :::warning Plugins run with your permissions
-A plugin's hooks and MCP servers execute on your machine. Install from marketplaces you trust, review what `claude plugin details <name>` reports, and prefer official or well-known community sources — the ecosystem's own top repos warn about malicious look-alike mirrors.
+A plugin's hooks and MCP servers execute on your machine. Install from marketplaces you trust, read a plugin's `/plugin` listing or repo before you install it, check what `claude plugin details <name>` reports afterwards, and prefer official or well-known community sources — the ecosystem's own top repos warn about malicious look-alike mirrors.
 :::
 
 ## The .claude/ folder & settings hierarchy
@@ -71,7 +72,7 @@ Settings merge across four layers, highest priority last:
 
 ## Which mechanism do I use? (the decision table)
 
-You now have five ways to customize. Pick by **what you need**:
+You now have six ways to customize. Pick by **what you need**:
 
 | Need | Use |
 |---|---|

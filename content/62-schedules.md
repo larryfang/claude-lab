@@ -23,7 +23,7 @@ A saved job that runs on a cadence. Every Monday at 8am, every weekday at 6pm, e
 :::concept Rules for unattended work
 **1. Read-only, or writes to a scratch folder.** A scheduled job runs with nobody reading the plan. Nothing that modifies a source system, sends an email, updates a CRM record, or transitions a ticket. It writes a draft; you decide.
 
-**2. Run it manually three times first.** A brief with a small flaw produces one flawed output when you run it by hand, and a flawed output every week forever when you schedule it — while you gradually stop reading them. This is how Anthropic's own reps graduate a job: keep a human validation step on every run until repeated checks confirm it is right, and only then remove the check and schedule it ([Anthropic's deployment guide](https://claude.com/blog/new-guide-deploying-claude-across-the-enterprise-with-claude-cowork)).
+**2. Run it manually three times first.** A brief with a small flaw produces one flawed output when you run it by hand, and a flawed output every week forever when you schedule it — while you gradually stop reading them. One Anthropic rep graduated a job this way: he kept a human validation step on every run until repeated checks confirmed it was right, and only then removed the check and let it run on a schedule ([Anthropic's deployment guide](https://claude.com/blog/new-guide-deploying-claude-across-the-enterprise-with-claude-cowork)).
 
 **3. It must report its own failures.** The worst scheduled-task failure is silence. A connector token expires, and the job produces nothing, and you notice five weeks later that you stopped receiving something you had come to rely on.
 :::
@@ -48,8 +48,8 @@ If nothing needs attention, write "Nothing needs attention this week" and the st
 Read-only. Never modify the CRM. Write only the report file, nothing else.
 ```
 
-:::warning Scheduled runs cannot see your local folders
-Scheduled tasks run remotely on Anthropic's infrastructure — they work with your **connectors and the files saved in your Claude account** (a Project is the natural home), and they *cannot* read or write a folder on your computer, like `output/weekly/`. So: create the schedule **inside a Project** and have it write its report to the Project's files, as the brief above does. If a job genuinely must touch local files, keep it manual and run it from the desktop app.
+:::warning Cloud runs cannot see your local folders
+By default, scheduled tasks run in the cloud — they work with your **connectors and the files saved in your Claude account**, and they *cannot* read or write a folder on your computer, like `output/weekly/`. A task that needs local files or apps runs only on your computer, so the computer must be awake and the desktop app open. So: create the schedule **inside a Project** made with **Start from scratch**, which is saved to your Claude account (a Project made from a folder on your computer stays on that computer), and have it write its report to the Project's files, as the brief above does. Check this after the first run: if the next run cannot see last week's file, have the job write to a connected Drive, OneDrive or SharePoint folder instead.
 :::
 
 Four things there earn their place:
@@ -69,7 +69,7 @@ If you have not read the last three outputs of a scheduled job, delete the job. 
 
 ### Practical notes
 
-- Scheduled tasks run remotely, on their cadence, even when your computer is asleep or the app is closed. Check the run history under **Scheduled** in the sidebar; when a run fails, the usual cause is an expired connector token, not your machine being off.
+- Cloud scheduled tasks run on their cadence even when your computer is asleep or the app is closed; a task that needs local files runs only while your computer is awake and the app is open. Check the run history under **Scheduled** in the sidebar; when a cloud run fails, the usual cause is an expired connector token, not your machine being off.
 - Time zones matter. Check what your schedule is set relative to.
 - Start with **one** scheduled job. Get it right, read its output for a month, then add a second.
 
@@ -147,8 +147,8 @@ A: A full report every week goes unread by week three. "What changed" gets read.
 Q: What goes in a scheduled report's status line?
 A: The date, the number of records queried, the number returned, and OK or PROBLEM. It is your failure detection at a glance.
 
-Q: Why can a scheduled task not use a local folder?
-A: It runs remotely, with your connectors and the files in your Claude account. Create it inside a **Project** and write to the Project's files.
+Q: Where does a scheduled task run, and what changes if it needs local files?
+A: By default it runs in the cloud, with your connectors and the files in your Claude account. Create it inside a **Project** saved to your account and write to the Project's files. (A task that needs local files runs only on your computer, while it is awake and Claude Desktop is open.)
 
 Q: When should you delete a scheduled job?
 A: When you have not read its last three outputs. It is not saving you time; it is generating unread files and false confidence.

@@ -38,7 +38,7 @@ Here is what I had to correct every time I ran it: [YOUR LIST]
 Here are my company's definitions that the brief kept having to explain: [YOUR DEFINITIONS — stage weightings, segment names, what "at risk" means, your document section names, your currency, your project keys]
 
 Write me a complete SKILL.md with:
-- YAML frontmatter: a name in kebab-case, and a description that begins "Use when the user asks for..." and lists every phrase someone might actually use for this job, plus what it produces
+- YAML frontmatter: a name in kebab-case, and a description that begins "Use when the user asks for..." and lists the 4–6 most common phrasings someone might use for this job, plus what it produces, within 200 characters
 - A definitions section holding my company specifics so they are never re-derived
 - The artefacts it always produces, with exact filenames and section orders
 - A rules section built from my corrections
@@ -66,7 +66,7 @@ For workflows easier to *do* than to explain, Cowork on **Claude for Mac** has *
 - [ ] Save `SKILL.md` inside it
 - [ ] Create any supporting `reference/` files it mentions — your FX rates, segment definitions, template
 - [ ] **Zip the folder**, then upload it: **Customize → Skills → + → Create skill → Upload a skill**
-- [ ] Confirm it appears in the Skills list, then type `/` in Cowork — installed skills show up there too
+- [ ] Confirm it appears in the Skills list with its toggle **on**, then type `/` in Cowork — installed skills show up there too. No Skills section, or skills greyed out? Turn on code execution in Settings → Capabilities
 :::
 
 :::details If the upload flow looks different
@@ -97,11 +97,11 @@ Typing `/` in Cowork lists your installed skills and lets you call one by name. 
 :::
 
 :::warning If the Skill did not fire
-This is the most common outcome on a first attempt, and it is almost always the description.
+This is the most common outcome on a first attempt. First confirm the Skill is toggled on in Customize → Skills. After that, it is almost always the description.
 
 Ask directly:
 
-> "I have a Skill called [name]. I asked '[your phrasing]' and it did not activate. Here is the description: [paste]. Why did it not match, and rewrite it so that it does — including every phrasing someone might use for this job."
+> "I have a Skill called [name]. I asked '[your phrasing]' and it did not activate. Here is the description: [paste]. Why did it not match, and rewrite it so that it does — using the 4–6 most common phrasings someone might use for this job, within 200 characters."
 
 Then test again with three *different* natural phrasings. A description that only matches one exact sentence is not usable by a team, because your colleagues will phrase it their way.
 :::
@@ -188,7 +188,7 @@ Q: Your Skill did not activate. What is the most likely cause?
 + The description does not match how you phrased the request — this is by far the most common first-attempt failure
 - The rules section is too long
 - Cowork needs restarting
-> Rewrite the description to include every phrasing someone might use, then test with three different ones.
+> Rewrite the description around the most common phrasings (within 200 characters), then test with three different ones.
 
 Q: What does the "read this as a new colleague" pass reveal?
 - Formatting problems
@@ -206,5 +206,5 @@ Q: Why share a new Skill with one colleague before the whole team?
 ```
 
 :::try Next
-Now remove yourself from the loop entirely: schedules.
+Next: a ready-to-adapt Skill for each function.
 :::

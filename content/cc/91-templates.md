@@ -60,7 +60,7 @@ model: sonnet
 ---
 You are a senior reviewer. Flag only correctness and security issues (not style).
 For each finding give file:line and a specific fix. If the diff is clean, say so.
-Follow the project rules in CLAUDE.md. Restate any rule that is critical to this review here as an explicit handoff constraint.
+Follow the project rules in CLAUDE.md. Rules critical to this review: <restate them here, e.g. "never approve an edit to an existing file in db/migrations/">.
 ```
 
 ## A skill — `.claude/skills/api-conventions/SKILL.md`
@@ -111,9 +111,10 @@ description: REST conventions for our services. Use when adding or changing endp
 ## Connect an MCP server (shell)
 
 ```bash
-# GitHub — the official remote server (or use the gh CLI directly — often simpler)
-claude mcp add --transport http github https://api.githubcopilot.com/mcp/
-claude mcp login github
+# GitHub — the official remote server, authenticated with a fine-grained personal
+# access token (or use the gh CLI directly — often simpler)
+claude mcp add --transport http github https://api.githubcopilot.com/mcp/ \
+  --header "Authorization: Bearer YOUR_GITHUB_PAT"
 
 # Sentry — remote HTTP server (example straight from `claude mcp add --help`)
 claude mcp add --transport http sentry https://mcp.sentry.dev/mcp

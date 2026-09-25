@@ -181,7 +181,7 @@ Did you find one? Note what kind of error it was. That class of error is the one
 
 ## Reflect
 
-You wrote **two briefs**. Claude planned, read a dozen files, cleaned data, calculated, wrote three deliverables in three formats, and put them where you asked.
+You wrote **three short briefs**. Claude planned, read every file in your lane folder, cleaned data, calculated, wrote three deliverables in three formats, and put them where you asked.
 
 :::concept The Cowork loop
 > **Describe the outcome → read the plan → let it work → verify the deliverable → refine.**

@@ -26,8 +26,8 @@ RESULT. Two files in `output/`:
 1. Row count in, row count out. If they differ, explain exactly why
 2. Every channel-name variant found and what you mapped it to
 3. Every row where a rate cannot be computed (zero denominator) and how you marked it
-4. Every row with spend but no clicks, or clicks but no spend — these are usually tracking failures, list them all
-5. Every row with a funnel impossibility: more SQLs than MQLs, more opportunities than SQLs, negative values
+4. Every row with spend but no clicks, or clicks but no spend — these are usually tracking failures unless the channel is unpaid (email, organic, referral); list them all and say which
+5. Every row with a funnel impossibility: negative values, or more SQLs than MQLs or more opportunities than SQLs that conversion lag from an earlier period cannot explain
 6. Every duplicate or near-duplicate row
 7. Date coverage: the actual range, and any gaps
 8. A trust score out of 10 for this dataset, with reasoning
@@ -47,14 +47,16 @@ Show me your plan first.
 :::
 
 :::tip Section 5 is where the real problems live
-"More SQLs than MQLs" is not a rounding issue. It means your funnel definitions differ between systems, or leads are entering mid-funnel, or someone is double-counting. Finding those rows is often more valuable than the entire performance analysis that follows — and it is the finding your CMO will actually thank you for.
+"More SQLs than MQLs" is not a rounding issue. First rule out conversion lag — last month's MQLs becoming this month's SQLs. If lag cannot explain it, your funnel definitions differ between systems, or leads are entering mid-funnel, or someone is double-counting. Finding those rows is often more valuable than the entire performance analysis that follows — and it is the finding your CMO will actually thank you for.
 :::
 
 ## Part 2 — The funnel model (6 min)
 
 :::lab Step 2 — A model your CMO can interrogate
 ```prompt
-Produce `output/funnel-model.xlsx` from `campaign-clean.csv`, with four tabs:
+BACKGROUND. Same CMO. She will click into any number she doubts.
+
+RESULT. `output/funnel-model.xlsx`, with four tabs:
 
 Tab "Data" — the cleaned rows. Header frozen, currency formatted.
 
@@ -64,7 +66,11 @@ Tab "Efficiency" — channels ranked by cost per opportunity, with cost per MQL 
 
 Tab "Excluded" — every row not counted in the Funnel tab, with the reason and the total spend those rows represent.
 
+INPUTS. Only `output/campaign-clean.csv`.
+
 EDGES. No hard-coded totals where a formula would do. Rows flagged as funnel impossibilities go in Excluded, not Funnel — and show their spend total separately so I know how much of the budget is unexplained. Never fabricate a value to complete a calculation.
+
+FLAG: every channel whose ranking rests on fewer than five rows.
 ```
 
 - [ ] The spreadsheet opens and the formulas are live
@@ -128,7 +134,7 @@ Find out which of these explains your gap **before** you present. "Marketing say
 
 ## Part 5 — Make it a Monday job
 
-This chain — integrity, model, readout — is a perfect scheduled task, because it is read-only and the inputs refresh on their own.
+This chain — integrity, model, readout — is a strong scheduled task once the campaign data comes from a connector, because it is read-only. Scheduled tasks cannot read local folders, so the scheduled version writes to a Project's files.
 
 - [ ] Save all three briefs as a sequence
 - [ ] Note your actual channel taxonomy and hard-code it, so it does not get re-derived each run
@@ -162,12 +168,12 @@ Q: A readout that includes "what this data cannot tell you" is…
 - Only appropriate for internal use
 > Stating your limits earns credit for everything else in the document.
 
-Q: You find rows with more SQLs than MQLs. What does this most likely mean?
+Q: You find rows with more SQLs than MQLs, and conversion lag from an earlier month cannot explain them. What does this most likely mean?
 - A rounding error
 + Funnel definitions differ between systems, leads are entering mid-funnel, or something is double-counted — a real problem worth more than the performance analysis
 - The data is fine
 - The campaign over-performed
-> Impossible funnel arithmetic is a definitional problem, and finding it is often the most valuable output of the run.
+> Once lag is ruled out, impossible funnel arithmetic is a definitional problem, and finding it is often the most valuable output of the run.
 
 Q: Marketing reports 40 opportunities; the CRM says 27. What is the right move before presenting?
 - Use the CRM number, it is authoritative

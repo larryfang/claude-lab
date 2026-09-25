@@ -9,3 +9,8 @@ export function classify(url, status) {
   if (status === 403 && BOT_BLOCKING_HOSTS.some((h) => host === h || host.endsWith(`.${h}`))) return "blocked";
   return "broken";
 }
+
+// A backtick ends a URL: lessons put endpoints in inline code (`https://…/mcp`).
+export function extractUrls(text) {
+  return [...text.matchAll(/https:\/\/[^\s)<>"'`]+/g)].map((m) => m[0].replace(/[.,;:]$/, ""));
+}

@@ -2,7 +2,7 @@
 
 Finance is the lane where Cowork's output is easiest to check and most dangerous to get wrong. Everything reconciles to something — which means every deliverable in this lane can be verified, and must be.
 
-It is also the lane Anthropic has invested in most heavily: an official **Finance plugin** (variance analysis, reconciliation, journal entries, income statements, SOX testing), a set of **finance agent templates** on paid plans — including a month-end closer — and the **Claude for Excel add-in**, which reads and writes live formulas and preserves cell dependencies. You will meet all three in this lane — though note the add-in only reaches you once your IT deploys it to the company Microsoft 365 tenant, so every lab here is built on the path that works today: exported files in your Cowork folder.
+It is also the lane Anthropic has invested in most heavily: an official **Finance plugin** (variance analysis, reconciliation, journal entries, income statements, SOX testing), a set of **finance agent templates** on paid plans — including a month-end closer — and the **Claude for Excel add-in**, which reads and writes live formulas and preserves cell dependencies. You will meet all three in this lane — though note the add-in needs a paid plan, and an IT deployment where your company blocks the Office Store, so every lab here is built on the path that works for everyone: exported files in your Cowork folder.
 
 :::concept Where the time actually goes
 The close, the variance commentary, the reconciliations, the chase emails, the board pack — finance runs on recurring, multi-source, deadline-driven document production. That is precisely the shape of work Cowork is built for. The judgement calls — what the numbers *mean*, what to accrue, what to tell the board — stay yours.
@@ -20,7 +20,7 @@ The close, the variance commentary, the reconciliations, the chase emails, the b
 
 ## Play 2 — The three-way reconciliation · hours per close
 
-**The job:** bank statement, payments report, invoice ledger — matched, with an exception report of everything that does not tie.
+**The job:** bank statement, payments report, invoice ledger — matched, with an exception report of everything that does not tie. (This is not the accounts-payable "three-way match" of purchase order, goods receipt and supplier invoice.)
 
 **Why it works:** matching by reference across three files is exactly the tedious, error-prone middle work you want off your desk. The value is not the matches; it is the **exception report** — duplicates, missing settlements, fee discrepancies, each with its financial impact.
 
@@ -66,17 +66,17 @@ Anthropic's own finance team runs roughly **150 shared skills from a version-con
 ## The official shortcuts
 
 :::tip Plugin first, custom second
-Before writing anything from scratch, look at what ships ready-made (availability varies by plan; look under **Customize → Plugins** and the template gallery):
+Before writing anything from scratch, look at what ships ready-made (availability varies by plan; look under **Customize → Plugins** — the finance agent templates install as plugins too):
 
 - **Finance plugin** — `/variance-analysis`, `/reconciliation`, `/journal-entry`, `/income-statement`, `/sox-testing`. Anthropic's own caveat applies: outputs require review by qualified financial professionals before use in reporting or filings.
 - **Finance agent templates** — ten of them on paid plans, including a Month-end closer, a general-ledger reconciler and a statement auditor.
-- **Claude for Excel** — the add-in reads live formulas, edits without breaking dependencies, and debugs `#REF!`/`#VALUE!` errors. For spreadsheet-heavy work it is often the better surface than a chat window — **where your IT has deployed it**. Office add-ins are admin-controlled on company tenants, so if you do not see it, that is a request to IT (name the close-week job and the hours), not a download. Until then, exports into Cowork do every job in this lane.
+- **Claude for Excel** — the add-in reads live formulas, edits without breaking dependencies, and debugs `#REF!`/`#VALUE!` errors. For spreadsheet-heavy work it is often the better surface than a chat window. On a paid plan you can install it yourself from Microsoft AppSource ("Get it now"); if your company blocks the Office Store, it becomes a request to IT (name the close-week job and the hours). Until then, exports into Cowork do every job in this lane.
 
 The labs in this lane teach you the underlying briefs, so you understand what the shortcuts do — and can fix them when they miss.
 :::
 
-:::note Enterprise vs everyone
-The market-data connectors you may have read about — FactSet, S&P Capital IQ, Moody's, LSEG and friends — are **enterprise-tier** Claude for Financial Services features. On a normal Pro or Team plan you work from exported files, your Drive/M365 connectors (where IT has enabled them), and — where IT has deployed it — the Excel add-in. Everything in this lane is built on the everyone tier, and runs on exported files alone.
+:::note Market data vs everyone
+The market-data connectors you may have read about — FactSet, S&P Capital IQ, Moody's, LSEG and friends — work on paid plans, but each one needs **your firm's own subscription to that data provider**. Without one, you work from exported files, your Drive/M365 connectors (where IT has enabled them), and the Excel add-in. Everything in this lane runs on exported files alone.
 :::
 
 ## What Cowork must not do in finance

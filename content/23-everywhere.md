@@ -1,6 +1,6 @@
 # Claude Where You Already Work
 
-The Cowork window is headquarters. But your actual day happens in Excel, PowerPoint, Outlook, Slack, and on your phone between meetings — and Claude now works in all of them, with the same skills and connectors you have already set up. This lesson is the map, so you stop copy-pasting between Claude and the tool the work actually lives in.
+The Cowork window is headquarters. But your actual day happens in Excel, PowerPoint, Outlook, Slack, and on your phone between meetings — and Claude now works in all of them: in Office and on your phone with the same skills and connectors you have already set up, and in Slack with connections your admin sets per channel. This lesson is the map, so you stop copy-pasting between Claude and the tool the work actually lives in.
 
 ## The Microsoft 365 add-ins
 
@@ -8,20 +8,20 @@ Claude works **inside** Office — not on exported copies, but on the open file 
 
 | App | Status | What it does on the open file |
 |---|---|---|
-| **Excel** | GA, all paid plans | Answers with cell-level citations, changes assumptions without breaking formula chains, debugs errors, builds multi-tab models ([guide](https://support.claude.com/en/articles/12650343-use-claude-for-excel)) |
+| **Excel** | GA, all paid plans | Answers with cell-level citations, changes assumptions without breaking formula chains, debugs errors, builds multi-tab models ([guide](https://claude.com/docs/office-agents/excel)) |
 | **PowerPoint** | GA, all paid plans | Builds and restyles decks in your template, on the deck itself |
 | **Word** | GA, all paid plans | Drafts and revises in the document, tracked-changes style |
-| **Outlook** | Public beta | Inbox triage and drafts — **drafts land unsent, for your review**; calendar invites via the native event form ([guide](https://support.claude.com/en/articles/14855664-use-claude-for-outlook)) |
+| **Outlook** | Public beta | Inbox triage and drafts — **drafts land unsent, for your review**; calendar invites via the native event form ([guide](https://claude.com/docs/office-agents/outlook)) |
 
 Two things make this more than a sidebar gimmick:
 
-- **Your Skills work there.** Type **`/`** in the add-in sidebar and your installed skills appear — `/deck-check` before a QBR, `/variance-pack` in the live workbook — and skills also fire automatically when relevant ([office docs](https://claude.com/docs/office-agents/connectors-and-skills)). The skill you built in Module 8 follows you into Office.
-- **One conversation spans the apps.** Context carries across your open Excel, PowerPoint, Word and Outlook files — "use the Q3 numbers from the workbook in slide 4" works.
+- **Your Skills work there.** Type **`/`** in the add-in sidebar and the skills you have turned on in **Customize → Skills** appear, if they fit that app — `/deck-check` before a QBR, `/variance-pack` in the live workbook — and skills also fire automatically when relevant ([office docs](https://claude.com/docs/office-agents/connectors-and-skills)). The skill you will build in Module 8 follows you into Office.
+- **One conversation spans the apps.** Context carries across your open Excel, PowerPoint, Word and Outlook files — "use the Q3 numbers from the workbook in slide 4" works — once **Let Claude work across files** is on in each add-in's Settings. It is on by default for Pro and Max, off for Team and Enterprise (the exact label may vary; [work across apps](https://claude.com/docs/office-agents/work-across-apps)).
 
 Google-side there is no equivalent sidebar for Docs/Sheets — the route there is the Drive/Gmail/Calendar connectors from Module 3.
 
 :::warning The reality check: your IT decides, not you
-On a company Microsoft 365 tenant, Office add-ins are **admin-controlled** — most organisations block self-install from AppSource, and "Claude for Microsoft 365" reaches you only when IT deploys it centrally (Microsoft 365 admin center → Integrated apps). So this feature needs **two approvals that are often confused**: your Claude plan (the Anthropic side, which you may already have) *and* the add-in deployment (the Microsoft side, which many companies have not done). If typing `/` in Office shows nothing, or the add-in will not install, that is a policy gate — not a bug, and not something to work around with a personal account.
+On a company Microsoft 365 tenant, Office add-ins are **admin-controlled**. You can install "Claude for Microsoft 365" (Excel, PowerPoint, Word) yourself from AppSource only if IT allows Office Store access; many organisations do not, and IT deploys it centrally instead (Microsoft 365 Admin Center → Settings → Integrated apps). Outlook is a separate add-in, "Claude for Outlook", and it also needs a one-time Microsoft Graph consent from a Global Administrator ([Outlook guide](https://claude.com/docs/office-agents/outlook)). So this feature needs **two approvals that are often confused**: your Claude plan (the Anthropic side, which you may already have) *and* the add-in deployment (the Microsoft side, which many companies have not done). If the Claude add-in is missing from Office, or will not install, that is a policy gate — not a bug, and not something to work around with a personal account. (If the add-in opens but `/` lists no skills, that is a different fix: turn the skill on in **Customize → Skills**.)
 
 The move is the same one Module 3 taught for a missing connector: **ask IT with a specific job and a specific benefit** — "the close commentary takes finance two days in Excel; the add-in cuts it to hours; here is Anthropic's admin deployment doc" beats "can we have the AI thing". And until the answer is yes, **nothing in this course is blocked**: export the workbook, drop it in your Cowork folder, and every lab works exactly as written — that file-based path is what the four lanes are built on.
 :::
@@ -34,7 +34,9 @@ The move is the same one Module 3 taught for a missing connector: **ask IT with 
 
 Cowork runs in beta on **web and mobile** (Pro/Max/Team; Enterprise where enabled), with sessions running in Anthropic's cloud — start a task from your phone, steer it with follow-ups, review the output, resume a session you started elsewhere ([guide](https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile)).
 
-The honest caveats: **local folders, browser use and computer use** need your desktop app open at home — cloud sessions work from connectors and uploaded files instead. So the pattern that works is:
+How you start a task depends on which version you see. If the message box shows a **Chat** / **Cowork** choice, pick **Cowork**. If there is no choice, you have the new Claude — rolling out from 16 September 2026, Pro and Max first — and any conversation can take a task ([announcement](https://claude.com/blog/cowork-is-now-claude)).
+
+The honest caveats: **local folders, browser use and computer use** need the Claude Desktop app open and online on your computer (and local folders only for sessions started on desktop) — cloud sessions work from connectors and uploaded files instead. So the pattern that works is:
 
 > **Kick off before the commute, review on the phone.** Start the account-brief run at your desk; approve the plan; read the finished brief on the train. Or start from the phone entirely, as long as the inputs come from connectors, not your laptop's folders.
 
@@ -46,8 +48,10 @@ The old "Claude in Slack" app was replaced on **2026-08-03** by **Claude Tag** �
 
 Tag `@Claude` in a channel and hand it actual work: it posts its checklist in the thread, does the job (turn this decision thread into a doc; chase these three owners; investigate this customer report), and follows up on its own. An org Owner sets it up and controls which credentials and resources it can use per channel — so if you want it, this is a request to your admin naming a specific job, exactly like a missing connector in Module 3.
 
-:::concept One account, many doors
-Everything in this lesson runs on the same account: the same skills, the same connectors, the same permissions and data rules you set in Module 3. Nothing here is a new trust decision — it is the trust decisions you already made, available where the work is. That is also the argument to your security team: no new data paths, just new doors into the ones you governed.
+:::concept Same data rules, new doors
+The Office add-ins and Cowork on your phone run on your own account: the same skills, the same connectors, the same permissions and data rules you set in Module 3. Claude Tag is different. It works from connections an Owner sets per channel, not from your account, so what it can reach depends on the channel, not on who you are — and anyone in that channel can use it ([overview](https://claude.com/docs/claude-tag/overview)).
+
+So each door is a new trust decision, and your security team will want to know about each one: Tag's per-channel access, Outlook's Microsoft Graph consent, and add-in activity that does not appear in Enterprise audit logs ([work across apps](https://claude.com/docs/office-agents/work-across-apps)). Name them when you ask. Your data rules still apply everywhere.
 :::
 
 ## Lock it in
@@ -59,10 +63,10 @@ Q: How do the Microsoft 365 add-ins differ from exporting a file?
 A: Claude works **inside** Office on the open file, not on exported copies.
 
 Q: How do you reach your Skills inside an Office add-in?
-A: Type **`/`** in the add-in sidebar and your installed skills appear. Skills also fire automatically when relevant.
+A: Type **`/`** in the add-in sidebar and the skills you turned on in **Customize → Skills** appear, if they fit that app. Skills also fire automatically when relevant.
 
 Q: Which two approvals does the add-in need at work?
-A: Your **Claude plan** (Anthropic side) *and* IT's **add-in deployment** (Microsoft side). Until IT says yes, export the file into Cowork.
+A: Your **Claude plan** (Anthropic side) *and* IT's **add-in deployment** (Microsoft side; Outlook also needs a one-time Microsoft Graph consent). Until IT says yes, export the file into Cowork.
 
 Q: What happens to an email Claude for Outlook writes?
 A: It lands as an **unsent draft** for your review. The send gate stays yours.
@@ -71,7 +75,7 @@ Q: What do Cowork sessions on web and mobile work from?
 A: **Connectors and uploaded files.** Local folders, browser use and computer use need your desktop app open.
 
 Q: Is using Claude in Office, Slack or mobile a new trust decision?
-A: No. Same account, skills, connectors, permissions and data rules — new doors into the data paths you already governed.
+A: Yes, in part. Office and mobile run on your account, skills and connectors — but Outlook needs its own Microsoft Graph consent, and add-in activity is not in Enterprise audit logs. Claude Tag runs on connections an Owner sets per channel, not on your account. Your data rules still apply everywhere.
 ```
 
 ```quiz
@@ -82,12 +86,12 @@ Q: You spend close week inside a 40-tab workbook. Where should Claude meet you?
 - Retype the numbers into Cowork
 > The add-in works on the live file — where IT has deployed it. Until then, the export-to-Cowork path does the same jobs on a copy.
 
-Q: The `/` menu shows nothing in Excel at work, though your colleague at another company has it. Most likely cause?
+Q: The Claude add-in does not appear in Excel at work, though your colleague at another company has it. Most likely cause?
 + Your tenant's IT has not deployed the add-in — it is admin-controlled on company M365, so this is a policy request, not a troubleshooting session
-- Your Excel is too old
+- Claude does not support Excel at all
 - Skills do not work in Excel
 - You need to reinstall Windows
-> Two approvals: the Claude plan (Anthropic side) and the add-in deployment (Microsoft side). Ask IT with a specific job, and use file exports meanwhile.
+> Two approvals: the Claude plan (Anthropic side) and the add-in deployment (Microsoft side). Ask IT with a specific job, and use file exports meanwhile. (If the add-in opens but `/` lists no skills, turn the skill on in Customize → Skills.)
 
 Q: What happens when Claude for Outlook writes an email for you?
 + It lands as an unsent draft for your review — the human send gate stays yours

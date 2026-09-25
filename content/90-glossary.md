@@ -4,7 +4,7 @@ Every term used in this lab, in one sentence each.
 
 ## The core ideas
 
-**Cowork** — Claude that takes on a whole multi-step job, working on real files and producing real deliverables, rather than answering turn by turn. Selected in the message box; available on desktop, web and mobile.
+**Cowork** — Claude that takes on a whole multi-step job, working on real files and producing real deliverables, rather than answering turn by turn. Selected with the Chat / Cowork choice in the message box; with no choice there, you have the new Claude, where you describe the task in any conversation. Available on desktop, web and mobile.
 
 **Brief** — the instructions you give Cowork for a whole job. Longer and more specific than a prompt, and the single biggest determinant of output quality.
 
@@ -46,7 +46,7 @@ Every term used in this lab, in one sentence each.
 
 **Plugin** — a bundle of Skills, connectors, and sub-agents, packaged so a team can install the whole playbook at once (Customize → Plugins).
 
-**Project** — a persistent Cowork workspace with its own files, instructions, memory, and Skills. Where you stop re-explaining your business.
+**Project** — a persistent Cowork workspace with its own files, instructions, memory, and scheduled tasks. Where you stop re-explaining your business.
 
 **Project instructions** — standing context applied to every task in a Project: your definitions, your unreliable-fields list, your standing rules.
 
@@ -74,7 +74,7 @@ Every term used in this lab, in one sentence each.
 
 ## Verification
 
-**The four-check pass** — trace three random numbers to source; compare row counts; verify three quotes or external claims; read the flag section.
+**The four-check pass** — trace three random numbers to source; compare row counts; verify three quotes and three external claims; read the flag section.
 
 **OBSERVED / INFERRED** — labelling what a source actually says separately from your reading of it, so inference cannot be repeated as fact.
 
@@ -110,10 +110,10 @@ Every term used in this lab, in one sentence each.
 
 **Claude.ai / chat** — the browser interface. Answers and drafts, turn by turn.
 
-**Claude Desktop** — the full local surface: chat, Cowork, connected folders, browser use, computer use and local connectors. Cloud sessions on web or mobile can reach a folder connected on your computer only while Desktop is open there.
+**Claude Desktop** — the full local surface: chat, Cowork, connected folders, browser use, computer use and local connectors. Cloud sessions on web or mobile can reach a folder connected on your computer only while Desktop is open there and the session was started on desktop.
 
 **Claude Code** — the terminal-based agent for codebases. A separate course in this lab.
 
-**Claude for Excel** — the add-in that works on an open workbook directly: reads live formulas, edits without breaking dependencies, debugs formula errors. The better surface for heavy spreadsheet work — deployed by your IT admin on company Microsoft 365 tenants, so its absence is a policy request, not a bug.
+**Claude for Excel** — the add-in that works on an open workbook directly: reads live formulas, edits without breaking dependencies, debugs formula errors. The better surface for heavy spreadsheet work — on company Microsoft 365 tenants an admin often has to allow or deploy it, so its absence is usually a policy request, not a bug.
 
-**Web and mobile Cowork (beta)** — Cowork also runs on claude.ai and the mobile apps. Cloud sessions work directly with account files, Projects and connectors; they can reach connected local folders, browser use and computer use through an open Desktop app, with some desktop-only limitations. The product ships fast and evolves quickly, so screens and features shift; the concepts in this course do not.
+**Web and mobile Cowork (beta)** — Cowork also runs on claude.ai and the mobile apps. Cloud sessions work directly with account files, Projects and connectors; they can reach connected local folders (only in a session started on desktop), browser use and computer use through an open Desktop app, with some desktop-only limitations. The product ships fast and evolves quickly, so screens and features shift; the concepts in this course do not.

@@ -41,7 +41,7 @@ Proceed? (I'll edit 2 files.)
 Tests: 7 passed, 7 total ✓
 The new endpoint works and all tests pass. Want me to commit?
 > commit with a clear message
-  $ git add -A && git commit -m "feat: add GET /health endpoint with test"
+  $ git add src/server.js __tests__/health.test.js && git commit -m "feat: add GET /health endpoint with test"
 [main 9c1f2a0] feat: add GET /health endpoint with test
  2 files changed, 16 insertions(+)
 Done. Anything else?
@@ -99,7 +99,7 @@ Commit this change with a clear, conventional commit message.
 :::
 
 :::warning If Claude asks permission
-In normal mode, Claude asks before editing files or running commands. **Read the request, then approve.** That's the safety model working — you stay in control. (We'll tune this in the Permissions lesson so you're not clicking forever.)
+In Manual mode, Claude asks before editing files or running commands. (On Pro, Max and Team plans you start in auto mode, so you may see few prompts.) **Read the request, then approve.** That's the safety model working — you stay in control. (We'll tune this in the Permissions lesson so you're not clicking forever.)
 :::
 
 ## Reflect
@@ -134,5 +134,5 @@ Q: What's the atomic loop you practiced?
 ```
 
 :::try Module complete!
-That's Foundations. Mark it done for your **🐣 Booted Up** badge. Next module is the real skill ceiling: **context engineering** — feeding Claude exactly what it needs and nothing it doesn't.
+That's Foundations. Choose **Complete and continue** — you already earned your **🐣 Booted Up** badge in the first lesson. Next module is the real skill ceiling: **context engineering** — feeding Claude exactly what it needs and nothing it doesn't.
 :::

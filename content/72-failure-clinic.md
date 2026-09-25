@@ -68,7 +68,7 @@ Q: What is the lesson?
 ~ Restore the file from backup and ask Cowork to be more careful.
 > Restore it, yes. But "be careful" is a wish. The next run needs an explicit write boundary.
 - Nothing went wrong — the folder is organised now.
-> The task succeeded and the job failed. Renames and overwrites do not trigger a permission prompt the way permanent deletions do, so they pass silently.
+> The task succeeded and the job failed. Edits, moves, renames and overwrites inside the folder you granted do not trigger a permission prompt; only permanent deletion always asks. That is why this passed silently.
 ```
 
 ## Case 5 — Last year's numbers, this year's pack
@@ -77,7 +77,7 @@ Q: What is the lesson?
 S: A pipeline summary shows 61 open deals. Your CRM shows 42. The plan you approved skimmed "read the pipeline files".
 Q: Where would you look first, and what prevents it?
 + The plan: "the pipeline files" probably included last quarter's export. It is a Wrong Source — name the exact file in the brief and read the plan's sources before approving.
-> 61 − 42 = 19 extra rows, the size of an old export. The four-point plan review puts "wrong source" first because it invalidates the whole run.
+> 61 − 42 = 19 extra rows: deals open last quarter that have since closed, which is what merging last quarter's export would add. The four-point plan review puts "wrong source" first because it invalidates the whole run.
 ~ Ask Cowork to remove duplicates and re-run.
 > It might, but deals from last quarter are not duplicates — they are the wrong data. De-duplication hides the cause.
 - Trust Cowork's number; the CRM may be out of date.
@@ -103,7 +103,7 @@ This summary came back from a Product-lane run. Four sentences carry one of the 
 
 ```spot
 # Select each sentence that shows one of the six failures, then check.
-We ran eight discovery interviews and all eight transcripts are included (source: `discovery/`). [[Seven of eight customers named reporting as their top pain.|A Silent Exclusion hides here: the theme table lists only six customers under "reporting". Count the rows behind the claim before you repeat it.]] [[Customers typically lose four hours a week to manual exports.|A Confident Gap: no transcript gives a weekly hours figure. "Typically" is doing the work of a source that does not exist.]] Acme and Borealis both asked for scheduled reports, with verbatim quotes in the appendix. [[Onboarding feedback was consistently positive.|A Quiet Resolution: the Northwind transcript calls onboarding "painful". Contradictions must be flagged, not averaged away.]] The three open questions for next round are listed at the end. [[Competitor pricing starts at $49 per seat, which makes us cheaper.|A Wrong Source: the brief allowed only the transcripts. This came from somewhere else and has no date — check it or cut it.]]
+We ran eight discovery interviews and all eight transcripts are included (source: `discovery/`). [[Six of eight customers named reporting as their top pain.|A Silent Exclusion: the theme table lists seven customers under "reporting", and one was dropped from the count with no note. Count the rows behind the claim before you repeat it.]] [[Customers typically lose four hours a week to manual exports.|A Confident Gap: no transcript gives a weekly hours figure. "Typically" is doing the work of a source that does not exist.]] Acme and Borealis both asked for scheduled reports, with verbatim quotes in the appendix. [[Onboarding feedback was consistently positive.|A Quiet Resolution: the Northwind transcript calls onboarding "painful". Contradictions must be flagged, not averaged away.]] The three open questions for next round are listed at the end. [[Competitor pricing starts at $49 per seat, which makes us cheaper.|A Confident Gap: the brief allowed only the transcripts, so this price came from general knowledge or the web, with no source or date. Check it or cut it.]]
 ```
 
 ## Lock it in

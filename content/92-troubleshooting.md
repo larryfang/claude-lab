@@ -8,7 +8,7 @@ Start here when something does not work.
 Check in order:
 
 1. **Plan** — Cowork needs Pro, Max, Team or Enterprise. Not available on Free.
-2. **Entry point** — Cowork is selected in the **message box**, not a sidebar item. On desktop, quit fully and reopen, or reinstall from `claude.com/download`. It also runs on web and mobile (still rolling out in beta), but these labs are taught on Desktop because cloud access to connected local folders depends on that Desktop app remaining open.
+2. **Entry point** — where the **message box** shows a **Chat / Cowork** choice, select **Cowork** there; it is not a sidebar item. No choice at all means you have the new Claude, where chat and Cowork are one: describe the task in any conversation. If you see neither on desktop, quit fully and reopen, or reinstall from `claude.com/download`. It also runs on web and mobile (still rolling out in beta), but these labs are taught on Desktop because cloud access to connected local folders works only while that Desktop app is open and for sessions started on desktop.
 3. **Admin policy** — on Team or Enterprise a seat admin may not have enabled it. That is a one-line ask.
 
 You can read every lesson and write every brief without access.
@@ -122,9 +122,9 @@ Interrupt, and add scope: *"Only the files in `X/`. Only records from [DATE] onw
 ## Skills and schedules
 
 :::details My Skill does not fire
-The description, in almost every case. Ask:
+First check that the Skill is toggled on in Customize → Skills and that code execution is enabled (Settings → Capabilities). After that, it is the description, in almost every case. Ask:
 
-> "I have a Skill called [name]. I asked '[your phrasing]' and it did not activate. Here is the description: [paste]. Why did it not match, and rewrite it to include every phrasing someone might use for this job."
+> "I have a Skill called [name]. I asked '[your phrasing]' and it did not activate. Here is the description: [paste]. Why did it not match, and rewrite it around the 4–6 most common phrasings someone might use for this job, within 200 characters."
 
 Then test with three *different* natural phrasings. A description matching only one exact sentence is not usable by a team.
 :::
@@ -146,7 +146,7 @@ Then fix the design so it cannot fail silently again: add a status line, and *"I
 :::
 
 :::details My scheduled task did not run at the scheduled time
-It is not your machine — scheduled tasks run remotely, on their cadence, even when your computer is asleep or the app is closed. Check the run history under **Scheduled** in the sidebar; the usual causes are an expired connector token, a job that tried to reach a **local folder** (scheduled runs can only use connectors and files in your Claude account), or the time zone the schedule is set relative to.
+If it is a cloud task, it is not your machine — cloud scheduled tasks run on their cadence even when your computer is asleep or the app is closed. A task that needs local files or apps runs only on your computer, so it needs the computer awake and the desktop app open. Check the run history under **Scheduled** in the sidebar; the usual causes are an expired connector token, a cloud job that tried to reach a **local folder** (cloud runs can only use connectors and files in your Claude account), or the time zone the schedule is set relative to.
 :::
 
 :::details Output from a Project is subtly and consistently wrong
@@ -160,7 +160,7 @@ This is the quietest failure in the whole course, which is why the quarterly rev
 ## Judgement and risk
 
 :::details How do I know when to trust the output?
-You do not trust the output. You verify it — the four checks in Module 9, every time something leaves your hands. Trace three random numbers, compare row counts, check three quotes or external claims, read the flag section.
+You do not trust the output. You verify it — the four checks in Module 9, every time something leaves your hands. Trace three random numbers, compare row counts, check three quotes and three external claims, read the flag section.
 
 The test that matters: can you explain every conclusion in your own words without re-reading the document? If not, you are forwarding someone else's reasoning with your name on it.
 :::
@@ -201,8 +201,8 @@ Your plan's usage is shared across Chat, Cowork and Claude Code, on a rolling se
 Two tools for seeing it: type **`/usage`** or **`/cost`** inside a Cowork task for an inline card of your plan limits and the session's spend — it costs nothing to check ([Cowork changelog](https://claude.com/docs/cowork/changelog)) — and **Settings → Usage** for the account view. Practical habits from the official guidance: batch related work into one session rather than many small ones, use plain chat for simple questions, test fan-outs on two items before forty, and schedule heavy jobs thoughtfully. If a "limit reached" message appears and never clears when it should, that is a support conversation, not something to engineer around.
 :::
 
-:::details It does not remember your last session
-Outside a Project, each Cowork session starts fresh — it does not recall what you built together last week. Durable reuse comes from the things designed for it: saved **files**, **Skills** for the how, and **Project** instructions and memory for the context. If you are re-explaining the same thing in every session, that is the signal to move it into one of those three.
+:::details It does not reliably remember your last session
+Outside a Project, do not rely on a Cowork session recalling last week's work. Cloud sessions can draw on your account memory from chat, but durable reuse comes from the things designed for it: saved **files**, **Skills** for the how, and **Project** instructions and memory for the context. If you are re-explaining the same thing in every session, that is the signal to move it into one of those three.
 :::
 
 ## Getting more out of it

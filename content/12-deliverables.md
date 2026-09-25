@@ -84,7 +84,7 @@ Then produce `output/briefs/_index.md` — a table of all 14 with account, stage
 After writing all 14, review them together and fix any place where the same situation was described inconsistently.
 ```
 
-Two things to notice. **"Same structure in every file"** makes fourteen documents comparable instead of fourteen individual essays. And the final review pass fixes the parallel-subagent inconsistency problem from the last lesson.
+Two things to notice. **"Same structure in every file"** makes fourteen documents comparable instead of fourteen individual essays. And the final review pass fixes the parallel-subagent inconsistency problem from the workspace tour.
 
 ## Formats and the tools around them
 
@@ -92,13 +92,13 @@ Two things to notice. **"Same structure in every file"** makes fourteen document
 - If the deliverable is going into Confluence, Notion or a wiki, ask for **Markdown**. It pastes cleanly; a `.docx` does not.
 - If it feeds a system, ask for **CSV** and specify the exact column headers that system expects.
 - If a person will edit it collaboratively, ask for a format your team actually uses. There is no prize for a beautiful file nobody can open.
-- If you live in a workbook all day, there is also the **Claude for Excel add-in**: it works on the open workbook directly, reads the live formulas, and edits without breaking cell dependencies. For heavy spreadsheet work — finance and RevOps especially — editing the real file often beats generating a new one. (On a company Microsoft 365 tenant the add-in is deployed by IT, not self-installed — until that approval lands, the export-into-Cowork path above does the same jobs.)
+- If you live in a workbook all day, there is also the **Claude for Excel add-in**: it works on the open workbook directly, reads the live formulas, and edits without breaking cell dependencies. For heavy spreadsheet work — finance and RevOps especially — editing the real file often beats generating a new one. (Some company Microsoft 365 tenants block self-install. If yours does, ask IT to deploy it. Until then, export the workbook into your Cowork folder and ask for a new file — Module 3 covers the add-ins.)
 
 ## When the deliverable should be alive
 
 Files are snapshots. Sometimes the right deliverable is a page people interact with — and that is an **artifact**: an interactive dashboard, a what-if calculator with sliders, a filterable tracker ([artifacts guide](https://support.claude.com/en/articles/9487310-what-are-artifacts-and-how-do-i-use-them)). Ask the same way you ask for a file: name the sections, the controls, and where each number must come from.
 
-Cowork on desktop goes one step further with **live artifacts** — a dashboard that stays on your machine and **refreshes itself from your connectors**, so Monday's pipeline view is current without re-running anything ([live artifacts guide](https://support.claude.com/en/articles/14729249-use-live-artifacts-in-claude-cowork)). Desktop-only and local to that machine, so it is *your* cockpit, not the thing you send the CFO.
+An artifact can also **connect to your apps** (paid plans, on web and desktop), so a dashboard reads current data from your connectors instead of a snapshot — Monday's pipeline view is current without re-running anything. Artifacts start private and you can share them, but each viewer sees data through **their own** connectors, so check what the CFO will actually see before you send the link. (The older desktop-only **live artifacts** are ones Cowork made before 19 August 2026 — [live artifacts guide](https://support.claude.com/en/articles/14729249-use-live-artifacts-in-claude-cowork).)
 
 The choice is simple: **a file when someone needs to keep, attach, or audit it; an artifact when someone needs to explore it.** The two-artefact rule still applies — a dashboard without its underlying CSV is a claim you cannot check.
 

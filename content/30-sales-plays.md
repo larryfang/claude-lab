@@ -2,7 +2,7 @@
 
 Sales is the lane where Cowork's value is easiest to measure, because everything an AE does that is not talking to a customer is overhead — and most of it is exactly the multi-step, file-touching, deliverable-producing work Cowork is built for.
 
-Here are the six plays, ranked by hours returned per rep per week.
+Here are the six plays, each with a rough estimate of the hours it returns.
 
 :::concept Where the time actually goes
 Studies vary, but most put the share of a seller's week spent actually selling at **under a third**. The rest is research, admin, CRM hygiene, internal reporting, and writing.

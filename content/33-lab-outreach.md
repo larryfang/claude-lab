@@ -9,7 +9,7 @@ Cowork can produce two hundred emails that look personalised and are not. That i
 
 The rule for this lab: **every email must contain at least one thing that could only be true of that recipient**, sourced from your notes or their public signals. If Cowork cannot find that one thing, it should tell you rather than pad the gap with flattery.
 
-Ten genuinely specific emails beat two hundred generated ones. The tool will not make that choice for you.
+Twenty genuinely specific emails beat two hundred generated ones. The tool will not make that choice for you.
 :::
 
 :::lab Step 1 — A sequence for a real target list
@@ -68,6 +68,22 @@ Answers to security, compliance, legal and contractual questions are **represent
 Never send a generated compliance answer unreviewed. Not once, not for a small deal, not because it is Friday.
 :::
 
+Put your past responses, policies and the questionnaire in `sales/rfp/`. No RFP material to hand? Generate some first.
+
+:::details 💼 No RFP files? Generate a practice set
+```prompt
+In the `sales/rfp/` subfolder, create realistic but entirely FICTIONAL practice data so I can learn on it. Invent all company names, policies and certifications — do not use any real company.
+
+Create:
+- `questionnaire.xlsx` — 30 security and procurement questions in one column, with an empty answer column.
+  Make it deliberately messy: two questions that ask the same thing in different words, one question with two parts, and three questions on topics that none of the files below cover.
+- `past-response-2025.txt` and `past-response-2026.txt` — two past RFP answers, 15–20 question-and-answer pairs each. Date the 2025 one more than 12 months ago, and make the two disagree on one answer (for example, the data retention period).
+- `security-policy.txt` — a 20-line security policy that describes one control as "partially implemented".
+
+Leave everything loose in `sales/rfp/`. Do not organise it.
+```
+:::
+
 :::lab Step 3 — Build the answer bank first
 The reusable asset is not the response. It is the answer bank.
 
@@ -76,7 +92,7 @@ BACKGROUND. I answer the same security and procurement questions repeatedly and 
 
 RESULT. `output/answer-bank.md` — from every source I have given you, extract each distinct question that has been asked of us and the best available answer. Group by topic (data handling, encryption, access control, availability, subprocessors, certifications, support, commercial terms). For each entry: the canonical question, the answer, the source document and date, and a freshness flag (current / needs review / stale) based on the source's date.
 
-INPUTS. Past RFP responses, our security documentation, our trust centre pages, and any policy documents in the folder. Nothing else — do not use general knowledge of what companies typically answer.
+INPUTS. Past RFP responses, our security documentation, our trust centre pages, and any policy documents in `sales/rfp/`. Nothing else — do not use general knowledge of what companies typically answer.
 
 EDGES. Never write an answer you cannot source to one of my documents. Where sources disagree, show both and flag the conflict rather than picking one. Do not soften or strengthen a claim from its source wording — quote or closely paraphrase.
 
@@ -100,7 +116,7 @@ Then `output/rfp-summary.md`:
 - Every question where our answer is likely to be a problem for this customer, and why
 - The three questions that most need a human before this goes back
 
-INPUTS. Only the questionnaire file and `output/answer-bank.md`.
+INPUTS. Only the questionnaire in `sales/rfp/` and `output/answer-bank.md`.
 
 EDGES. Never invent a certification, a control, an SLA, a subprocessor, or a compliance status. If the answer bank does not cover it, mark it "NO SOURCE — requires human answer" and leave draft_answer empty. Do not upgrade a "partially" into a "yes". Mark every answer needs_human_review = yes for anything touching security, compliance, legal or a contractual commitment.
 
@@ -151,7 +167,7 @@ Q: What is the reusable asset in RFP work?
 - The list of reviewers
 > Build the bank once; every future questionnaire gets cheaper.
 
-Q: A questionnaire asks about a certification you do not have. What must the draft answer say?
+Q: A questionnaire asks about a certification that your answer bank does not mention. What must the draft answer say?
 - The nearest equivalent certification
 + "NO SOURCE — requires human answer", with draft_answer left empty
 - That it is in progress

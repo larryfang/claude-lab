@@ -5,9 +5,9 @@ You built *your* Skill in the last lab. This lesson hands you a starting Skill f
 They are deliberately not finished. Each has `[BRACKETS]` where your company's specifics go, because **the definitions section is the value** — a Skill with generic definitions produces generic output, which is exactly what you already had without it.
 
 :::concept Two ways to get these installed
-**Path 1 — upload the file.** Save the skill as `SKILL.md` in a folder named after it, zip the folder, then **Customize → Skills → + → Create skill → Upload a skill** ([how to create custom skills](https://support.claude.com/en/articles/12512198-how-to-create-custom-skills)). The description field is capped at 200 characters, and it is how Claude decides when the skill fires — spend your best minute there.
+**Path 1 — upload the file.** Save the skill as `SKILL.md` in a folder named after it, zip the folder, then **Customize → Skills → + → Create skill → Upload a skill** ([use skills in Claude](https://support.claude.com/en/articles/12512180-use-skills-in-claude)). The description field is capped at 200 characters ([how to create custom skills](https://support.claude.com/en/articles/12512198-how-to-create-custom-skills)), and it is how Claude decides when the skill fires — spend your best minute there.
 
-**Path 2 — have Claude build it.** In a Cowork session, ask Claude to create the skill: it interviews you (what the job is, when it should trigger, what good output looks like) and produces the installable folder. Later you can say *"add a step that…"* and it updates the skill in place ([same guide](https://support.claude.com/en/articles/12512198-how-to-create-custom-skills)). Paste any template below as the starting point for that interview.
+**Path 2 — have Claude build it.** In a Cowork session, ask Claude to create the skill: it interviews you (what the job is, when it should trigger, what good output looks like) and produces the installable folder. Later you can say *"add a step that…"* and it updates the skill in place ([Claude Academy](https://academy.claude.com/courses/introduction-to-claude-cowork/file-document-tasks)). Paste any template below as the starting point for that interview.
 
 (There is also a third path for workflows easier to show than describe — **Record a skill**, Mac-only — covered in the lab lesson before this one.)
 :::
@@ -19,7 +19,7 @@ Skills **fire on their own** when your request matches the description — that 
 Explicit invocation is the right choice when the job has **side effects** or you want a guaranteed, exact run — `/variance-pack` on close day, not "hey, do the variance thing".
 
 :::tip Plugin first, custom second — same rule as the lanes
-Anthropic open-sourced complete plugins for **eleven functions** — sales, marketing, finance, product, legal and more — installable from the marketplace that ships enabled by default: **Customize → Plugins → Browse plugins** ([use plugins in Claude](https://support.claude.com/en/articles/13837440-use-plugins-in-claude) · [source](https://github.com/anthropics/knowledge-work-plugins)). Even better: select an installed plugin and hit **Customize** — Claude opens a session, inspects your connected tools, interviews you, and rewrites the plugin's skills for *your* stack ([Academy tutorial](https://academy.claude.com/tutorials/how-to-customize-plugins-in-cowork)).
+Anthropic open-sourced complete plugins for **common job functions** — sales, marketing, finance, product, legal, HR, engineering and more — installable from the marketplace that ships enabled by default: **Customize → Plugins → Browse plugins** ([use plugins in Claude](https://support.claude.com/en/articles/13837440-use-plugins-in-claude) · [source](https://github.com/anthropics/knowledge-work-plugins)). Even better: select an installed plugin and hit **Customize** — Claude opens a session, inspects your connected tools, interviews you, and rewrites the plugin's skills for *your* stack ([Academy tutorial](https://academy.claude.com/tutorials/how-to-customize-plugins-in-cowork)).
 
 So before adapting a template below, check whether the official plugin for your function already covers the job. The templates earn their keep where the plugin misses your standards — or where you want to *understand* what a good skill contains, which is the point of this lesson.
 :::
@@ -29,15 +29,15 @@ So before adapting a template below, check whether the official plugin for your 
 Open your lane. Adapt the definitions before anything else.
 
 :::details 💼 Sales — account-brief
-The pre-call brief from Lab 4, permanently. (The other strong sales Skill, `deal-review`, is written out in full in the Skills lesson — steal it from there.)
+The pre-call brief from Lab 1 of the sales lane, permanently. (The other strong sales Skill, `deal-review`, is written out in full in the Skills lesson — steal it from there.)
 
 ```text
 ---
 name: account-brief
 description: >-
   Use when the user asks for an account brief, pre-call brief, call prep,
-  meeting prep for a customer, or account research. Produces a one-page
-  brief and an evidence appendix before a customer conversation.
+  customer meeting prep or account research. Produces a one-page brief and
+  an evidence appendix.
 ---
 
 # Account Brief
@@ -75,15 +75,15 @@ description: >-
 :::
 
 :::details 📣 Marketing / GTM — campaign-readout
-The funnel story from Lab 4 of the GTM lane, with the reconciliation rule that makes marketing numbers survive a CRO's questions.
+The funnel story from Lab 3 of the GTM lane, with the reconciliation rule that makes marketing numbers survive a CRO's questions.
 
 ```text
 ---
 name: campaign-readout
 description: >-
   Use when the user asks for a campaign readout, campaign report, funnel
-  story, channel performance review, or marketing QBR input. Produces a
-  metrics file and a narrative readout with every claim tied to data.
+  story, channel performance review or marketing QBR input. Produces a
+  metrics file and a data-tied readout.
 ---
 
 # Campaign Readout
@@ -122,9 +122,9 @@ The tracker-to-update fan-out from Lab 3 of the product lane — including the s
 ---
 name: stakeholder-update
 description: >-
-  Use when the user asks for a stakeholder update, roadmap update, status
-  update for execs, sales or customers, or a "where are we" summary from
-  the tracker. Produces audience-specific updates from live tracker data.
+  Use when the user asks for a stakeholder, roadmap or status update for
+  execs, sales or customers, or a "where are we" summary. Produces
+  audience-specific updates from the tracker.
 ---
 
 # Stakeholder Update
@@ -164,9 +164,9 @@ Close week from Lab 1 of the finance lane, as a permanent asset — exact dollar
 ---
 name: variance-pack
 description: >-
-  Use when the user asks for a variance pack, budget vs actuals, month-end
-  variance commentary, or close-week variance analysis. Produces a
-  live-formula workbook and CFO-ready commentary with exact figures.
+  Use when the user asks for a variance pack, budget vs actuals, or
+  month-end or close-week variance commentary. Produces a live-formula
+  workbook and CFO-ready commentary.
 ---
 
 # Variance Pack
@@ -252,7 +252,7 @@ Q: Before adapting a template, what should you check first?
 - Whether you have admin rights
 - Whether your teammates approve
 - Nothing; always build custom
-> Anthropic ships open-source plugins for eleven functions, and the Customize flow rewrites them for your stack.
+> Anthropic ships open-source plugins for common job functions, and the Customize flow rewrites them for your stack.
 ```
 
 :::try Next

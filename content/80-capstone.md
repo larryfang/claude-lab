@@ -47,7 +47,7 @@ Not a one-off deliverable. A thing that keeps producing.
 ## Stage 1 — Foundation (8 min)
 
 :::lab Build the Project
-- [ ] Create a Cowork **Project** for this work
+- [ ] Create a Cowork **Project** for this work with **Start from scratch**, so it is saved to your Claude account (a Project made with **Use an existing folder** stays on this computer, which breaks the cloud schedule in Stage 7)
 - [ ] Write its instructions: who you are, what you sell or build, your definitions (weightings, thresholds, taxonomies, currency), your **unreliable fields list**, standing rules, and your tone preferences
 - [ ] Grant the workspace folder with subfolders: `sources/`, `reference/`, `output/weekly/`, `snapshots/`
 - [ ] Connect the systems you need and run a **read-only smoke test** on each — a query whose answer you already know
@@ -132,24 +132,25 @@ One file per item that needs individual attention — per at-risk deal, per comp
 - [ ] Turn the whole four-stage chain into one `SKILL.md`
 - [ ] Its definitions section holds your company specifics
 - [ ] Its rules section holds every correction you made during this build
-- [ ] Description lists every phrasing that should trigger it
+- [ ] Description lists the main phrasings that should trigger it, within 200 characters
 - [ ] **Cold test**: ask in natural language, without pasting anything. Does it fire and produce all four artefacts?
 :::
 
-## Stage 7 — Schedule it (2 min)
+## Stage 7 — Schedule it (2 min, after two more runs by hand)
 
 :::lab Go unattended
 - [ ] Add the explicit failure path: *"If any source is unreachable or returns zero records, still write the file, put PROBLEM in the status line, state exactly what failed, and write nothing else. Never write a normal-looking report from missing data."*
 - [ ] Add the delta instruction: compare against last week's file and report only what changed
 - [ ] Add the empty case: *"If nothing needs attention, say so in one line and stop."*
 - [ ] Confirm it is **read-only** on every source system and writes only its own report file
-- [ ] Move the job into a **Project** and point its output at the Project's files — scheduled tasks run remotely against connectors and files in your Claude account, and **cannot reach a local folder** like `output/weekly/`
-- [ ] Schedule it for Monday 8am
-- [ ] Run it **manually** once more and read the whole output
+- [ ] Edit the Skill (or the scheduled prompt) so its outputs go to the Project's files, not `output/weekly/` — cloud scheduled tasks run against connectors and files in your Claude account, and **cannot reach a local folder**. Create the schedule inside the Project from Stage 1
+- [ ] Run it **manually** twice more and read each output in full
+- [ ] Then schedule it for Monday 8am
+- [ ] After the first scheduled run, check that the next run can see last week's file; if not, have it write to a connected Drive, OneDrive or SharePoint folder
 :::
 
-:::warning You have run this by hand once
-The rule from Module 8 says three times before you trust a schedule. Keep it scheduled, but read the next three outputs properly — trace numbers, check counts, read the flags. After three clean runs it has earned your inattention.
+:::warning Three runs by hand, then the schedule
+The rule from Module 8 says three runs by hand before you trust a schedule: the cold test in Stage 6 plus the two manual runs above. Even then, read the first three scheduled outputs properly — trace numbers, check counts, read the flags. After three clean scheduled runs it has earned your inattention.
 :::
 
 ## Stage 8 — Verify and hand over (final)
@@ -157,7 +158,7 @@ The rule from Module 8 says three times before you trust a schedule. Keep it sch
 :::lab The four-check pass
 - [ ] Traced three random numbers to source
 - [ ] Row count in equals row count out
-- [ ] Three quotes or external claims checked at source
+- [ ] Three quotes and three external claims checked at source
 - [ ] Read every flag and resolved it
 - [ ] Every unverifiable number removed or marked
 - [ ] I can explain every conclusion in my own words

@@ -12,7 +12,7 @@ This is the canonical workflow from Anthropic's own [best-practices guide](https
 ```
 
 ### 1. Explore (in plan mode)
-Enter **plan mode** (Shift+Tab) so Claude can read and reason but **not change anything**. Have it understand the relevant code first:
+Enter **plan mode** (Shift+Tab) so Claude can read, search and reason but **not edit your code**. Have it understand the relevant code first:
 
 ```prompt
 Read src/auth and explain how we handle sessions and login. Also check how we manage env vars for secrets. Don't write code yet.
@@ -28,7 +28,7 @@ I want to add Google OAuth. What files change, what's the session flow, and what
 Press **`Ctrl+G`** to open the plan in your editor and tweak it before Claude proceeds. A plan you can read and edit is a plan you can trust.
 
 ### 3. Code
-Switch **out** of plan mode and let Claude implement — **verifying against the plan**:
+Switch **out** of plan mode (approve the plan, or press Shift+Tab) and let Claude implement — **verifying against the plan**:
 
 ```prompt
 Implement the OAuth flow from your plan. Write tests for the callback handler, run the suite, and fix any failures.
@@ -55,13 +55,13 @@ Commit with a descriptive message and open a PR.
 ## Plan mode, deeper
 
 :::concept Why plan mode is the biggest unlock
-Plan mode is **enforced at the tool level** — Claude literally *cannot* edit files or run destructive commands in it. So you get fearless exploration of unfamiliar code and a reviewable plan *before* a single line changes.
+Plan mode is **enforced, not advisory** — Claude Code blocks file edits until you approve a plan. Claude can still read, search, and run exploratory commands (read-only ones freely; others through the auto-mode classifier or a prompt). So you get fearless exploration of unfamiliar code and a reviewable plan *before* a single line changes.
 :::
 
 Two dials pair naturally with planning:
 
 - **`/model opusplan`** uses **Opus to plan** (better reasoning) and **Sonnet to execute** (fast, efficient) — the best of both without manual switching ([model config](https://code.claude.com/docs/en/model-config)).
-- **`/effort`** sets reasoning depth (`low` → `medium` → `high` → `xhigh` → `max`) — crank it up for a gnarly architectural plan, drop it for mechanical work. This replaced the old "think hard / ultrathink" magic words.
+- **`/effort`** sets reasoning depth (`low` → `medium` → `high` → `xhigh` → `max`) — crank it up for a gnarly architectural plan, drop it for mechanical work. Phrases like "think hard" are now just ordinary text; for one deep turn, `ultrathink` in your prompt still works.
 
 ## When to skip the plan
 
@@ -82,7 +82,7 @@ Then start a **fresh session** to implement from `SPEC.md` — clean context, fo
 ```claude-sim
 # You need to add OAuth. Start in plan mode (Shift+Tab → "plan").
 > [plan mode] read src/auth and summarize how login + sessions work. don't change anything.
-[plan mode — read only]
+[plan mode — no edits]
   • Login: src/auth/login.ts issues a JWT, stored in an httpOnly cookie
   • Sessions: middleware/session.ts verifies the JWT on each request
   • Secrets: loaded from env via config/env.ts (JWT_SECRET)
@@ -93,9 +93,10 @@ Plan:
   2. add GET /auth/google + /auth/google/callback   (test: callback exchanges code → user)
   3. reuse JWT issuance from login.ts                (test: session works post-OAuth)
   4. handle edge cases: denied consent, email already exists, expired state
-Press Ctrl+G to edit this plan, or approve to implement.
-> approve — switch out of plan mode and implement step 1 with its test, then run it
-[normal mode] ✎ created src/auth/oauth.ts, __tests__/oauth.redirect.test.js
+Press Ctrl+G to edit this plan. Approve?
+  1. Yes, and use auto mode   2. Yes, manually approve edits   3. No, keep planning
+> yes, and use auto mode — implement step 1 with its test, then run it
+[auto mode] ✎ created src/auth/oauth.ts, __tests__/oauth.redirect.test.js
   $ npm test -- oauth.redirect
  PASS  __tests__/oauth.redirect.test.js ✓
 Step 1 done and verified. Continue with step 2?
@@ -110,7 +111,7 @@ Q: What are the four phases of the canonical workflow?
 A: Explore → Plan → Code → Commit. Separate *figuring out what to do* from *doing it*.
 
 Q: What does plan mode prevent?
-A: Editing files and running destructive commands. It is enforced at the tool level, so Claude can only read and reason.
+A: Editing files, until you approve a plan. Claude can still read, search, and run exploratory commands; ones that aren't read-only go to the classifier or a prompt.
 
 Q: How do you edit Claude's plan before it proceeds?
 A: Press `Ctrl+G` to open the plan in your editor.
@@ -141,11 +142,11 @@ Q: When should you SKIP planning?
 > Planning has overhead. Small, obvious changes (typo, log line, rename) don't need it. Plan for uncertainty/multi-file/unfamiliar code.
 
 Q: What does plan mode guarantee?
-+ Claude can read and reason but is blocked at the tool level from editing files or running destructive commands
++ Claude Code blocks file edits until you approve a plan; Claude can still read, search, and run exploratory commands
 - Claude works faster
 - Claude writes tests automatically
 - Nothing; it's advisory
-> Plan mode is enforced, not a suggestion — making it the safe way to explore unfamiliar code and produce a reviewable plan.
+> Plan mode is enforced, not a suggestion — edits stay blocked until you approve, making it the safe way to explore unfamiliar code and produce a reviewable plan.
 
 Q: For a large, fuzzy feature, a great first step is to…
 + Have Claude interview you, then write a SPEC.md, then implement from it in a fresh session

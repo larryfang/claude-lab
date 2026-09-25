@@ -6,14 +6,14 @@ Everything so far is **advisory** — `CLAUDE.md` rules and skill instructions a
 
 :::concept The key distinction
 - A `CLAUDE.md` rule "always run prettier after edits" is a *suggestion* Claude usually follows.
-- A **PostToolUse hook** that runs prettier after every edit is a *guarantee* — it happens whether Claude remembers or not.
+- A **PostToolUse hook** that runs prettier after every edit is a *guarantee* — it happens whether Claude remembers or not. (It covers edits made with the Edit and Write tools; a file that a Bash command rewrites needs a `FileChanged` hook.)
 
 Use hooks for the things that **must** happen every time: formatting, linting, running tests, blocking edits to protected paths, sending a notification.
 :::
 
 ## The lifecycle events
 
-Hooks fire on events in Claude's loop — **31 events** as of v2.1.246 ([full list](https://code.claude.com/docs/en/hooks)). The ones you'll use most:
+Hooks fire on events in Claude's loop — **33 events** as of v2.1.282 ([full list](https://code.claude.com/docs/en/hooks)). The ones you'll use most:
 
 | Event | Fires… | Great for |
 |---|---|---|
@@ -79,7 +79,7 @@ Then run **`/hooks`** to browse and verify what's configured. Claude edits `sett
 
 ## Where hooks can come from
 
-Hooks can be defined in `settings.json` (user / project / local), in a **plugin's** `hooks.json`, or inline in a skill/subagent's frontmatter (scoped to that component's lifetime). Settings reload live — most changes apply without restarting.
+Hooks can be defined in `settings.json` (user / project / local), in a **plugin's** `hooks.json`, or inline in frontmatter: a subagent's hooks run only while that subagent runs, and a skill's hooks register when the skill runs and stay active for the rest of the session. Settings reload live — most changes apply without restarting.
 
 ## The "stop nagging your CLAUDE.md" pattern
 
@@ -99,7 +99,7 @@ Q: Which hook event can block a tool before it runs?
 A: **PreToolUse**. Exit code 2 blocks the action and feeds the stderr message back to Claude.
 
 Q: Which event guarantees formatting after every edit?
-A: **PostToolUse**, with a matcher like `Edit|Write` running your formatter.
+A: **PostToolUse**, with a matcher like `Edit|Write` running your formatter. It covers the Edit and Write tools; a file rewritten by Bash needs a `FileChanged` hook.
 
 Q: Which event gates completion on a passing build or test?
 A: **Stop**. It fires when Claude tries to end its turn.
@@ -124,7 +124,7 @@ Q: You want to guarantee code is formatted after every edit. Which hook event?
 - SessionStart
 - A CLAUDE.md note
 - UserPromptSubmit
-> PostToolUse fires after a tool runs — perfect for auto-format/lint after edits.
+> PostToolUse fires after a tool runs — perfect for auto-format/lint after Edit and Write calls (a file rewritten by Bash needs a FileChanged hook).
 
 Q: Your CLAUDE.md keeps growing "remember to..." rules that Claude still forgets. Better approach?
 + Convert the must-happen ones into hooks — deterministic enforcement, and it shrinks CLAUDE.md

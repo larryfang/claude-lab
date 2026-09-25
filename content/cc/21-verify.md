@@ -15,7 +15,7 @@ Claude stops when the work **looks done**. Without a check it can run, "looks do
 :::
 
 :::tip UI work: let Claude drive a real browser
-For frontend changes, "screenshot and compare" isn't hypothetical — **Claude in Chrome** (`claude --chrome`, [docs](https://code.claude.com/docs/en/chrome)) lets Claude open your app, click through the flow, and read the console to verify its own change end-to-end. The desktop app goes further with a built-in browser pane: select any element (⌘⇧S) and Claude reads its DOM, components and styles before editing ([@ClaudeDevs, 2026-07-10](https://x.com/ClaudeDevs/status/2075635283211772279)). The principle is the same as tests: the agent that can *see* the result can fix it.
+For frontend changes, "screenshot and compare" isn't hypothetical — **Claude in Chrome** (`claude --chrome`, [docs](https://code.claude.com/docs/en/chrome)) lets Claude open your app, click through the flow, and read the console to verify its own change end-to-end. The desktop app goes further with a built-in browser pane ([@ClaudeDevs, 2026-07-10](https://x.com/ClaudeDevs/status/2075635283211772279)): select any element (⌘⇧S, [desktop docs](https://code.claude.com/docs/en/desktop)) and Claude can inspect its DOM before editing. The principle is the same as tests: the agent that can *see* the result can fix it.
 :::
 
 ## Put the check in your prompt

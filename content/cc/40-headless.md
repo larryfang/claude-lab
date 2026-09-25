@@ -46,15 +46,15 @@ claude -p "List risky TODOs in this repo" --output-format json | jq '.result'
 For automated runs you won't be watching, scope what Claude may do and let the classifier guard the rest:
 
 ```bash
-# auto mode: a classifier blocks risky actions; aborts if it keeps blocking (no human to ask)
+# auto mode: a classifier blocks risky actions; with no human to ask, a blocked action is skipped and the run continues
 claude --permission-mode auto -p "fix all lint errors"
 
-# scope tools explicitly for batch jobs
+# pre-approve only what the job needs; in -p, any other call that would prompt is denied
 claude -p "Add a license header to this file" --allowedTools "Edit,Bash(git add *)"
 ```
 
 :::warning Unattended = scope tightly
-With no human in the loop, `--allowedTools` and `--permission-mode` are your safety rails. Allow only what the job needs. Use `--verbose` while developing the prompt, then turn it off in production.
+With no human in the loop, the permission mode and your pre-approved tools are your safety rails: `--allowedTools` pre-approves tools, `--tools` restricts which tools exist at all, and `--permission-mode dontAsk` denies anything not pre-approved. Allow only what the job needs. Use `--verbose` while developing the prompt, then turn it off in production.
 :::
 
 ## In CI: GitHub Actions
@@ -71,14 +71,20 @@ jobs:
   claude:
     if: contains(github.event.comment.body, '@claude')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
 ```
 
-Now commenting *"@claude please add tests for the auth module and open a PR"* on an issue kicks off a real run. Subscription users can pass `claude_code_oauth_token` instead of an API key. (Check the [action's docs](https://github.com/anthropics/claude-code-action) for the full input list — they evolve.)
+Now commenting *"@claude please add tests for the auth module and open a PR"* on an issue kicks off a real run. The `permissions` block matters: `id-token: write` is required for the action's default GitHub App authentication, and the write permissions let it push a branch and comment. Subscription users can pass `claude_code_oauth_token` instead of an API key. (Check the [action's docs](https://github.com/anthropics/claude-code-action) for the full input list — they evolve.)
 
 ## Beyond the CLI: the Agent SDK
 
@@ -107,10 +113,10 @@ Q: How do you get output another tool can parse?
 A: Add `--output-format json` (or `stream-json` for real-time processing). `--json-schema` forces the output to match a schema.
 
 Q: What are your safety rails for an unattended run?
-A: `--allowedTools` and `--permission-mode`. Allow only what the job needs.
+A: The permission mode and pre-approved tools: `--allowedTools` pre-approves, `--tools` restricts, and `--permission-mode dontAsk` denies the rest. Allow only what the job needs.
 
 Q: Headless auto mode keeps blocking. What does it do?
-A: It aborts, because there is no human to ask.
+A: It skips the blocked action and keeps working, because there is no human to ask. Add `--permission-prompts none` so Claude doesn't retry.
 
 Q: What is the easy path to Claude in GitHub Actions?
 A: Run `/install-github-app` in a session, then mention `@claude` in an issue or PR comment to trigger it.
@@ -128,11 +134,11 @@ Q: How do you run Claude Code without an interactive session, for use in a scrip
 > `claude -p` is non-interactive (headless) mode — the basis for CI, pre-commit hooks, and pipelines.
 
 Q: For an unattended batch job, what keeps it safe?
-+ Scope it with --allowedTools and use --permission-mode auto (classifier guards risky actions)
++ Pre-approve only the needed tools with --allowedTools and pick a strict permission mode such as dontAsk or auto
 - Nothing; it's automatically safe
 - Run it as root
 - --dangerously-skip-permissions on a production repo
-> No human to approve = scope tightly. Allow only needed tools; auto mode blocks risky actions and aborts if it keeps blocking.
+> No human to approve = scope tightly. --allowedTools pre-approves (it doesn't restrict; --tools does), dontAsk denies everything else, and auto mode skips a blocked action and keeps working.
 
 Q: How do you trigger Claude Code from a GitHub issue or PR?
 + Install the Claude Code GitHub action/app and mention @claude in a comment

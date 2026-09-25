@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { classify } from "./link-status.mjs";
+import { classify, extractUrls } from "./link-status.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const files = ["README.md", "CONTRIBUTING.md", ...walk(path.join(root, "content")).filter((f) => f.endsWith(".md"))];
@@ -9,7 +9,7 @@ const urls = new Set();
 for (const file of files) {
   const full = path.isAbsolute(file) ? file : path.join(root, file);
   const text = fs.readFileSync(full, "utf8");
-  for (const match of text.matchAll(/https:\/\/[^\s)<>"']+/g)) urls.add(match[0].replace(/[.,;:]$/, ""));
+  for (const url of extractUrls(text)) urls.add(url);
 }
 
 function walk(dir) {

@@ -5,17 +5,17 @@ Twelve minutes to a working, safe Cowork setup. Do not skip the sandbox part —
 ## Part 1 — Find Cowork (3 min)
 
 :::lab Step 1 — Open it
-- [ ] Open **Claude Desktop**. (Cowork also runs on web and mobile, but this course uses Desktop for reliable local-folder access. A cloud session can reach a connected local folder only while the Desktop app is open on that computer.)
-- [ ] In the **message box**, switch from Chat to **Cowork** — Chat and Cowork share one home
+- [ ] Open **Claude Desktop**. (Cowork also runs on web and mobile, but this course uses Desktop for reliable local-folder access. A cloud session can reach a connected local folder only if you started it in Desktop, and only while Desktop stays open on that computer.)
+- [ ] If your **message box** shows **Chat** and **Cowork**, choose **Cowork**. If you are on Pro or Max and there is no such choice, you already have the new Claude: every conversation can take a Cowork task
 - [ ] You should be able to pick a folder or start a task
 :::
 
 :::details I cannot see Cowork
-Check, in order:
+On Pro or Max with no Chat/Cowork choice at all? That is the new Claude, not a missing feature: describe the task in any conversation. Otherwise, check, in order:
 
 1. **Plan** — Cowork needs Pro, Max, Team or Enterprise. Free plans do not have it.
 2. **App version** — quit fully and reopen, or reinstall from `claude.com/download`. Cowork ships fast; stale builds miss features.
-3. **Team/Enterprise admin settings** — on managed plans an admin may not have enabled it yet. That is a one-line ask: *"Please enable Cowork for my seat."*
+3. **Team/Enterprise admin settings** — on managed plans an admin may have turned it off (or, on Enterprise web and mobile, not turned it on yet). That is a one-line ask: *"Please enable Cowork for my seat."*
 4. **Region / rollout** — availability has expanded in waves.
 
 You can read every lesson and write every brief without access. Come back and run the labs when you have it.
@@ -28,14 +28,14 @@ You are going to create a folder that contains nothing you care about, and do al
 :::lab Step 2 — Make a practice workspace
 - [ ] Create a folder on your Desktop called `Cowork-Lab`
 - [ ] Inside it, create five subfolders: `sales`, `gtm`, `product`, `finance`, `output`
-- [ ] Drop in **copies** — never originals — of two or three real work files you would not mind losing (an old export, a stale deck, some meeting notes)
+- [ ] Drop in **copies** — never originals — of two or three real work files you would not mind losing and that contain no customer or personal data (an old export, a stale deck, some meeting notes)
 - [ ] In Cowork, **grant access to `Cowork-Lab`** and nothing above it
 :::
 
 :::warning Why "copies, never originals"
 Cowork can create, edit, move and rename files in the folder you grant. That is the whole value. It also means a badly-worded brief can genuinely reorganise or overwrite your work — and unlike deletions, which always trigger a permission prompt before anything is permanently removed, an edit or a rename does not. Grant the narrowest folder that lets the job get done — never your home directory, never `Documents`, never a synced Drive root you have not thought about.
 
-Cloud-synced folders deserve extra suspicion: iCloud, OneDrive and Dropbox often keep only **placeholder stubs** locally, so a "copy" of a not-downloaded file copies an empty stub — one user lost real documents exactly this way when a reorganisation copied stubs and removed originals ([firsthand account](https://www.reddit.com/r/ClaudeAI/comments/1rwxnxe/claude_cowork_nuked_my_icloud_drive_documents/)). Sync is not backup. Anything irreplaceable needs a real backup before Cowork touches its folder.
+Cloud-synced folders deserve extra suspicion: iCloud, OneDrive and Dropbox often keep only **placeholder stubs** locally, so a "copy" of a not-downloaded file copies an empty stub — one user lost real documents exactly this way when a reorganisation copied stubs and removed originals ([firsthand account](https://www.reddit.com/r/ClaudeAI/comments/1rwxnxe/claude_cowork_nuked_my_icloud_drive_documents/)). Sync is not backup — Anthropic's own guidance is to give Claude a dedicated working folder and "keep backups of important files" ([Use Claude Cowork safely](https://support.claude.com/en/articles/13364135-use-claude-cowork-safely)). Anything irreplaceable needs a real backup before Cowork touches its folder.
 :::
 
 ## Part 3 — Set your guardrails (3 min)
@@ -48,7 +48,7 @@ Two habits, adopted now, will save you later.
 :::
 
 :::tip Approval modes
-Cowork has three approval modes — **Manually approve**, **Automatically approve**, and **Skip all approvals**. While you are learning, stay on **Manually approve**: it is the setting that makes Habit 1 real, because you see and confirm each consequential action before it happens.
+Cowork has three approval modes — **Manually approve**, **Automatically approve**, and **Skip all approvals**. (In the new Claude experience there are only two settings: **Manual**, the default, and **Auto**.) While you are learning, stay on **Manually approve**: Claude asks before actions that reach outside your folder, such as using a connector, sending a message or acting on a website. It does not ask before it edits, moves or renames files in the folder you granted — only permanent deletion always asks. That is why Habit 1 matters: the plan is where you catch a bad edit.
 :::
 
 Try it on something harmless:
@@ -69,7 +69,7 @@ Two things. One: the access grant works and it is scoped where you think it is. 
 Before you point Cowork at company data, know what is already wired up.
 
 :::lab Step 4 — Audit your connectors
-- [ ] Open **Customize → Connectors** (in Cowork; on claude.ai it is under Settings → Connectors)
+- [ ] Open **Customize → Connectors** (or the **+** menu in the message box)
 - [ ] Write down, in a note, every connector already enabled and what it can reach
 - [ ] Disable anything you do not recognise or do not need this week
 :::

@@ -87,7 +87,7 @@ A vague description means the Skill never fires and you conclude Skills do not w
 
 ❌ `description: Helps with sales reporting.`
 
-✅ `description: Use when the user asks for a pipeline review, deal review, forecast pack, deal risk analysis, or pipeline hygiene check. Produces a cleaned CSV, a weighted forecast model, and a two-page review document.`
+✅ `description: Use when the user asks for a pipeline review, deal review, forecast pack, deal risk analysis or pipeline hygiene check. Produces a cleaned CSV, weighted forecast model and two-page review.`
 
 List the phrases people actually say. Include the synonyms. Say what it produces.
 :::
@@ -137,7 +137,7 @@ Reference them from `SKILL.md` and Claude reads them when needed. This is how yo
 
 A **plugin** bundles Skills, connectors, and sub-agents into one installable package (Customize → Plugins → Browse plugins). It is how "here is my Skill" becomes "install this and you have the whole team's playbook".
 
-Anthropic ships open-source plugins for **eleven business functions** — sales, marketing, finance, product, legal and more — via a marketplace that is enabled by default, and teams can add any GitHub repo as their own marketplace ([use plugins in Claude](https://support.claude.com/en/articles/13837440-use-plugins-in-claude) · [anthropics/knowledge-work-plugins](https://github.com/anthropics/knowledge-work-plugins)).
+Anthropic ships open-source plugins for **common job functions** — sales, marketing, finance, product, legal, HR, engineering and more — via a marketplace that is enabled by default, and teams can add any GitHub repo as their own marketplace ([use plugins in Claude](https://support.claude.com/en/articles/13837440-use-plugins-in-claude) · [anthropics/knowledge-work-plugins](https://github.com/anthropics/knowledge-work-plugins)).
 
 For now: build one good Skill. Bundling matters when you have three or four that belong together — and the next-but-one lesson hands you a ready-to-adapt Skill for each function.
 

@@ -6,6 +6,8 @@ Do not skip Part 1. The contrast is the lesson.
 
 :::warning Setup
 Use the `Cowork-Lab` folder and the practice data you generated in Module 1. If you deleted it, go back and regenerate your lane's data — three minutes.
+
+Before Part 1, move the files in `output/` out of `Cowork-Lab` (for example to a new Desktop folder `Module-1-output`), so the lazy brief cannot read your earlier deliverables and Part 2 does not overwrite them. Then start a **new** Cowork task, so it does not carry over the earlier run.
 :::
 
 ## Part 1 — Run the lazy brief (4 min)
@@ -194,7 +196,7 @@ Now the verification pass, which you will do for the rest of your career:
 :::
 
 :::tip If you found a discrepancy
-Good. You have just proved the value of asking for the data artefact alongside the narrative. Now ask Cowork about it directly:
+Good. You have just proved the value of asking for the data artefact alongside the narrative. Now ask Cowork about it directly (swap in your lane's files — for example `spend-review.md` and `expenses-clean.csv`):
 
 > "In `deal-review.md` you state the weighted forecast is [X]. Walk me through that calculation row by row from `pipeline-clean.csv` and tell me which rows you included and excluded."
 

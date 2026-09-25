@@ -55,7 +55,9 @@ Most AEs have never seen an honest inventory of their own pipeline data. Send th
 
 :::lab Step 2 — A model, not a screenshot of a model
 ```prompt
-Produce `output/forecast-model.xlsx` from `pipeline-clean.csv`, with three tabs:
+BACKGROUND. Same deal review. I want a forecast I can change live in the meeting.
+
+RESULT. `output/forecast-model.xlsx`, with three tabs:
 
 Tab "Data" — the cleaned rows. Freeze the header. Format amounts as currency, no decimals.
 
@@ -67,7 +69,11 @@ Tab "Model":
 
 Tab "Exclusions" — every row not included in the main total, the opp_id, and why.
 
+INPUTS. Only `output/pipeline-clean.csv`.
+
 EDGES. No hard-coded totals anywhere a formula could be used. Do not include rows flagged as unmappable in the main forecast — put them in Exclusions and show their total separately. Never invent a weighting for a stage I did not list; flag it instead.
+
+FLAG: every stage in the data with no weighting, and the total value sitting in Exclusions.
 ```
 
 - [ ] The spreadsheet opens correctly
@@ -88,7 +94,7 @@ BACKGROUND. My manager runs a weekly deal review. She has 15 minutes for my pipe
 RESULT. `output/deal-review.md`, maximum two pages:
 
 1. HEADLINE — one sentence. Where my pipeline stands and the single thing she should worry about
-2. THE NUMBERS — a compact table: total, weighted, weighted-with-recent-activity, count by stage, and the change I cannot show (say so if the data has no history)
+2. THE NUMBERS — a compact table: total, weighted, weighted-with-recent-activity, count by stage, and the change since last week (say so if the data has no history)
 3. AT RISK — the five highest-risk deals. For each: account, amount, stage, the specific evidence of risk (quote the data), the likely cause, and one action with a date and an owner
 4. MOVING WELL — the three deals I feel best about and the specific evidence for that confidence
 5. NEEDS A DECISION — anything where I need her help, air cover, or a resource, stated as a request
@@ -157,7 +163,7 @@ Q: What is the value of a "weighted pipeline counting only deals with recent act
 - It excludes closed deals
 > Two numbers side by side tell the truth that either alone conceals.
 
-Q: The brief said "never assess a risk without citing the specific data that supports it". What does that prevent?
+Q: The brief said "every risk assessment must cite the specific data that supports it". What does that prevent?
 - Long documents
 + Risk assessments that are actually just plausible narrative — unfalsifiable, and indistinguishable from insight until they are wrong
 - Connector errors

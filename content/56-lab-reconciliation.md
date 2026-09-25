@@ -2,6 +2,8 @@
 
 Twenty minutes. Three files that should tie and do not, an exception report that says exactly where and by how much — then the debtors-ageing chase emails, drafted and never sent.
 
+The three sources here are your invoices, the payment processor's report and the bank statement. This is not the accounts-payable "three-way match" of purchase order, goods receipt and supplier invoice.
+
 ## Part 1 — Make the mess (4 min)
 
 :::lab Step 1 — Generate books that do not tie
@@ -11,7 +13,7 @@ In the `finance/` subfolder, create realistic but entirely FICTIONAL practice da
 Create:
 - `invoices.csv` — 30 rows: invoice_id, customer, issue_date, due_date, amount_usd, status (open/paid)
 - `payments.csv` — 26 rows: payment_id, invoice_id, date, gross_usd, fee_usd, net_usd
-- `bank-statement.csv` — 27 rows: date, reference, amount_usd, description
+- `bank-statement.csv` — 25 rows: date, reference, amount_usd, description
 
 Seed exactly these problems, and do not tell me where they are:
 - one invoice paid twice
@@ -20,26 +22,30 @@ Seed exactly these problems, and do not tell me where they are:
 - one bank line with a reference that matches nothing
 - one payment applied to the wrong invoice_id (amount matches a different invoice exactly)
 
-Leave the files loose in `finance/`.
+Every other row must tie exactly. Leave the files loose in `finance/`.
 ```
 
 - [ ] Files created — and you genuinely do not know where the problems are, which makes the next part a real test
 :::
 
-## Part 2 — The reconciliation (8 min)
+## Part 2 — The reconciliation (10 min)
 
 :::lab Step 2 — The brief
 ```prompt
 BACKGROUND. I need to reconcile invoices, payments and the bank statement for the month. The three files are in `finance/`.
 
 RESULT. Produce `output/reconciliation.xlsx` with three tabs:
-1. Matched — every three-way match: invoice_id, payment_id, bank reference, amounts at each stage, and the fee explaining any gross-to-net difference
-2. Exceptions — a three-tier report: (a) exact matches confirmed, (b) timing differences likely to resolve within days, (c) unexplained variances requiring investigation. Within the investigation tier, one row per item with columns: type (duplicate payment / missing settlement / amount mismatch / unmatched bank line / suspected misapplication), the row ids involved from each file, the financial impact in USD, and what a human should check first
+1. Matched — every fully matched invoice–payment–bank set: invoice_id, payment_id, bank reference, amounts at each stage, and the fee explaining any gross-to-net difference
+2. Exceptions — a three-tier report: (a) exact matches confirmed — a count only, their rows stay on Matched, (b) timing differences likely to resolve within days, (c) unexplained variances requiring investigation. Within the investigation tier, one row per item with columns: type (duplicate payment / missing settlement / amount mismatch / unmatched bank line / suspected misapplication), the row ids involved from each file, the financial impact in USD, and what a human should check first
 3. Control — the totals: sum of invoices, payments and bank lines, counts of matched and unmatched from each file, and a single line stating whether Matched + Exceptions accounts for every row in all three files
 
 Also produce `output/reconciliation-summary.md`: five lines maximum — items matched, exceptions found by type, total financial impact of exceptions, and the single most urgent item.
 
+INPUTS. Only the three files in `finance/`.
+
 EDGES. NEVER force a match. If a match is plausible but not certain — an amount that fits a different invoice, a near-miss on the fee — put it in Exceptions as suspected, with your reasoning, not in Matched. Never estimate a missing value. State every row id. Read-only on `finance/`; write only to `output/`.
+
+FLAG: any row you could not classify, and any open invoice whose customer also appears in Exceptions.
 
 Show me your plan before you start.
 ```
@@ -50,11 +56,11 @@ Show me your plan before you start.
 :::
 
 :::warning Score it against the seed
-This is the rare lab where you know the right answer: five seeded problems. Did it find all five? Did it invent a sixth that is not real? A reconciliation that **misses** an exception is dangerous; one that **invents** exceptions wastes the reviewer's trust. Both failure modes matter, and you have just measured your setup against each.
+This is the rare lab where you know the right answer: five seeded problem types, six items in all (the missing settlement is seeded twice). Did it find all six? Did it invent a seventh that is not real? A reconciliation that **misses** an exception is dangerous; one that **invents** exceptions wastes the reviewer's trust. Both failure modes matter, and you have just measured your setup against each.
 :::
 
 :::note Why "three-tier"?
-The tiered wording comes from Anthropic's own finance team, whose AR-to-GL reconciliation skill uses exactly this structure — their observation: *"Specifying 'three-tier' forces Claude to categorise rather than summarise."* The same skill surfaced a **$33k discrepancy live during a webinar demo**. ([CFO Connect recap](https://www.cfoconnect.eu/resources/finance-insights/finance-workflows-anthropic-automates-claude-prompts/))
+The tiered wording comes from a write-up of the AR-to-GL reconciliation workflow that Anthropic's finance team automates, which uses exactly this structure: *"Specifying 'three-tier' forces Claude to categorise rather than summarise."* ([CFO Connect](https://www.cfoconnect.eu/resources/finance-insights/finance-workflows-anthropic-automates-claude-prompts/)) An AR-to-GL reconciliation skill shown in the team's webinar surfaced a **$33k discrepancy live**. ([CFO Connect recap](https://www.cfoconnect.eu/resources/finance-insights/anthropic-finance-team-claude-skills/))
 :::
 
 :::concept Why "never force a match" is the whole lab
@@ -67,13 +73,13 @@ Now the ageing follow-up — the weekly task most reliably skipped.
 
 :::lab Step 3 — Tone-graded drafts, never sent
 ```prompt
-Using `finance/invoices.csv`, find every open invoice past its due date and group by days overdue: 1–30, 31–60, 61–90, 90+.
+Using `finance/invoices.csv`, find every open invoice past its due date and group by days overdue: 1–30, 31–60, 61–90, 91+.
 
 For each overdue customer, draft a chase email in `output/chase-drafts/` (one file per customer, named by customer):
 - 1–30 days: friendly reminder, assume oversight
 - 31–60 days: firm, restate amount, invoice id and due date, ask for a payment date
 - 61–90 days: escalation, mention next steps plainly but professionally
-- 90+ days: final notice tone, no threats you have not told me about
+- 91+ days: final notice tone, no threats you have not told me about
 
 Every draft must state the exact invoice ids and amounts from the file. At the top of each draft, add a DO NOT SEND line listing anything I should verify first — a payment that might be in flight from the reconciliation exceptions, a disputed invoice, anything odd.
 
@@ -94,7 +100,7 @@ Notice what made this safe: drafts to disk, not a connected mailbox; the verify-
 Answer about your own work, not the practice data. Your answers save to your notebook in this browser.
 
 ```reflect
-Did the reconciliation find all five seeded problems, and did it invent any? How would you measure your setup against a known answer before you trust it with your real books?
+Did the reconciliation find all six seeded items, and did it invent any? How would you measure your setup against a known answer before you trust it with your real books?
 ```
 
 ```reflect
@@ -123,7 +129,7 @@ Q: Why do the chase drafts cross-reference the reconciliation exceptions?
 - Connectors require it
 > The two deliverables are one system. The exceptions protect the chase.
 
-Q: This lab seeded five known problems before running the reconciliation. What is that technique for?
+Q: This lab seeded six known problems before running the reconciliation. What is that technique for?
 - Making the data realistic
 + Measuring both failure modes against a known answer: exceptions missed, and exceptions invented
 - Saving tokens

@@ -25,7 +25,7 @@ Leave everything loose in `finance/`. Do not organise it.
 - [ ] I opened them and confirmed they are really there
 :::
 
-## Part 2 — The variance pack (10 min)
+## Part 2 — The variance pack (12 min)
 
 Note the shape: outcome, named sources, exact format, the non-negotiables in EDGES, and the plan first.
 
@@ -36,9 +36,9 @@ BACKGROUND. I am preparing the month-end variance pack for our leadership. The d
 RESULT. Produce two files in `output/`:
 
 1. `variance-pack.xlsx` with three tabs:
-   - Data — the source rows, cleaned: consistent gl_names, amounts as plain numbers, blank actuals marked "not recorded", plus columns variance_usd and variance_pct AS LIVE FORMULAS referencing the budget and actual cells
+   - Data — the source rows, cleaned: consistent gl_names, amounts as plain numbers, blank actuals left empty and marked "not recorded" in a status column, plus columns variance_usd and variance_pct AS LIVE FORMULAS referencing the budget and actual cells (blank where the actual is blank)
    - Summary — totals by category and cost centre, again as formulas reading from the Data tab, never pasted values
-   - Waterfall — the bridge from budget total to actual total: the five largest favourable and five largest unfavourable movements, with an "all other" line that makes the bridge tie exactly
+   - Waterfall — the bridge from budgeted profit to actual profit (revenue minus cogs minus opex): the five largest favourable and five largest unfavourable movements, with an "all other" line that makes the bridge tie exactly
 
 2. `variance-commentary.md` — maximum two pages:
    - A status line: rows in, rows used, rows excluded and why, and OK or PROBLEM
@@ -48,14 +48,14 @@ RESULT. Produce two files in `output/`:
    - A FLAGS section: every row you excluded, every blank you found, every place the detail file and the summary file disagree
    - "What I cannot tell you from this data" — stated plainly
 
-EDGES. Use only the files in `finance/`. Never estimate a missing value — write "not recorded". Use exact dollar amounts in the commentary — do not round. Label every driver call as evidence-based or hypothesis. State row counts in and out for every total. Read-only on the source files; write only to `output/`.
+EDGES. Sign convention: variance_usd = actual minus budget, so a positive variance is favourable on revenue and unfavourable on cogs and opex. Use only the files in `finance/`. Never estimate a missing value — write "not recorded". Use exact dollar amounts in the commentary — do not round. Label every driver call as evidence-based or hypothesis. State row counts in and out for every total. Read-only on the source files; write only to `output/`.
 
 Show me your plan before you start.
 ```
 
 - [ ] Both files appeared
 - [ ] The Summary tab contains formulas, not pasted values — click a cell and check
-- [ ] The waterfall ties exactly to the two totals
+- [ ] The waterfall ties exactly to budgeted and actual profit
 - [ ] The commentary flags the blank actuals and the misspelled GL name
 :::
 
@@ -69,7 +69,7 @@ This is the part that earns the lab its place. On practice data the stakes are z
 
 :::lab Step 3 — Trace, reconcile, interrogate
 - [ ] **Trace three numbers** from the commentary back to source rows — pick the headline figure and two driver claims
-- [ ] **Reconcile the totals**: does the Summary tab tie to the sum of the Data tab? Does the waterfall tie to both?
+- [ ] **Reconcile the totals**: does the Summary tab tie to the sum of the Data tab? Does the waterfall tie to budgeted and actual profit?
 - [ ] **Check the row counts**: rows in vs rows used vs rows excluded — do they add up?
 - [ ] Ask it to show its working on the largest variance:
 
@@ -110,7 +110,7 @@ Q: Why must the Summary tab use live formulas instead of pasted values?
 - It reduces file size
 > A pasted-value workbook is a screenshot wearing a spreadsheet costume.
 
-Q: The waterfall must "tie exactly" to the budget and actual totals. Why insist?
+Q: The waterfall must "tie exactly" to budgeted and actual profit. Why insist?
 - It looks better in review
 + A bridge that does not tie means something was dropped or invented in between — the tie is the integrity check
 - Waterfalls always tie automatically

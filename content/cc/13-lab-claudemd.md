@@ -17,17 +17,17 @@ Open it to review — I tend to over-include on the first pass.
 Revised CLAUDE.md → 31 lines. Removed: the src/ file map, generic "use TypeScript"
 advice, and restated language defaults. Kept: pnpm commands, the Vitest single-file
 tip, the Prisma migrate gotcha, and required env vars.
-> add a rule: never edit files under src/generated, and always run `pnpm typecheck` after a batch of edits. mark them important.
+> add a rule: never edit files under src/generated, and always run `pnpm typecheck` after a batch of edits. mark only the src/generated rule important.
 Updated CLAUDE.md. Added under ## Workflow:
   - IMPORTANT: never edit src/generated/** (built by `pnpm codegen`)
-  - IMPORTANT: run `pnpm typecheck` after a series of edits
+  - run `pnpm typecheck` after a series of edits
 > now make a trivial change to a generated file to prove the rule holds
 I won't — src/generated/** is off-limits per CLAUDE.md. If you need that output
 changed, edit the source schema and run `pnpm codegen`. Want me to do that instead?
 ```
 
 :::tip What just happened
-You watched the full lifecycle: **generate → prune hard → add sharp rules → verify the behavior changed.** That last step — Claude *refusing* to touch `src/generated` — is how you know a rule landed. If behavior doesn't change, the rule is buried or ambiguous.
+You watched the full lifecycle: **generate → prune hard → add sharp rules → verify the behavior changed.** That last step — Claude *refusing* to touch `src/generated` — is how you know a rule landed. If behavior doesn't change, the rule is buried or ambiguous. `CLAUDE.md` is guidance, not enforcement: for a hard guarantee, also add a deny rule `Edit(src/generated/**)` in `.claude/settings.json`.
 :::
 
 ## Part 1b — Lint a bloated CLAUDE.md
@@ -89,10 +89,10 @@ Review CLAUDE.md and cut it down. Remove anything you could infer by reading the
 **Add 2–3 sharp, project-specific rules** (adapt):
 
 ```prompt
-Add these rules with IMPORTANT emphasis: (1) the exact test command and that you prefer single-file test runs, (2) one directory you must never edit, (3) one gotcha that's bitten us. Then show me the final file.
+Add these rules: (1) the exact test command and that you prefer single-file test runs, (2) one directory you must never edit, (3) one gotcha that's bitten us. Mark only the never-edit rule IMPORTANT. Then show me the final file.
 ```
 
-- [ ] My rules are specific and emphasized
+- [ ] My rules are specific, and only the critical one is emphasized
 
 **Test that a rule actually changed behavior:**
 
@@ -142,5 +142,5 @@ Q: After /init generates a CLAUDE.md, the most important next step is to…
 ```
 
 :::try Module complete!
-You've mastered the core skill — context. Mark it done for your **📍 Context Engineer** badge. Next: the workflow that turns context into shipped code — Explore → Plan → Code → Commit.
+You've mastered the core skill — context. Choose **Complete and continue** for your **📍 Context Engineer** badge. Next: the workflow that turns context into shipped code — Explore → Plan → Code → Commit.
 :::

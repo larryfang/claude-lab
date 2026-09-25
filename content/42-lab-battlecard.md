@@ -29,6 +29,8 @@ RESULT. `output/[competitor]-research.md` with these sections. In every section,
 7. WHERE MARKETING AND DOCS DISAGREE — anything their own materials contradict
 8. WHAT I COULD NOT FIND OUT — explicitly
 
+Also produce `output/[competitor]-sources.csv` with columns section, observed_claim, source, date_read.
+
 INPUTS. Only pages you actually visit on their own domains, their docs site, their status page, and public review sites — or only the files I have given you. Do not use the model's general knowledge of this company. Do not visit anything behind a login.
 
 EDGES. Every factual claim needs a URL and the date read, or a filename. If you cannot source it, leave it out — do not fill gaps from general knowledge. Never state a price you did not see on a page. Never describe a feature you did not see documented. Read-only: do not click anything that submits, signs up, purchases or contacts them, and do not fill in any form.
@@ -45,7 +47,7 @@ Show me your plan and the exact list of URLs you intend to visit before you star
 :::
 
 :::tip Save the sources
-Have Cowork save the page text it read into `snapshots/[competitor]/[date]/`. In six weeks the pages will have changed and you will need to know what they actually said. This is also what makes the monitoring play in Module 8 possible — you cannot diff against a snapshot you did not keep.
+Have Cowork save the page text it read into `snapshots/[competitor]/[date]/`. In six weeks the pages will have changed and you will need to know what they actually said. This is also what makes the monitoring play in Module 8 possible — you cannot diff against a snapshot you did not keep. (For that scheduled version, keep the snapshots in a Project's files: scheduled tasks cannot read local folders.)
 :::
 
 ## Part 2 — The battlecard (6 min)
@@ -64,6 +66,8 @@ RESULT. `output/battlecard-[competitor].md`, ONE page maximum:
 6. DISQUALIFIERS — when we should walk away from this deal
 7. DO NOT SAY — claims that are unverified, stale, or that legal would not want repeated
 8. SOURCES AND FRESHNESS — every claim keyed to its source and date, plus a "check again after" date
+
+Also produce `output/battlecard-[competitor]-claims.csv` with columns claim, section, source, date_read, check_after.
 
 INPUTS. Only `output/[competitor]-research.md`. Nothing else — do not add anything from general knowledge.
 

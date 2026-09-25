@@ -28,7 +28,7 @@ Every term in this course, in one or two sentences, in the words the lessons use
 
 **Memory hierarchy** — your global `~/.claude/CLAUDE.md`, the project's `CLAUDE.md`, and files in subfolders. Subfolder files add to what is above them; they do not replace it.
 
-**Path-scoped rules** — Markdown files in `.claude/rules/` that load only when Claude touches matching files.
+**Path-scoped rules** — Markdown files in `.claude/rules/` with `paths:` frontmatter, which load only when Claude touches matching files. A rule without `paths:` loads every session.
 
 **Auto memory** — notes Claude keeps for itself in `~/.claude/projects/<project>/memory/`.
 
@@ -42,7 +42,7 @@ Every term in this course, in one or two sentences, in the words the lessons use
 
 **Worktree** — a separate git working folder on its own branch, so parallel sessions never edit the same files. `claude -w` starts a session in a fresh one.
 
-**Background agent** — a session started with `claude --bg` that works on its own. `claude agents` shows every session: running, blocked or done.
+**Background agent** — a session started with `claude --bg` that works on its own. `claude agents` shows every background session: running, blocked or done.
 
 **Cloud session** — a task handed to claude.ai/code with `claude --cloud`. `claude --teleport` pulls it back into your terminal.
 
@@ -56,7 +56,7 @@ Every term in this course, in one or two sentences, in the words the lessons use
 
 ## Customising Claude Code
 
-**Subagent** — a specialist with its own separate context window, defined in `.claude/agents/`. It does the investigating and returns only a summary to your session.
+**Subagent** — a specialist with its own separate context window, defined in a file in `.claude/agents/` (ask Claude to write it; `/agents` now only points you there). It does the investigating and returns only a summary to your session. Most subagents load `CLAUDE.md`, but none load your auto memory; a `memory` field gives one memory of its own.
 
 **Explore subagent** — the built-in subagent for investigating code. It skips `CLAUDE.md` and git status to stay lean, so restate any rule it must follow in the handoff.
 
@@ -64,11 +64,11 @@ Every term in this course, in one or two sentences, in the words the lessons use
 
 **Custom command** — a Markdown file in `.claude/commands/` that becomes a slash command. `$ARGUMENTS` passes in what you type after it.
 
-**Hook** — a script that runs at a lifecycle event, configured in `.claude/settings.json`. An instruction can be forgotten; a hook always happens.
+**Hook** — a script that runs at a lifecycle event, configured in `.claude/settings.json`. An instruction can be forgotten; a hook always happens. Hooks in a skill's frontmatter stay active for the rest of the session; a subagent's run only while it runs.
 
-**PreToolUse** — the hook event before a tool runs. It can block the call, so it is used to protect files and guard dangerous commands.
+**PreToolUse** — the hook event before a tool runs. It can block the call (with `exit 2`), so it is used to protect files and guard dangerous commands.
 
-**PostToolUse** — the hook event after a tool runs, used to format, lint or run the affected tests after every edit.
+**PostToolUse** — the hook event after a tool runs, used to format, lint or run the affected tests after every Edit or Write call.
 
 **MCP (Model Context Protocol)** — the open standard for connecting Claude Code to tools and data. Add a server with `claude mcp add`; project servers live in `.mcp.json`.
 

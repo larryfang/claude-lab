@@ -41,7 +41,8 @@ claude -p "Give me a 3-bullet summary of what this repo does"
 Try piping a diff through a review:
 
 ```bash
-git add -A
+# make a small edit first, then stage only that file
+git add <the-file-you-edited>
 git diff --cached | claude -p "Review this staged diff. Print BLOCK + the reason if there's a likely bug or secret, otherwise print OK."
 ```
 - [ ] Claude reviewed my staged changes from the command line
@@ -70,14 +71,16 @@ claude
 Clean up when done:
 
 ```bash
-# from the main repo
-git worktree remove ../your-repo-experiment
+# from the main repo root. --force is needed because Claude left uncommitted
+# changes there; it discards them, and -D deletes the experiment branch.
+git worktree remove --force ../$(basename "$PWD")-experiment
+git branch -D experiment/claude-lab
 ```
 - [ ] I removed the experiment worktree
 :::
 
 :::warning Scope unattended runs
-Anytime you run `claude -p` in scripts/CI, add `--allowedTools "..."` (and consider `--permission-mode auto`) so an unattended run can only do what the job needs. Never `--dangerously-skip-permissions` on code you don't trust.
+Anytime you run `claude -p` in scripts/CI, add `--allowedTools "..."` to pre-approve only what the job needs (in `-p`, any other call that would prompt is denied; `--tools` restricts the set outright), and consider `--permission-mode dontAsk` or `auto`. Never `--dangerously-skip-permissions` on code you don't trust.
 :::
 
 ## Reflect
@@ -107,5 +110,5 @@ Q: Why run a second Claude in a git worktree instead of the same folder?
 ```
 
 :::try Module complete!
-You can run Claude headless and in parallel. Mark it done for your **🚀 Automator** badge. Last module: the prompt patterns and habits that separate power users from the pack — and the capstone.
+You can run Claude headless and in parallel. Choose **Complete and continue** for your **🚀 Automator** badge. Last module: the prompt patterns and habits that separate power users from the pack — and the capstone.
 :::

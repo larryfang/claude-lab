@@ -19,27 +19,27 @@ Claude Code's view of the world is rooted where you launched it. Start it at you
 
 ## The modes (Shift+Tab)
 
-Press **Shift+Tab** to cycle the permission/working mode. This is one of the most important keys in the tool:
+Press **Shift+Tab** to cycle the permission/working mode: **Manual → Accept edits → Plan mode → Auto** (Auto appears only when it's available; from Auto, the first press goes to Manual). This is one of the most important keys in the tool:
 
 | Mode | What it does |
 |---|---|
-| **Auto** | A classifier model reviews each action and interrupts you only for risky ones — the **default** on Pro/Max/Team plans |
-| **Accept edits** | Applies file edits without asking (faster when you trust the task) |
-| **Plan mode** | **Read-only.** Claude can explore and propose a plan, but *cannot* edit files or run destructive commands |
 | **Manual** | Asks permission before every edit and command — the classic, most cautious mode |
+| **Accept edits** | Applies file edits without asking (faster when you trust the task) |
+| **Plan mode** | **No edits.** Claude can explore, run exploratory commands, and propose a plan, but *cannot* edit files until you approve the plan |
+| **Auto** | A classifier model reviews actions and blocks risky ones (Claude then tries another way); you're asked only after repeated blocks — the **default** on Pro/Max/Team plans |
 
 (The full set, including `dontAsk` and `bypassPermissions`, is in the [permission-modes docs](https://code.claude.com/docs/en/permission-modes) — more in the Permissions lesson.)
 
 :::concept Plan mode is enforced, not suggested
-In plan mode, Claude is blocked at the **tool level** from editing or running destructive commands — it can only read, search, and think. That's why it's the safe way to let Claude loose on an unfamiliar codebase. We'll go deep on it in the workflow module.
+In plan mode, Claude Code **blocks file edits** until you approve a plan. Claude can still read, search, and run exploratory shell commands: read-only ones run freely, and others go to the auto-mode classifier or a permission prompt. That's why it's the safe way to let Claude loose on an unfamiliar codebase. We'll go deep on it in the workflow module.
 :::
 
 ## The keys that matter
 
 - **Enter** — send. **`Esc`** — interrupt Claude mid-action (context is preserved, so you can redirect).
-- **`Esc` `Esc`** (double-tap) or **`/rewind`** — open the checkpoint menu to restore previous conversation/code state. Every prompt is a checkpoint.
+- **`Esc` `Esc`** (double-tap, with an empty prompt) or **`/rewind`** — open the checkpoint menu to restore previous conversation/code state. Every prompt is a checkpoint.
 - **`@`** — reference a file (`@src/auth.ts`) so Claude reads it before responding.
-- **`#`** — quickly save a note to memory (`# always run prettier before committing` adds it to CLAUDE.md).
+- **Save a rule to memory** — tell Claude *"add to CLAUDE.md: always run prettier before committing"*, or run `/memory` to edit the file. (The old `#` shortcut was removed.)
 - **Paste / drag an image** — Claude can see screenshots, mockups, diagrams.
 - **`Ctrl+C`** — cancel / exit. **`Ctrl+G`** — open the current plan in your text editor (in plan mode).
 
@@ -56,9 +56,9 @@ There are dozens of built-ins (`/help` shows the live list). The ones you'll act
 | `/rewind` | Restore a previous checkpoint (conversation, code, or both) |
 | `/model` | Switch models (aliases like `opus`/`sonnet`, or `opusplan` — Opus to plan, Sonnet to execute) |
 | `/permissions` | Allowlist commands/tools so you're not asked every time |
-| `/agents`, `/hooks`, `/mcp`, `/plugin` | Manage subagents, hooks, MCP servers, plugins |
+| `/hooks`, `/mcp`, `/plugin` | View hooks · manage MCP servers and plugins (for subagents, ask Claude or edit `.claude/agents/`) |
 | `/code-review` | Run a fresh-context review of your current diff |
-| `/cost`, `/context`, `/usage` | Token spend · what's filling your context · plan-limit usage |
+| `/context`, `/usage` (alias `/cost`) | What's filling your context · cost and plan-limit usage |
 | `/statusline` | Put context %, model, and branch permanently in view |
 
 ## Sessions persist (treat them like branches)
@@ -85,8 +85,8 @@ Claude Code — common commands:
   /compact    Summarize to reclaim context
   /rewind     Restore a previous checkpoint
   /model      Switch model (try: opusplan)
-  /permissions, /agents, /hooks, /mcp, /plugin
-Shortcuts: Shift+Tab = cycle modes · Esc = interrupt · @file = add file · # = save memory
+  /permissions, /hooks, /mcp, /plugin
+Shortcuts: Shift+Tab = cycle modes · Esc = interrupt · @file = add file · /memory = edit CLAUDE.md
 > how does this project handle configuration?
 I read package.json and src/config/. Configuration loads from:
   • src/config/index.ts — merges defaults with env vars
@@ -110,16 +110,16 @@ Flip each card, recall the answer *before* you look, and grade yourself honestly
 
 ```flashcards
 Q: What does **Shift+Tab** do?
-A: It cycles the permission/working mode: Auto, Accept edits, Plan mode, Manual.
+A: It cycles the permission/working mode: Manual → Accept edits → Plan mode → Auto (Auto only when it's available).
 
 Q: What is Claude blocked from doing in plan mode?
-A: Editing files or running destructive commands. The block is at the tool level, so it can only read, search, and think.
+A: Editing files, until you approve a plan. It can still read, search, and run exploratory commands; ones that aren't read-only go to the classifier or a prompt.
 
 Q: How do you interrupt Claude mid-action without losing context?
 A: Press `Esc`. Context is preserved, so you can redirect.
 
 Q: How do you restore an earlier conversation or code state?
-A: Double-tap `Esc` or run `/rewind` to open the checkpoint menu. Every prompt is a checkpoint.
+A: Double-tap `Esc` on an empty prompt, or run `/rewind`, to open the checkpoint menu. Every prompt is a checkpoint.
 
 Q: `/clear` or `/compact` — which one before an unrelated task?
 A: `/clear` wipes context for a fresh, unrelated task. `/compact` only summarizes the conversation to reclaim context.
@@ -131,10 +131,10 @@ A: `claude --continue` resumes the most recent session; `claude --resume` lets y
 ```quiz
 Q: You're about to let Claude work in a codebase you don't know well. Which mode is safest to start in?
 - Auto-accept edits
-+ Plan mode (Shift+Tab) — read-only, so it can explore and plan but not change anything
-- Normal mode with permissions disabled
++ Plan mode (Shift+Tab) — no file edits until you approve a plan, so it can explore and plan without changing your code
+- Manual mode with permissions disabled
 - There is no safe mode
-> Plan mode is enforced at the tool level — Claude can only read, search, and think. Ideal for exploring unfamiliar code.
+> Plan mode blocks edits until you approve the plan — Claude can read, search, and run exploratory commands. Ideal for exploring unfamiliar code.
 
 Q: You finished one task and want to start something totally unrelated. Best move?
 + /clear to reset the context window

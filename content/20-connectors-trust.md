@@ -20,7 +20,7 @@ You do not need to understand the protocol. You need to understand the **shape o
 
 | Route | What it is | Who can use it |
 |---|---|---|
-| **The directory** | Vetted, one-click connectors at [claude.ai/connectors](https://claude.com/connectors) — Gmail, Google Drive, Atlassian (Jira/Confluence), Salesforce, HubSpot, Slack, Notion and hundreds more. Each listing states its read/write capabilities before you connect. | All plans ([connectors guide](https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities)) |
+| **The directory** | Vetted, one-click connectors at [claude.ai/connectors](https://claude.com/connectors) — Gmail, Google Drive, Atlassian (Jira/Confluence), HubSpot, Slack, Notion and hundreds more. Salesforce is there too, but in beta: paid plans, organisations Salesforce approves, and an admin sets it up first ([Salesforce in Claude](https://support.claude.com/en/articles/16952186-use-salesforce-in-claude)). Each listing states its read/write capabilities before you connect. | All plans ([connectors guide](https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities)) |
 | **A custom connector by URL** | Any remote **MCP server** — paste its URL under **Customize → Connectors → + → Add custom connector**, authenticate, done. This is how you reach an internal tool or a vendor not in the directory. | All plans (Free: one custom connector). On Team/Enterprise only an Owner can add one ([custom connectors guide](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp)) |
 | **An admin-provisioned set** | On Team/Enterprise, Owners enable connectors org-wide and can set per-tool rules — e.g. *read email: always allow; send email: needs approval*. | Managed plans |
 
@@ -32,9 +32,9 @@ Three rules that clear up most of the confusion:
 
 1. **It sees what your account sees.** A connector authenticates as *you*. If you cannot open that Salesforce record, neither can Claude. Connectors do not escalate privileges — which also means they inherit every over-broad permission you already have.
 
-2. **It sees on request, not continuously.** Connectors are not a background sync. Claude queries when a task needs it. There is no shadow copy of your CRM.
+2. **It sees on request, not continuously.** Connectors are not a background sync. Claude queries when a task needs it. But what it does retrieve is stored with that chat or task on Anthropic's servers until you delete it ([Google Workspace connectors](https://support.claude.com/en/articles/10166901-use-google-workspace-connectors)) — so treat retrieved records like data you pasted in.
 
-3. **Read and write are different grants — check which you gave.** A connector that can create a Jira ticket can create a hundred. Prefer read-only until a specific job needs write, then grant write for that job.
+3. **Read and write are different grants — check which you gave.** A connector that can create a Jira ticket can create a hundred. Prefer read-only until a specific job needs write, then grant write for that job. In Claude the grant is a tool permission: in **Customize → Connectors**, select the connector to see **Tool permissions**, grouped into read-only tools and write/delete tools, each set to *Always allow*, *Needs approval* or *Blocked* (the exact label may vary). Set write tools to **Blocked** until a job needs them. In Cowork's **Auto** mode Claude itself decides on tools marked *Needs approval*, so Blocked is the only setting that holds in every mode ([Cowork guide](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)).
 
 :::warning The permission you did not think about
 Most people have far more access at work than they use — an old admin role, a shared inbox, a Drive folder from a team they left. A connector makes all of it reachable by an agent following instructions in a brief.
@@ -92,8 +92,8 @@ Start with **one**. The one whose data you retype most often.
 
 ## The connector audit — do this now
 
-- [ ] Open **Customize → Connectors** (on claude.ai: Settings → Connectors) and list everything currently enabled
-- [ ] For each: do I know what it can reach, and is it read-only or read-write?
+- [ ] Open **Customize → Connectors** and list everything currently enabled
+- [ ] For each: do I know what it can reach, and is it read-only or read-write? (Its **Tool permissions** show which write/delete tools are not **Blocked**.)
 - [ ] Disable anything I do not need this month
 - [ ] For my top-priority connector, check what my own account can reach in that system
 - [ ] Write my six data rules in a note (use the table above)
@@ -135,7 +135,7 @@ Q: What can a connector see?
 A: Exactly what **your account** can see. It authenticates as you and does not escalate privileges — so it also inherits your over-broad access.
 
 Q: Is a connector a background sync of your CRM?
-A: No. Claude queries on request, when a task needs it. There is no shadow copy of your CRM.
+A: No. Claude queries on request, when a task needs it. But what it retrieves is stored with that chat or task until you delete it — treat it like data you pasted in.
 
 Q: What is prompt injection?
 A: Instructions hidden inside content Cowork reads — a document, email, web page or ticket — that the agent may then follow.
@@ -144,7 +144,7 @@ Q: What is the core habit against prompt injection?
 A: **Untrusted content in, no privileged action out.** Never chain reading an external document with sending email or updating the CRM in one unattended run.
 
 Q: What is the sane default for read and write access?
-A: **Read-only** by default. Grant write access per job, and never on a schedule you are not watching.
+A: **Read-only** by default — write tools set to **Blocked** in the connector's Tool permissions. Grant write access per job, and never on a schedule you are not watching.
 ```
 
 ```quiz

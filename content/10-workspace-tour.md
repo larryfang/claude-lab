@@ -42,7 +42,7 @@ For bigger jobs Cowork splits work across parallel workers — one researching e
 
 ## 6 — Scheduled tasks
 
-Save a job, have it run on a cadence — every Monday 8am, every weekday at 6pm. Chat cannot do this. Scheduled tasks run remotely, so they run on time even when your computer is asleep or the app is closed.
+Save a job, have it run on a cadence — every Monday 8am, every weekday at 6pm. A one-off chat message cannot do this. Scheduled tasks run remotely, so they run on time even when your computer is asleep or the app is closed — unless the task uses a folder or app on your computer. Then it runs locally, and needs the computer awake and Desktop open.
 
 **Where it matters to you:** a scheduled job runs with **no one reading the plan**. Only schedule jobs that are read-only or write to a scratch folder, and that you have run by hand successfully at least three times. Module 8.
 
@@ -67,7 +67,7 @@ Open Cowork and find each of these. Tick as you go:
 - [ ] Where **scheduled tasks** are created or listed
 - [ ] **Projects**
 - [ ] The **stop / interrupt** control — find this one before you need it
-- [ ] **Settings → Connectors**
+- [ ] **Customize → Connectors**
 
 :::warning Find the stop button now
 Not when a run is halfway through moving your files. Now. Every experienced Cowork user has needed it, and the ones who knew where it was lost thirty seconds instead of a folder.

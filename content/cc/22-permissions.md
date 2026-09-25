@@ -6,15 +6,15 @@ Claude Code can edit files and run commands — that's the power, and the respon
 
 Claude Code gates anything that could modify your system — file writes, Bash commands, MCP tool calls. The classic behavior is **ask before acting**: safe, but tedious, because after the tenth approval you're not reviewing, you're just clicking.
 
-That's why **auto mode is now the default** on Pro, Max and Team plans ([permission modes](https://code.claude.com/docs/en/permission-modes)): a separate classifier model reviews each action and interrupts you only for the genuinely risky ones. In a study Anthropic ran, dangerous commands were hidden inside realistic sessions — 1,053 professional developers manually approving caught **13.6%** of them; auto mode's classifier caught **89%** ([@adocomplete, 2026-08-13](https://x.com/adocomplete/status/2087957562859913525)). Cycle modes any time with **Shift+Tab**.
+That's why **auto mode is now the default** on Pro, Max and Team plans ([permission modes](https://code.claude.com/docs/en/permission-modes)): a separate classifier model reviews actions and blocks the genuinely risky ones — Claude then tries another way, and you're asked only after repeated blocks. In a study Anthropic ran, dangerous commands were hidden inside realistic sessions — 1,053 professional developers manually approving caught **13.6%** of them; auto mode's classifier caught **89%** ([@adocomplete, 2026-08-13](https://x.com/adocomplete/status/2087957562859913525)). Cycle modes any time with **Shift+Tab**.
 
 ## Three layers that cut the noise
 
 | Approach | What it is | Best when |
 |---|---|---|
-| **Auto mode** | A classifier reviews each action and blocks only risky things (scope escalation, unknown infra, hostile-content-driven actions) | Day-to-day work — it's the default for a reason |
+| **Auto mode** | A classifier reviews actions and blocks only risky things (scope escalation, unknown infra, hostile-content-driven actions) | Day-to-day work — it's the default for a reason |
 | **Permission allowlists** | Pre-approve specific safe tools/commands with `/permissions` or in `settings.json` | Repetitive safe commands like `npm run lint`, `git commit` |
-| **Sandboxing** | OS-level isolation (`/sandbox`): a filesystem boundary plus a **network egress allowlist**, with credential masking built in ([sandboxing](https://code.claude.com/docs/en/sandboxing)) | Letting Claude work freely inside hard boundaries |
+| **Sandboxing** | OS-level isolation (`/sandbox`): a filesystem boundary plus a **network egress allowlist**, and optional credential masking you configure with `sandbox.credentials` ([sandboxing](https://code.claude.com/docs/en/sandboxing)) | Letting Claude work freely inside hard boundaries |
 
 Run auto mode non-interactively like this:
 
@@ -25,7 +25,7 @@ claude --permission-mode auto -p "fix all lint errors"
 (Other `--permission-mode` values: `plan`, `acceptEdits`, `dontAsk`, `manual`, and `bypassPermissions`.)
 
 :::tip Tune the classifier in plain English
-Auto mode's rules are configurable as natural-language sentences in your settings — keep the shipped rules with `$defaults` and add your own ("never touch the prod database", "asking before any docker command"). Inspect the effective config with `claude auto-mode config`, and have Claude review your custom rules for ambiguity with `claude auto-mode critique` ([@lydiahallie, 2026-08-19](https://x.com/lydiahallie/status/2090134982161502394)).
+Auto mode's rules are configurable as natural-language sentences in your settings — keep the shipped rules with `$defaults` and add your own ("never touch the prod database", "no docker push to public registries"). Inspect the effective config with `claude auto-mode config`, and have Claude review your custom rules for ambiguity with `claude auto-mode critique` ([@lydiahallie, 2026-08-19](https://x.com/lydiahallie/status/2090134982161502394)).
 :::
 
 ## Allow and deny rules
@@ -54,10 +54,11 @@ You can codify permissions in `.claude/settings.json` (commit it to share team r
 
 :::concept allow / deny / ask
 - **allow** — pre-approved, runs without a prompt
-- **deny** — blocked entirely, even if Claude asks (great for secrets and destructive commands)
-- everything else → falls through to the normal **ask** prompt
+- **deny** — blocked in every mode, even if Claude asks (great for secrets and destructive commands). It matches the command text, so it isn't an OS-level boundary: pair it with `/sandbox`
+- **ask** — an explicit rule that always prompts, even in auto mode (e.g. `Bash(docker *)`)
+- everything else → the classifier in auto mode, or a normal prompt in Manual mode
 
-Pre-approve a handful of read-only/test commands; deny secrets and destructive operations; let the rest prompt. That's the sweet spot.
+Pre-approve a handful of read-only/test commands; deny secrets and destructive operations; let the rest go to the classifier or a prompt. That's the sweet spot.
 :::
 
 ## The YOLO flag (handle with care)
@@ -76,9 +77,9 @@ Anthropic reports its stacked defenses (model training, input probes, an intent 
 
 For most day-to-day work on **your own** repo:
 
-1. Run in **normal mode**, or **auto mode** when you trust a longer task.
+1. Stay in **auto mode** (the default), or switch to **Manual mode** for sensitive work.
 2. Allowlist your common safe commands (test, lint, build, `git add`/`commit`).
-3. **Deny** reads of `.env`/secrets and destructive commands (`rm -rf`, `git push`, force operations).
+3. **Deny** reads of `.env`/secrets and destructive commands (`rm -rf`, `git push`, force operations). Deny rules match command text, so pair them with sandboxing for a hard boundary.
 4. Reach for **sandboxing** when working with anything unfamiliar.
 
 ## Make the call
@@ -90,7 +91,7 @@ S: You clone an unfamiliar open-source repo that you don't fully trust, and you 
 Q: How do you run the session?
 + Keep permissions on and reach for sandboxing (`/sandbox`), so Claude works inside a filesystem boundary and a network egress allowlist.
 > Claude can work freely inside hard boundaries. If a file or dependency carries hidden instructions, the boundaries still stand between it and your system.
-~ Keep permissions on in normal mode, and read each request before you approve it.
+~ Keep permissions on in Manual mode, and read each request before you approve it.
 > Safe — you stay in control of every action. But a long fix means many prompts, and sandboxing would let Claude work freely inside hard boundaries.
 - Start Claude with `--dangerously-skip-permissions` so the fix goes faster.
 > Never on untrusted code or content. A prompt injection hidden in a file, dependency or issue can steer Claude into harmful commands, with no prompt to stop it.
@@ -111,16 +112,16 @@ Flip each card, recall the answer *before* you look, and grade yourself honestly
 
 ```flashcards
 Q: What does auto mode do?
-A: A separate classifier model reviews each action and interrupts you only for the genuinely risky ones. It's the default on Pro, Max and Team plans.
+A: A separate classifier model reviews actions and blocks the risky ones; Claude tries another way, and you're asked only after repeated blocks. It's the default on Pro, Max and Team plans.
 
 Q: allow, deny, ask — what does each do?
-A: **allow** runs without a prompt; **deny** blocks entirely, even if Claude asks; everything else falls through to the normal **ask** prompt.
+A: **allow** runs without a prompt; **deny** blocks in every mode; **ask** always prompts, even in auto mode. Anything unmatched goes to the classifier (auto) or a prompt (Manual).
 
 Q: Where do you codify permission rules for the whole team?
 A: In `.claude/settings.json`. Commit it to share team rules.
 
 Q: What does sandboxing (`/sandbox`) give you?
-A: OS-level isolation: a filesystem boundary plus a network egress allowlist, with credential masking built in.
+A: OS-level isolation: a filesystem boundary plus a network egress allowlist, and optional credential masking you configure with `sandbox.credentials`.
 
 Q: When is `--dangerously-skip-permissions` legit?
 A: In a throwaway sandbox, a disposable container/VM, or CI where the environment is isolated and the repo is trusted. Never on untrusted code or content.
@@ -145,11 +146,11 @@ Q: When is --dangerously-skip-permissions reasonable?
 > Skipping permissions is fine in isolation with trusted code. Untrusted code/content + no permissions = prompt-injection risk.
 
 Q: What's the point of a `deny` rule like `Read(./.env)`?
-+ It blocks Claude from ever reading secrets, even if it would otherwise ask
++ It blocks Claude's file tools and common shell reads (`cat`, `head`…) of `.env`, even where Claude would otherwise ask
 - It speeds up reads
 - It encrypts the file
 - It's only decorative
-> deny is a hard block — perfect for secrets and destructive commands. allow pre-approves; everything else prompts.
+> deny blocks in every mode — good for secrets and destructive commands. It isn't an OS-level boundary (a script can still open the file), so pair it with /sandbox. allow pre-approves; ask always prompts.
 ```
 
 :::try Next

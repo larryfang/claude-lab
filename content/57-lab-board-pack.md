@@ -2,7 +2,7 @@
 
 Twenty minutes. A small driver-based forecast with every assumption in an editable cell, a board deck where every number traces to the model — and the proofreading pass that checks it all before anyone else sees it.
 
-This lab uses the `finance/` data and the variance pack from Lab 1. If you skipped it, do Part 1 of Lab 1 first — four minutes.
+This lab uses `output/variance-pack.xlsx` from Lab 1 (Parts 1–2) and `output/reconciliation-summary.md` from Lab 2 (Parts 1–2). If you skipped either, run those parts first.
 
 ## Part 1 — The driver-based mini-forecast (7 min)
 
@@ -43,6 +43,8 @@ RESULT. Produce `output/board-pack.pptx`, six slides:
 5. The forecast — base case with the two sensitivities
 6. What I want from the room: decisions, not information
 
+INPUTS. Only the three source files above.
+
 EDGES. Every number on every slide must come from the three source files — if a number is not in them, the slide does not get it. State every limitation plainly: no softening a miss into "broadly in line", no reframing a one-off as strategy. Speaker notes: three bullets a slide, maximum. Do not invent a trend the data does not show.
 
 FLAG on a final hidden slide: every number you were tempted to round or simplify, and what the exact figure is.
@@ -51,12 +53,12 @@ FLAG on a final hidden slide: every number you were tempted to round or simplify
 - [ ] The deck opens and the numbers match the workbooks — spot-check slide 2 against the waterfall
 - [ ] Slide 4 states the exceptions plainly rather than burying them
 - [ ] The flag slide exists and is honest
-- [ ] Check the **story order**: Cowork ranks by magnitude by default, and the biggest number is not always the most strategically important one — reorder if the story demands it (a caveat straight from a finance leader's real close run: [F9 Finance](https://www.f9finance.com/claude-cowork-month-end-close/))
+- [ ] Check the **story order**: Cowork sometimes orders stories by magnitude, and the biggest number is not always the most strategically important one — reorder if the story demands it (a caveat straight from a finance leader's real close run: [F9 Finance](https://www.f9finance.com/claude-cowork-month-end-close/))
 :::
 
 ## Part 3 — The proofreading pass (6 min)
 
-This is the pattern Anthropic's own teams use before anything ships: a **separate pass, fresh eyes, that traces every number to a verified source**. Run it as its own task so it is not marking its own homework.
+Anthropic's finance team checks its board materials the same way: Claude is asked to *"validate that every number and claim reconciles to a single source of truth"* ([Anthropic](https://claude.com/blog/how-anthropics-finance-team-uses-claude-to-shape-the-narrative-behind-the-numbers)). Here you make it a **separate pass, fresh eyes, that traces every number to a verified source**. Run it as its own task so it is not marking its own homework.
 
 :::lab Step 4 — Fresh-eyes audit
 Start a **new** Cowork session (or task) so it has no memory of building the deck, and run:

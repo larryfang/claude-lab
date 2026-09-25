@@ -137,7 +137,7 @@ Q: What next?
 ~ Switch to a higher effort level and try again in the same session.
 > More thinking may help, but it thinks inside a context full of wrong turns. Clean context usually beats more effort.
 - Keep correcting. The third attempt usually works.
-> It usually does not — each failure adds more misleading context. This is failure pattern 2, "correcting over and over".
+> It usually does not — each failure adds more misleading context. This is the "correcting over and over" trap (see *Habits & Failure Patterns*).
 ```
 
 ## Lock it in

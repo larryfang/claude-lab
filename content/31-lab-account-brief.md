@@ -8,7 +8,7 @@ If your CRM connector is live, use it. If not, export your opportunities to CSV 
 
 ## Part 1 — One account, done properly (8 min)
 
-Pick a real account you have a call with soon. If you would rather not use real data, use one of the fictional accounts from your Module 1 practice CSV — the brief is identical.
+Pick a real account you have a call with soon. If you would rather not use real data, use one of the fictional accounts from your Module 1 practice CSV — the brief is identical, except: delete "and their public website" from INPUTS (here and in Step 2), because an invented name can match a real company.
 
 :::lab Step 1 — The single-account brief
 ```prompt
@@ -24,6 +24,8 @@ RESULT. Produce `output/briefs/[account]-brief.md`, maximum two pages, with thes
 6. THREE QUESTIONS — specific to this account, not generic discovery. Each one should be impossible to ask without having done the research
 7. RISKS AND UNKNOWNS — what I do not know that could derail this call
 8. SOURCES — every URL and file you used, with dates
+
+Also produce `output/briefs/[account]-sources.csv`: one row per factual claim, with columns section, claim, source, date_read.
 
 INPUTS. Our CRM record for this account, my email history with anyone at their domain, any notes in `sales/` (or your `accounts/` folder if you keep one), and their public website. Nothing else.
 
@@ -59,7 +61,7 @@ Push back and re-run:
 :::
 
 :::warning Verify before the call, not after
-Pick the two most consequential facts in the brief and check them yourself — the headcount, the funding, the name and title of the person you are meeting. A wrong title in the first thirty seconds of a call costs you the credibility that the other nineteen pages of research bought.
+Pick the two most consequential facts in the brief and check them yourself — the headcount, the funding, the name and title of the person you are meeting. A wrong title in the first thirty seconds of a call costs you the credibility that the rest of the research bought.
 :::
 
 ## Part 3 — The fan-out (8 min)

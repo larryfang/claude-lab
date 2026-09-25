@@ -2,6 +2,10 @@
 
 There is exactly one idea to absorb in this lesson. Everything else in the course is technique.
 
+:::note Cowork and chat are merging (16 Sep 2026)
+Anthropic is combining chat and Cowork into one Claude, starting with Pro and Max ([announcement](https://claude.com/blog/cowork-is-now-claude), [Help Center](https://support.claude.com/en/articles/16761823)). If your message box shows **Chat** and **Cowork**, choose **Cowork**. If you are on Pro or Max and there is no such choice, you already have the new Claude: every conversation can take a Cowork task. The shift below — from prompt to outcome — is the same in both.
+:::
+
 :::concept The shift: from prompt to outcome
 - **Chat** is organised around the **prompt**. You ask, it answers, you copy, you paste, you ask again. *You* are the project manager.
 - **Cowork** is organised around the **outcome**. You describe the finished thing you want. Claude plans the steps, reads the files, does the work, and hands you a deliverable.
@@ -40,21 +44,21 @@ You read the plan, approve, walk away, come back to a finished document.
 - **It works on your real files.** Cowork reads from and writes to folders you choose. No upload/download dance.
 - **It produces real deliverables.** Not text in a chat window: `.xlsx` with working formulas, `.pptx` decks, formatted `.docx`, organised folders, CSVs.
 - **It divides and conquers.** Big jobs get split across **subagents** working in parallel, so twelve accounts do not take twelve times as long.
-- **It runs on a schedule.** Save a job, have it run every Monday at 8am. Chat cannot do this.
+- **It runs on a schedule.** Save a job, have it run every Monday at 8am. A one-off chat message cannot do this.
 - **It remembers.** **Projects** give recurring work a persistent workspace with its own files, instructions and memory.
-- **It can use the web.** Paired with **Claude in Chrome**, it navigates sites, reads pages, and fills forms.
+- **It can use the web.** In its built-in browser in Claude Desktop, or in your own Chrome with **Claude in Chrome**, it opens sites, reads pages, and fills forms.
 
 ## The four Claude surfaces, and when to use which
 
 | Surface | Reach for it when | Example |
 |---|---|---|
 | **Claude.ai / chat** | You need an answer or a paragraph, right now | "Tighten this subject line" |
-| **Claude Desktop chat** | Same, but with your files and connectors to hand | "What did this account say on the last call?" |
+| **Claude Desktop chat** | Same, plus desktop extensions that reach files on your computer | "What did this account say on the last call?" |
 | **Cowork** | You want a **finished multi-step job** with real output files | "Build me a deal review pack for all 14 open opps" |
 | **Claude Code** | The job is a **codebase** | "Add rate limiting to this service" |
 
 :::tip The Cowork test — five ingredients
-Anthropic's own checklist for a good Cowork task: it draws on **multiple inputs**, it produces a **file deliverable**, it **recurs**, you have a **clear quality bar** (you already know what good looks like, so you can verify fast), and the middle steps are **boring** — extracting, compiling, reconciling. Three or more of these and Cowork is the right surface.
+[Anthropic's own checklist](https://claude.com/blog/best-practices-for-getting-started-with-claude-cowork) for a good Cowork task: it draws on **multiple inputs**, it produces a **file deliverable**, it **recurs**, you have a **clear quality bar** (you already know what good looks like, so you can verify fast), and the middle steps are **boring** — extracting, compiling, reconciling. You do not need all five, but a good candidate hits a few.
 
 ✅ Good fits
 - "Research these 12 accounts and give me a pre-call brief each."
@@ -79,15 +83,15 @@ Being honest about this saves you a week of disappointment.
 
 ## The trust model, briefly
 
-Cowork needs more trust than chat because it can act. You keep control in four ways, and we set all four up in the next lesson:
+Cowork needs more trust than chat because it can act. You keep control in four ways; the next lesson sets up the first two:
 
 1. **You choose the folders** it can reach. It works there, not across your whole machine.
 2. **You see the plan** before it acts, and you can interrupt mid-run.
-3. **Code and shell commands run isolated.** But **computer use** — driving your browser or desktop apps — is **not** sandboxed, and either way it can genuinely change the files you shared.
+3. **Code and shell commands run isolated.** But **computer use** — Claude clicking and typing directly in the apps on your screen — is **not** sandboxed, and either way it can genuinely change the files you shared.
 4. **You review the output.** Non-negotiable. Module 9.
 
 :::warning Requirements and expectations
-Cowork needs a **paid plan** (Pro, Max, Team or Enterprise). It runs on desktop, web and mobile. This course uses the **Claude Desktop app** because the labs depend on reliable local-folder access; a cloud session on web or mobile can reach a folder you connected on your computer only while Desktop is open there. Cowork **ships fast and evolves quickly**, so screens and features shift. If your interface differs slightly from these lessons, that is expected — the concepts and the briefs still hold. Frame every UI instruction in this course as "look for something that does this", not "click exactly here".
+Cowork needs a **paid plan** (Pro, Max, Team or Enterprise). It runs on desktop, web and mobile. This course uses the **Claude Desktop app** because the labs depend on reliable local-folder access; a cloud session can reach a folder you connected on your computer only if the session was started in Desktop, and only while Desktop stays open on that computer. Cowork **ships fast and evolves quickly**, so screens and features shift. If your interface differs slightly from these lessons, that is expected — the concepts and the briefs still hold. Frame every UI instruction in this course as "look for something that does this", not "click exactly here".
 :::
 
 ## Lock it in
@@ -99,7 +103,7 @@ Q: What is chat organised around, and what is Cowork organised around?
 A: Chat is organised around the **prompt**; Cowork around the **outcome**. Same model, completely different unit of work.
 
 Q: What are the five ingredients of the Cowork test?
-A: **Multiple inputs**, a **file deliverable**, it **recurs**, a **clear quality bar**, and **boring** middle steps. Three or more and Cowork is the right surface.
+A: **Multiple inputs**, a **file deliverable**, it **recurs**, a **clear quality bar**, and **boring** middle steps. You do not need all five — a good candidate hits a few.
 
 Q: Is Cowork a source of truth?
 A: No. It reports what it read. If your CRM is wrong, your brief is wrong.
@@ -108,7 +112,7 @@ Q: You run the same brief twice. What should you expect?
 A: Two slightly different documents. Cowork is not deterministic — fine for a draft, not fine for a system of record.
 
 Q: What is genuinely **not** sandboxed in Cowork?
-A: **Computer use** — driving your browser or desktop apps. Code and shell commands run isolated, and either way it can change the files you shared.
+A: **Computer use** — Claude clicking and typing directly in the apps on your screen. Code and shell commands run isolated, and either way it can change the files you shared.
 
 Q: What are the four ways you keep control of Cowork?
 A: You choose the folders, you see the plan (and can interrupt), code and shell run isolated, and you review the output.
@@ -132,7 +136,7 @@ Q: Which of these is the best fit for Cowork rather than chat?
 Q: What is genuinely NOT sandboxed in Cowork?
 - Reading files in a granted folder
 - Writing a spreadsheet
-+ Computer use — when Cowork drives your browser or desktop apps
++ Computer use — when Cowork clicks and types directly in the apps on your screen
 - Asking it a question
 > Code and shell run isolated; computer use does not. And in every mode it can really change files in folders you granted.
 

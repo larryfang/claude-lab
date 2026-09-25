@@ -37,15 +37,15 @@ That's correct — plan mode is **read-only by design**. Press **Shift+Tab** to 
 :::
 
 :::details My subagent ignores project rules
-Custom and general-purpose subagents normally **do inherit the CLAUDE.md and memory hierarchy**. The built-in Explore and Plan agents are the exceptions: they skip CLAUDE.md and git status to stay lean. If a rule is essential, restate it in the delegation prompt—especially when using Explore or Plan—and check that you did not accidentally shadow a built-in agent name.
+Custom and general-purpose subagents normally **do load the CLAUDE.md hierarchy** (unless a custom agent sets `omitClaudeMd: true`); none of them load your auto memory. The built-in Explore and Plan agents are the exceptions: they skip CLAUDE.md and git status to stay lean. If a rule is essential, restate it in the delegation prompt—especially when using Explore or Plan—and check that you did not accidentally shadow a built-in agent name.
 :::
 
 :::details Plan mode broke after I added a subagent
-Did you name a subagent `Explore` or `Plan`? Those **shadow the built-ins** and break plan mode's research step. Rename your custom agent.
+Did you name a subagent `Explore` or `Plan`? That **replaces the built-in**, so plan mode's research step now runs your agent, with its prompt and tools. Rename it unless you meant to override the built-in.
 :::
 
 :::details My hook isn't firing
-Check `/hooks` to confirm it's registered. Verify the **event** (PreToolUse vs PostToolUse) and the **matcher** (e.g. `Edit|Write`). Settings reload live, but if in doubt, restart the session. A PreToolUse hook must `exit` non-zero to *block* an action.
+Check `/hooks` to confirm it's registered. Verify the **event** (PreToolUse vs PostToolUse) and the **matcher** (e.g. `Edit|Write`). Settings reload live, but if in doubt, restart the session. A PreToolUse hook must `exit 2` (or print a JSON deny decision) to *block* an action; `exit 1` only logs a non-blocking error.
 :::
 
 ## MCP & tools

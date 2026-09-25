@@ -23,15 +23,16 @@ Each session has its own files, its own branch, its own context. Merge the branc
 Two flags turn "several terminals" into a managed fleet:
 
 - **Name them** — `claude -n backend`, `claude -n frontend`. Named sessions can **message each other**: tell one *"tell frontend the order endpoint changed"* and it does, via cross-session messaging ([docs](https://code.claude.com/docs/en/cross-session-messaging); demo: [@adocomplete, 2026-08-13](https://x.com/adocomplete/status/2087728817012162973)).
-- **Background them** — `claude --bg "fix the flaky tests"` launches a session that runs without a terminal attached. **`claude agents`** is the control tower: one screen showing every session — running, blocked on a question, or done — and `claude agents --json` scripts it.
+- **Background them** — `claude --bg "fix the flaky tests"` launches a session that runs without a terminal attached. **`claude agents`** is the control tower: one screen showing every background session — running, blocked on a question, or done (a terminal session joins once you background it) — and `claude agents --json` scripts it.
 
 ```claude-sim
-# Your shell. Three sessions are live: two named terminals + one background agent.
+# Your shell. Three background sessions are live: backend and frontend (named, then backgrounded) + one started with --bg.
 $ claude agents
-  ● backend      running   fixing order-endpoint validation      (worktree: proj-api)
-  ● frontend     waiting   needs input: "confirm new field name"  (worktree: proj-web)
-  ● bg-4f2a      running   --bg: migrate remaining class components
-$ claude -n backend --continue
+Agent view (interactive; Enter attaches, Esc returns to your shell)
+  Needs input  frontend  a91c  "confirm new field name"                 worktree: proj-web
+  Working      backend   7c1e  fixing order-endpoint validation         worktree: proj-api
+  Working      bg-4f2a   4f2a  --bg: migrate remaining class components
+$ claude attach 7c1e
 Claude Code — session "backend" (branch: feature/orders)
 > tell frontend the order endpoint now returns amounts in cents, field "amount_cents"
 Message sent to session "frontend". It acknowledged and is updating its formatter util.
@@ -59,7 +60,7 @@ Same idea works for tests: one Claude writes the tests, another writes code to p
 
 ## Fan-out across many files
 
-For big migrations or audits, loop `claude -p` over a list, scoping tools for safety:
+For big migrations or audits, loop `claude -p` over a list, pre-approving only the tools each run needs:
 
 ```bash
 # 1) have Claude list the files needing work → files.txt
@@ -107,7 +108,7 @@ A: Two sessions in the same working directory clobber each other. Each worktree 
 Q: How do you start a session in a fresh worktree?
 A: `claude -w` (`--worktree`).
 
-Q: Which command shows every session — running, blocked, or done?
+Q: Which command shows every background session — running, blocked, or done?
 A: `claude agents`, the control tower. `claude agents --json` scripts it.
 
 Q: Why does a separate Reviewer session beat self-review?

@@ -27,13 +27,18 @@ var COWORK_COURSE = {
     { id: "finance", emoji: "🧾", title: "Finance quick start", audience: "Finance and RevOps", desc: "Create a live-formula variance pack and reconciliation workflow with a strict review pass.", lessons: ["welcome", "what-is-cowork", "lab-setup", "the-brief", "finance-plays", "lab-variance", "lab-reconciliation", "verify"] }
   ],
   freshness: {
-    "what-is-cowork": { verifiedDate: "2026-08-26", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork" },
-    "lab-setup": { verifiedDate: "2026-08-26", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork" },
-    "workspace-tour": { verifiedDate: "2026-08-26", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork" },
-    "connectors-trust": { verifiedDate: "2026-08-26", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities" },
-    "chrome-research": { verifiedDate: "2026-08-26", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/11088861-use-research-on-claude" },
-    "everywhere": { verifiedDate: "2026-08-26", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile" },
-    "skills": { verifiedDate: "2026-08-26", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/12512198-how-to-create-custom-skills" }
+    "welcome": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/16761823" },
+    "what-is-cowork": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork" },
+    "deliverables": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/14729249-use-live-artifacts-in-claude-cowork" },
+    "lab-connect": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities" },
+    "schedules": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/13854387" },
+    "projects-teams": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/14116274" },
+    "lab-setup": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork" },
+    "workspace-tour": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork" },
+    "connectors-trust": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities" },
+    "chrome-research": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/11088861-use-research-on-claude" },
+    "everywhere": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile" },
+    "skills": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/12512198-how-to-create-custom-skills" }
   },
   modules: [
     {
@@ -69,7 +74,7 @@ var COWORK_COURSE = {
           summary: "Five parts every good Cowork brief has. Skip one and you get confident, useless work.",
           keywords: ["brief", "prompting", "framework", "outcome", "constraints", "sources", "format"] },
         { id: "deliverables", file: "12-deliverables.md", title: "Ask for Real Deliverables", minutes: 10, level: "Core",
-          summary: "Decks, spreadsheets with live formulas, docs, CSVs — plus interactive artifacts and self-refreshing live dashboards.",
+          summary: "Decks, spreadsheets with live formulas, docs, CSVs — plus interactive artifacts that can read your connected apps.",
           keywords: ["deliverables", "excel", "powerpoint", "word", "csv", "artifacts", "live artifacts", "dashboard", "output", "format"] },
         { id: "steering", file: "13-steering.md", title: "Plans, Steering & When to Stop", minutes: 9, level: "Core",
           summary: "Read the plan, interrupt early, redirect cheaply, and recognise the four ways a run goes wrong.",
@@ -91,7 +96,7 @@ var COWORK_COURSE = {
         { id: "connectors-trust", file: "20-connectors-trust.md", title: "Connectors & the Trust Model", minutes: 11, level: "Core",
           summary: "What MCP and connectors actually are, what Claude can and cannot see, and the data rules to agree before you start.",
           keywords: ["connectors", "mcp", "custom connector", "remote mcp", "oauth", "permissions", "security", "pii", "trust", "data"] },
-        { id: "lab-connect", file: "21-lab-connect.md", title: "Lab: Wire Up CRM, Mail & Docs", minutes: 18, level: "Core",
+        { id: "lab-connect", file: "21-lab-connect.md", title: "Lab: Wire Up CRM, Mail & Docs", minutes: 16, level: "Core",
           summary: "Hands-on. Add your connectors, prove each one works with a read-only smoke test, and log what you granted.",
           keywords: ["lab", "connect", "salesforce", "hubspot", "gmail", "slack", "drive", "jira", "atlassian", "confluence", "mcp", "setup"] },
         { id: "chrome-research", file: "22-chrome-research.md", title: "Web Research: Search, Research & Chrome", minutes: 11, level: "Core",
@@ -286,19 +291,19 @@ var CC_COURSE = {
     { id: "automation", emoji: "🚀", title: "Automation power path", audience: "Experienced users building repeatable workflows", desc: "Combine skills, subagents, hooks, headless runs, and worktrees without skipping safety.", lessons: ["cc-permissions", "cc-commands", "cc-subagents", "cc-hooks", "cc-mcp-plugins", "cc-headless", "cc-parallel", "cc-lab-automate"] }
   ],
   freshness: {
-    "cc-tour": { verifiedDate: "2026-08-26", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/commands" },
-    "cc-claudemd": { verifiedDate: "2026-08-26", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/memory" },
-    "cc-context-mgmt": { verifiedDate: "2026-08-26", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/commands" },
-    "cc-epcc": { verifiedDate: "2026-08-26", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/best-practices" },
-    "cc-permissions": { verifiedDate: "2026-08-26", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/permission-modes" },
-    "cc-commands": { verifiedDate: "2026-08-26", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/skills" },
-    "cc-subagents": { verifiedDate: "2026-08-26", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/sub-agents" },
-    "cc-hooks": { verifiedDate: "2026-08-26", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/hooks" },
-    "cc-mcp-plugins": { verifiedDate: "2026-08-26", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/mcp" },
-    "cc-headless": { verifiedDate: "2026-08-26", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/github-actions" },
-    "cc-parallel": { verifiedDate: "2026-08-26", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/cross-session-messaging" },
-    "cc-cheatsheet": { verifiedDate: "2026-08-26", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs" },
-    "cc-whats-new": { verifiedDate: "2026-08-26", sourceLabel: "Claude Code changelog", sourceUrl: "https://code.claude.com/docs/en/whats-new" }
+    "cc-tour": { verifiedDate: "2026-09-25", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/commands" },
+    "cc-claudemd": { verifiedDate: "2026-09-25", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/memory" },
+    "cc-context-mgmt": { verifiedDate: "2026-09-25", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/commands" },
+    "cc-epcc": { verifiedDate: "2026-09-25", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/best-practices" },
+    "cc-permissions": { verifiedDate: "2026-09-25", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/permission-modes" },
+    "cc-commands": { verifiedDate: "2026-09-25", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/skills" },
+    "cc-subagents": { verifiedDate: "2026-09-25", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/sub-agents" },
+    "cc-hooks": { verifiedDate: "2026-09-25", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/hooks" },
+    "cc-mcp-plugins": { verifiedDate: "2026-09-25", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/mcp" },
+    "cc-headless": { verifiedDate: "2026-09-25", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/github-actions" },
+    "cc-parallel": { verifiedDate: "2026-09-25", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/cross-session-messaging" },
+    "cc-cheatsheet": { verifiedDate: "2026-09-25", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs" },
+    "cc-whats-new": { verifiedDate: "2026-09-25", sourceLabel: "Claude Code changelog", sourceUrl: "https://code.claude.com/docs/en/whats-new" }
   },
   modules: [
     {

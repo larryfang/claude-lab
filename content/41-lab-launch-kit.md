@@ -25,6 +25,8 @@ RESULT. `output/messaging-house.md` with these sections:
 7. PROOF INVENTORY — every piece of evidence available to us: metrics, quotes, benchmarks, case studies. With source and date
 8. EVIDENCE GAPS — every claim in sections 1–3 that we cannot currently prove
 
+Also produce `output/proof-inventory.csv` with columns claim, pillar, proof_point, source, date, status (supported / gap).
+
 INPUTS. Only the files I have provided. Do not use general knowledge about this market or invent customer quotes, metrics, benchmarks or case studies.
 
 EDGES. Never write a proof point you cannot source to a file I gave you. Never invent a customer name or a statistic. If a pillar has no proof, keep the pillar and list it in Evidence Gaps rather than fabricating support.
@@ -51,7 +53,7 @@ Now attack this messaging house. You are a sceptical analyst who has seen forty 
 :::
 
 :::tip Why the human edit is mandatory here
-Everything downstream inherits this file. Thirty minutes arguing with the foundation saves a launch. This is the one point in the whole course where "read it properly and change it yourself" is a hard requirement rather than good practice.
+Everything downstream inherits this file. Thirty minutes arguing with the foundation saves a launch. This is one of the points in the course where "read it properly and change it yourself" is a hard requirement, not just good practice.
 :::
 
 ## Part 2 — Generate the kit (10 min)
@@ -70,6 +72,10 @@ RESULT. Produce these in `output/launch-kit/`:
 6. `internal-announcement.md` — the Slack or email post to the company: what shipped, who it is for, what to do about it, where the assets are. Under 250 words.
 7. `launch-checklist.md` — everything that must happen before, on, and after launch day, with an owner column left blank for me to fill and a "blocked by" column.
 8. `enablement-deck.pptx` — 10 slides for a rep training session: the problem, who it is for, the three pillars, the demo moment, the objections, the disqualifiers, what to do on Monday. Three bullets of speaker notes per slide.
+
+Also produce `output/launch-kit/_claims-trace.csv` with columns artefact, claim, messaging_house_section.
+
+INPUTS. Only `output/messaging-house.md`.
 
 EDGES. Every claim in every artefact must trace to the messaging house. Do not introduce a new claim, proof point, statistic, customer name or competitor comparison anywhere. Where an artefact would naturally need a claim the messaging house does not support, write "[NEEDS PROOF: description]" and list it at the end of that file. Keep the one-liner byte-identical everywhere it appears.
 

@@ -62,7 +62,7 @@ test("route pages and freshness evidence render", async ({ page }) => {
   await page.locator('.fast-path-card[href="#/cowork/path/essentials"]').click();
   await expect(page.locator(".path-list li")).toHaveCount(8);
   await page.goto("/#/claude-code/cc-subagents");
-  await expect(page.locator(".freshness")).toContainText("Verified 26 Aug 2026");
+  await expect(page.locator(".freshness")).toContainText("Verified 25 Sep 2026");
 });
 
 for (const width of [390, 320]) {

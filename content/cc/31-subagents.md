@@ -36,9 +36,9 @@ Key frontmatter ([sub-agents reference](https://code.claude.com/docs/en/sub-agen
 - **`name`** / **`description`** — the description is how Claude decides when to delegate.
 - **`tools`** — restrict what it can do (a reviewer needs Read/Grep/Bash, not Write).
 - **`model`** — e.g. `haiku` for fast read-only research, `opus` for hard reasoning.
-- **`memory`** — give the subagent its **own persistent memory** across sessions (subagents don't share the main session's auto memory), loaded before it starts and written back after ([@lydiahallie, 2026-07-20](https://x.com/lydiahallie/status/2079255826355892464)).
+- **`memory`** — give the subagent its **own persistent memory** across sessions (subagents don't share the main session's auto memory): its `MEMORY.md` loads at start, and the subagent writes to its memory folder as it works ([@lydiahallie, 2026-07-20](https://x.com/lydiahallie/status/2079255826355892464)). It also turns on Read, Write and Edit, so a read-only reviewer gains write tools.
 
-Manage them with **`/agents`**. Subagents spawned mid-session run **in the background by default**, so your conversation keeps moving while they work.
+Create or change them by asking Claude, or edit the files in `.claude/agents/` directly (since v2.1.198, `/agents` only prints that reminder). Subagents spawned mid-session run **in the background by default**, so your conversation keeps moving while they work.
 
 ## Invoke them — by name or on purpose
 
@@ -65,8 +65,8 @@ Claude Code ships with subagents it invokes automatically:
 | **Explore** | Fast, **read-only** codebase research — it inherits the main session's model (capped at Opus on the Claude API) and keeps bulky exploration out of the main context |
 | **Plan** | Does the research during plan mode so your main agent stays focused on presenting the plan |
 
-:::warning Don't shadow the built-ins
-Don't name a custom subagent `Explore` or `Plan` — you'll override the built-ins and break plan mode in subtle ways.
+:::warning Shadow the built-ins only on purpose
+A project or user subagent named `Explore` or `Plan` replaces the built-in with your prompt, tools and model. Do it only on purpose — for example, an `Explore` pinned to `model: haiku` to keep exploration cheap — never by accident.
 :::
 
 ## Two rules that make subagents great
@@ -76,7 +76,7 @@ A **feature-specific** subagent (`payment-flow-reviewer`, `migration-explorer`) 
 :::
 
 :::warning Know the two lean exceptions
-Custom and general-purpose subagents load the same `CLAUDE.md` and memory hierarchy as the main conversation. The built-in **Explore** and **Plan** agents deliberately skip `CLAUDE.md` and git status to stay lean. Restate a rule in the delegation prompt when Explore or Plan must follow it, or when the rule is important enough to make explicit in the handoff.
+Custom and general-purpose subagents load the same `CLAUDE.md` hierarchy as the main conversation (unless a custom one sets `omitClaudeMd: true`), but not your auto memory. The built-in **Explore** and **Plan** agents deliberately skip `CLAUDE.md` and git status to stay lean. Restate a rule in the delegation prompt when Explore or Plan must follow it, or when the rule is important enough to make explicit in the handoff.
 :::
 
 ## See it delegate
@@ -105,14 +105,14 @@ Q: Which definition do you write?
 ~ A general `qa` subagent with the same read-only tools, used for every review.
 > It still keeps the review out of your main context, but a vague agent loses to a feature-specific one on tool selection and focus.
 - An agent named `Plan` with every tool enabled, so it can also fix what it finds.
-> Naming it `Plan` overrides the built-in and breaks plan mode in subtle ways. Every tool also throws away the restriction a reviewer should have.
+> Naming it `Plan` replaces the built-in plan-mode researcher with your reviewer, so plan mode now runs it. Every tool also throws away the read-only restriction both roles should have.
 
 S: Your `CLAUDE.md` says the old `v1/` API is deprecated. You ask Claude to have the built-in Explore subagent find utilities you can reuse.
 Q: How do you hand off the search?
 + Restate the rule in the delegation prompt: ignore the deprecated `v1/` code.
 > Explore deliberately skips `CLAUDE.md` to stay lean, so the rule only reaches it when the handoff states it.
 ~ Delegate to a custom subagent instead, because it loads `CLAUDE.md`.
-> That works — custom subagents load the same `CLAUDE.md` and memory hierarchy — but you give up fast, read-only Explore for a rule that one sentence could carry.
+> That works — custom subagents load the same `CLAUDE.md` hierarchy — but you give up fast, read-only Explore for a rule that one sentence could carry.
 - Delegate as usual; Explore reads `CLAUDE.md` like the main session does.
 > It doesn't. Explore skips `CLAUDE.md` and git status, so its summary can recommend the deprecated code.
 ```
@@ -134,8 +134,8 @@ A: From the subagent's `description` frontmatter.
 Q: Which built-in subagents skip `CLAUDE.md` and git status?
 A: **Explore** and **Plan**. Restate a rule in the delegation prompt when they must follow it.
 
-Q: Why never name a custom subagent `Explore` or `Plan`?
-A: You'll override the built-ins and break plan mode in subtle ways.
+Q: What happens if you name a custom subagent `Explore` or `Plan`?
+A: It replaces the built-in. Do it only on purpose, for example an `Explore` pinned to `haiku`.
 
 Q: `/subtask` or `/fork` — what is the difference?
 A: `/subtask` hands a side task to a subagent and the result comes back here. `/fork` copies the whole conversation into a new background session.
@@ -154,14 +154,14 @@ Q: Which built-in subagents deliberately skip CLAUDE.md and git status to keep r
 - Every subagent
 - Only custom reviewer agents
 - No subagent ever skips project memory
-> Explore and Plan are the lean exceptions. Custom and general-purpose subagents receive CLAUDE.md and project memory, while still starting without your conversation history unless you explicitly fork it.
+> Explore and Plan are the lean exceptions. Custom and general-purpose subagents receive the CLAUDE.md hierarchy (but not your auto memory), while still starting without your conversation history unless you explicitly fork it.
 
 Q: Which subagent design is better?
 + A specific one like "payment-flow-reviewer" with a tight toolset
 - A vague catch-all "engineer" that does everything
 - Naming it "Plan" to reuse the built-in
 - One giant agent with all tools enabled
-> Specificity buys better tool selection and tighter context. And never shadow the built-in Explore/Plan names.
+> Specificity buys better tool selection and tighter context. A custom "Plan" replaces the built-in rather than reusing it, so shadow a built-in name only on purpose.
 ```
 
 :::try Next

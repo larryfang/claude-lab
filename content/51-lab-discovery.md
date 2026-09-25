@@ -5,7 +5,7 @@ Twenty-two minutes. Six or eight interviews become a themed, quote-backed report
 :::note Data
 Use real transcripts if you have them — anonymise first if that is your policy. Otherwise use the practice `product/` transcripts from Module 1, which include two customers who deliberately contradict each other.
 
-Want real-world scale instead? All 320 transcripts of Lenny's Podcast are open-sourced ([github.com/ChatPRD/lennys-podcast-transcripts](https://github.com/ChatPRD/lennys-podcast-transcripts)) — Lenny Rachitsky himself ran this exact synthesis over the full set with Cowork in about 15 minutes ([his account](https://x.com/lennysan/status/2010840092865413254)). Download a dozen into `product/` for a bigger practice run.
+Want real-world scale instead? About 300 transcripts of Lenny's Podcast are open-sourced ([github.com/ChatPRD/lennys-podcast-transcripts](https://github.com/ChatPRD/lennys-podcast-transcripts)) — Lenny Rachitsky himself ran a theme synthesis over a folder of 320 transcripts with Cowork in about 15 minutes ([his account](https://x.com/lennysan/status/2010840092865413254)). Download a dozen into a separate `product/lenny/` folder for a bigger practice run, and point the briefs at that folder.
 :::
 
 ## Part 1 — Inventory before synthesis (5 min)

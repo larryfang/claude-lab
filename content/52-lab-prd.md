@@ -2,8 +2,10 @@
 
 Twenty-two minutes. A brain-dump plus real evidence becomes a PRD where every requirement traces to something a customer actually said — and then Cowork attacks it.
 
+This lab uses `output/discovery-report.md` and `output/themes.csv` from Lab 1. If you skipped it, run Lab 1 Parts 1–2 first.
+
 :::warning You write the problem statement
-This is the one thing you must not delegate. A generated problem statement produces a spec that solves a problem nobody has, expressed beautifully. Write two or three honest sentences yourself, in your own words, before you start.
+This is one of the two things you must not delegate — the other is the decisions. A generated problem statement produces a spec that solves a problem nobody has, expressed beautifully. Write two or three honest sentences yourself, in your own words, before you start.
 :::
 
 ## Part 1 — Your input (3 min)
@@ -41,6 +43,8 @@ RESULT. `output/prd.md`:
 10. OPEN QUESTIONS — what must be decided before build, and who decides each
 11. REQUIREMENTS WITH NO EVIDENCE — every requirement in section 5 whose source column is empty
 12. WHERE I MAY BE WRONG — your honest assessment of the weakest parts of my thinking, including the problem statement
+
+Also produce `output/prd-requirements.csv` with columns id, requirement, evidence_ref, evidence_type (quote / ticket / theme / none).
 
 INPUTS. Only `product/prd-braindump.md`, `output/discovery-report.md`, `output/themes.csv`, and the transcripts and tickets in `product/`.
 
@@ -136,7 +140,7 @@ Q: Why must you write the problem statement yourself?
 + A generated problem statement produces a spec that beautifully solves a problem nobody has
 - It is faster
 - Legal requires it
-> The problem is the one thing that cannot be derived from the artefacts. Everything else can.
+> The problem and the decisions cannot be derived from the artefacts. The structure, evidence links and edge cases can.
 
 Q: Section 11 lists requirements with no supporting evidence and comes back empty. What should you do?
 - Nothing; the PRD is well evidenced

@@ -6,6 +6,10 @@ By the end you will hand Claude a job like *"research these twelve accounts, cro
 
 That is **Cowork**: Claude that stops answering and starts **delivering**.
 
+:::note Cowork and chat are merging (16 Sep 2026)
+Anthropic is combining chat and Cowork into one Claude, starting with Pro and Max ([announcement](https://claude.com/blog/cowork-is-now-claude), [Help Center](https://support.claude.com/en/articles/16761823)). If your message box shows **Chat** and **Cowork**, choose **Cowork**. If you are on Pro or Max and there is no such choice, you already have the new Claude: every conversation can take a Cowork task. This course keeps the name **Cowork** for that capability, and every brief works the same way in both.
+:::
+
 :::tip This is a lab, not an article
 Every module has something you actually run in your own Claude Desktop. Reading about Cowork is like reading about swimming. The value is in the doing.
 :::
@@ -48,7 +52,7 @@ Tick each box that is true:
 
 - [ ] I have **Claude Desktop** installed (macOS or Windows) and I am signed in — Cowork also runs on web and mobile, but this course's local-folder labs need the desktop app
 - [ ] I am on a **paid plan** — Pro, Max, Team or Enterprise
-- [ ] I can switch the **message box** from Chat to **Cowork** (if not, the next lessons cover it)
+- [ ] My **message box** shows **Chat** and **Cowork** and I can choose **Cowork** — or I am on Pro or Max with no such choice, so I already have the new Claude (if neither, the next lessons cover it)
 - [ ] I have access to *at least one* real work system — CRM, Jira, Drive, Gmail or Slack
 - [ ] I know which **lane** I am doing first
 
@@ -62,10 +66,10 @@ Tick each box that is true:
 |---|---|---|
 | **Foundations** | Start Here · Fundamentals | "Oh — I have been using this wrong." |
 | **Access** | Connect Your Revenue Stack | "It can see my actual pipeline." |
-| **Your lane** | Sales · GTM · Product | "That was four hours of work." |
+| **Your lane** | Sales · GTM · Product · Finance | "That was four hours of work." |
 | **Leverage** | Make It Repeatable | "It runs itself on Mondays now." |
 | **Grown-up mode** | Trust & Rollout · Capstone | "My team uses this." |
 
 :::try Your first action
-Tick the boxes above, then press **Next →**. In eight minutes you will understand what Cowork actually is — and in twenty you will have run your first job.
+Tick the boxes above, then choose **Complete and continue** at the bottom of the page. In eight minutes you will understand what Cowork actually is — and in about forty you will have run your first job.
 :::
