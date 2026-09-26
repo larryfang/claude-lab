@@ -7,8 +7,12 @@
     "check:content": "node scripts/verify-course.mjs",
     "check:browser": "playwright test",
     "check:links": "node scripts/check-links.mjs",
-    "check:unit": "node --test scripts/link-status.test.mjs scripts/checkers.test.mjs scripts/contrast.test.mjs",
+    "usage": "node analytics/server.mjs",
+    "check:unit": "node --test scripts/link-status.test.mjs scripts/checkers.test.mjs scripts/contrast.test.mjs scripts/usage-report.test.mjs",
     "test": "npm run check:content && npm run check:unit && npm run check:browser"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.4.0"
   },
   "devDependencies": {
     "@playwright/test": "1.62.1"

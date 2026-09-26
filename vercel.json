@@ -1,0 +1,19 @@
+{
+  "framework": null,
+  "functions": {
+    "api/report.js": {
+      "maxDuration": 30,
+      "includeFiles": "analytics/catalog.json"
+    },
+    "api/collect.js": {
+      "maxDuration": 15
+    }
+  },
+  "routes": [
+    { "src": "^/api/collect$", "dest": "/api/collect" },
+    { "src": "^/api/report$", "dest": "/api/report" },
+    { "src": "^/report/?$", "dest": "/api/report" },
+    { "src": "^/$", "dest": "/api/home" },
+    { "src": "/.*", "status": 404 }
+  ]
+}

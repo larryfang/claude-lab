@@ -1,0 +1,18 @@
+# The course stays on GitHub Pages. Do not upload it with the collector.
+/index.html
+/assets
+/content
+/tests
+/scripts
+/research
+/.github
+/playwright-report
+/test-results
+/node_modules
+/analytics/data
+*.md
+LICENSE
+start.command
+playwright.config.mjs
+.env*
+.vercel

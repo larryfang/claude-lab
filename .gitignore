@@ -18,3 +18,11 @@ REVIEW.md
 node_modules/
 playwright-report/
 test-results/
+
+# Usage events and the private report token
+analytics/data/
+
+# Vercel project link
+.vercel/
+.vercel
+.env*

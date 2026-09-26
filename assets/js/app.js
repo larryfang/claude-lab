@@ -228,7 +228,8 @@
       html += '<div class="how-step"><span class="how-num">' + (k + 1) + '</span><span class="how-emoji">' + s[0] + "</span><h3>" + s[1] + "</h3><p>" + s[2] + "</p></div>";
     });
     html += "</div>";
-    html += '<footer class="hub-foot"><span>Open source &amp; built to be remixed. <a href="' + SITE.repo + '" target="_blank" rel="noopener">Fork it on GitHub</a> to make an internal edition for your team.</span><span class="kbd-hint">Press <kbd>?</kbd> for shortcuts</span></footer>';
+    var usageNote = SITE.analytics ? " Anonymous usage counts help improve the lessons." : "";
+    html += '<footer class="hub-foot"><span>Open source &amp; built to be remixed. <a href="' + SITE.repo + '" target="_blank" rel="noopener">Fork it on GitHub</a> to make an internal edition for your team.' + usageNote + '</span><span class="kbd-hint">Press <kbd>?</kbd> for shortcuts</span></footer>';
     $("#content").innerHTML = html;
     window.scrollTo(0, 0);
     fillDaily();

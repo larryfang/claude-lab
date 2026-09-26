@@ -7,7 +7,9 @@
 window.SITE = {
   title: "Claude Lab",
   tagline: "Hands-on, interactive courses for getting genuinely good at Claude.",
-  repo: "https://github.com/larryfang/claude-lab"
+  repo: "https://github.com/larryfang/claude-lab",
+  // Public origin of the usage collector, with no path. Empty: the site sends no usage.
+  analytics: "https://claude-lab-usage.vercel.app"
 };
 
 var COWORK_COURSE = {

@@ -80,6 +80,22 @@ python3 -m http.server 8080    # then open http://localhost:8080
 
 A GitHub Actions workflow is included at `.github/workflows/pages.yml` if you prefer Actions-based deploys (set Source: *GitHub Actions*). After deploying, update `repo` in `assets/js/content.js` (`window.SITE.repo`).
 
+## Usage report
+
+For the person running the course. Learners never see it.
+
+```bash
+npm run usage
+```
+
+That serves the course on port 8787 and prints a private report URL. It is for a laptop only. Those events stay in `analytics/data/` on that machine.
+
+Live visitors are recorded by the Vercel collector at `https://claude-lab-usage.vercel.app`. That host is only the collector. The course stays on GitHub Pages. Each event is saved as a private object in the Vercel Blob store `claude-lab-usage` (Sydney). That store keeps the events across deploys. The report is `https://claude-lab-usage.vercel.app/report` and needs the `ANALYTICS_TOKEN` environment variable. The token is not in this repo. Before deploying the collector, run `node analytics/build-catalog.mjs` so the report has current lesson titles.
+
+The report names lessons where people stall, questions they miss, searches that find nothing, and where phone users fall behind. Events are anonymous: no names, reflections, prompts, checker text, or IP addresses. Search text that looks like an email or a key is dropped.
+
+`window.SITE.analytics` is the collector origin. GitHub Pages starts sending only after that value is in the published `content.js`.
+
 ## 🧩 Add a course or lesson
 
 Everything is driven by `assets/js/content.js`.
@@ -97,7 +113,7 @@ npm test              # content structure + unit tests + all browser interaction
 npm run check:links   # live external-link check
 ```
 
-The browser suite renders every registered lesson and checks progress persistence, quizzes and scores, every learning block, the review deck, notebook export, progress export/import, the certificate, full-text search, keyboard navigation, guided simulations, route pages, accessibility state, and 390 px / 320 px layouts. A smoke test uses every interactive block on every lesson at phone width and fails on any browser error. Unit tests cover the checker heuristics, the link-check rules, and WCAG AA colour contrast for every text/background pair in both themes. GitHub Actions runs the main suite on every push and pull request, plus a weekly external-link check.
+The browser suite renders every registered lesson and checks progress persistence, quizzes and scores, every learning block, the review deck, notebook export, progress export/import, the certificate, full-text search, keyboard navigation, guided simulations, route pages, accessibility state, and 390 px / 320 px layouts. A smoke test uses every interactive block on every lesson at phone width and fails on any browser error. Unit tests cover the checker heuristics, the link-check rules, WCAG AA colour contrast for every text/background pair in both themes, and the usage report. GitHub Actions runs the main suite on every push and pull request, plus a weekly external-link check.
 
 ## 📁 Project structure
 
@@ -111,7 +127,9 @@ The browser suite renders every registered lesson and checks progress persistenc
 │       ├── widgets.js      # Flashcards + spaced repetition, order, scenario, reflect, spot
 │       ├── checkers.js     # Heuristic brief and CLAUDE.md checkers
 │       ├── content.js      # Multi-course manifest: COURSES, modules, badges  ← edit here
+│       ├── usage.js        # Anonymous usage beacon. Sends nothing until a collector is configured.
 │       └── app.js          # Hub, journey, lessons, search index, review, notebook, progress, certificate
+├── analytics/              # Provider collector and private usage report
 ├── content/                # Cowork course lessons (*.md)
 │   └── cc/                 # Claude Code course lessons (*.md)
 ├── start.command           # macOS: double-click to preview locally
