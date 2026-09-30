@@ -8,6 +8,7 @@
 
   var STORE_KEY = "claudelab.v2";
   var SITE = window.SITE, COURSES = window.COURSES, MD = window.MD, WIDGETS = window.WIDGETS;
+  var icon = window.EXPERIENCE.icon;
   var byId = {};
   COURSES.forEach(function (c) { byId[c.id] = c; });
   var bodyCache = {};
@@ -79,6 +80,10 @@
   function applyTheme(t) { document.documentElement.setAttribute("data-theme", t); store.theme = t; save(); }
   (function () { var t = store.theme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); applyTheme(t); })();
   $("#themeBtn").addEventListener("click", function () { applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark"); });
+  function applyFocus() { document.body.classList.toggle('focus-mode', !!store.focus); $('#focusBtn').setAttribute('aria-pressed', String(!!store.focus)); $('#focusBtn').setAttribute('aria-label', store.focus ? 'Exit focus mode' : 'Enter focus mode'); }
+  $('#focusBtn').innerHTML = icon('focus') + '<span>Focus</span>';
+  $('#focusBtn').addEventListener('click', function () { store.focus = !store.focus; save(); applyFocus(); updateReadProgress(); });
+  applyFocus();
   if (SITE.repo) $("#githubLink").href = SITE.repo;
 
   /* ---------- Top progress ---------- */
@@ -100,17 +105,17 @@
     COURSES.forEach(function (c) {
       var p = progressPct(c);
       var a = document.createElement("a"); a.className = "nav-courselink"; a.href = courseHref(c.id);
-      a.innerHTML = '<span class="nav-group-emoji">' + c.emoji + '</span><span class="nav-title">' + c.title + '</span><span class="nav-group-meter">' + p.pct + "%</span>";
+      a.innerHTML = '<span class="nav-group-emoji">' + icon(c.id === 'claude-code' ? 'code' : 'grid') + '</span><span class="nav-title">' + c.title + '</span><span class="nav-group-meter">' + p.pct + "%</span>";
       nav.appendChild(a);
     });
   }
 
   function buildCourseNav(c, activeId) {
     var nav = $("#nav"); nav.innerHTML = learnNav();
-    var back = document.createElement("a"); back.className = "nav-allcourses"; back.href = "#/"; back.innerHTML = "⌂ All courses";
+    var back = document.createElement("a"); back.className = "nav-allcourses"; back.href = "#/"; back.innerHTML = icon("grid") + " All courses";
     nav.appendChild(back);
     var head = document.createElement("a"); head.className = "nav-course-head nav-course-head-link"; head.href = courseHref(c.id);
-    head.innerHTML = '<span class="nav-course-emoji">' + c.emoji + '</span><span class="nav-course-title">' + c.title + "</span>";
+    head.innerHTML = '<span class="nav-course-emoji">' + icon(c.id === 'claude-code' ? 'code' : 'grid') + '</span><span class="nav-course-title">' + c.title + "</span>";
     nav.appendChild(head);
 
     c.modules.forEach(function (m) {
@@ -126,7 +131,7 @@
       btn.setAttribute("aria-expanded", String(!collapsed));
       btn.setAttribute("aria-controls", ul.id);
       btn.innerHTML =
-        '<span class="nav-group-emoji">' + m.emoji + "</span>" +
+        '<span class="nav-group-emoji">' + String(c.modules.indexOf(m) + 1).padStart(2, '0') + "</span>" +
         '<span class="nav-group-title">' + m.title + "</span>" +
         '<span class="nav-group-meter">' + mp.done + "/" + mp.total + "</span>" +
         '<span class="nav-group-chev"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg></span>';
@@ -137,6 +142,7 @@
         var a = document.createElement("a");
         a.className = "nav-link" + (s.completed[l.id] ? " done" : "") + (l.id === activeId ? " active" : "");
         a.href = lessonHref(c.id, l.id); a.dataset.lesson = l.id;
+        if (l.id === activeId) a.setAttribute('aria-current', 'page');
         a.innerHTML = '<span class="nav-check">✓</span><span class="nav-title">' + l.title + "</span>" + (l.minutes ? '<span class="nav-min">' + l.minutes + "m</span>" : "");
         li.appendChild(a); ul.appendChild(li);
       });
@@ -146,7 +152,7 @@
   }
 
   function setActiveNav(id) {
-    $all(".nav-link").forEach(function (a) { a.classList.toggle("active", a.dataset.lesson === id); });
+    $all(".nav-link").forEach(function (a) { a.classList.toggle("active", a.dataset.lesson === id); if (a.dataset.lesson === id) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     var info = lessonInfo(byId[currentCourseId], id);
     if (info) { var g = $('.nav-group[data-module="' + info.module.id + '"]'); if (g && g.classList.contains("collapsed")) { g.classList.remove("collapsed"); var btn = $(".nav-group-btn", g); if (btn) btn.setAttribute("aria-expanded", "true"); cstate(currentCourseId).collapsed[info.module.id] = false; save(); } }
   }
@@ -156,19 +162,7 @@
 
   /* ---------- Hub ---------- */
   function isLab(l) { return /^(lab|capstone)\b/i.test(l.title); }
-  function heroVisual() {
-    return '<div class="hero-visual" aria-hidden="true"><div class="hv-orb hv-orb-1"></div><div class="hv-orb hv-orb-2"></div>' +
-      '<div class="hv-card hv-brief"><div class="hv-bar"><i></i><i></i><i></i><span>brief.md</span><em>checker</em></div>' +
-        '<p class="hv-line" style="--d:0"><b>B</b><span>I run RevOps; this pack is for our VP of Sales.</span></p>' +
-        '<p class="hv-line" style="--d:1"><b>R</b><span>Produce <code>output/deal-review.xlsx</code> + a memo.</span></p>' +
-        '<p class="hv-line" style="--d:2"><b>I</b><span>Use only <code>pipeline-q3.csv</code>. No web.</span></p>' +
-        '<p class="hv-line" style="--d:3"><b>E</b><span>Never estimate a missing amount.</span></p>' +
-        '<p class="hv-line" style="--d:4"><b>F</b><span>Flag every row you exclude, and why.</span></p>' +
-        '<div class="hv-score"><span>5 / 5</span> signals present</div></div>' +
-      '<div class="hv-card hv-term"><span class="p">$</span> npm test<span class="ok">✓ 42 passed</span></div>' +
-      '<div class="hv-card hv-flash"><div class="hv-flip"><span class="f"><small>Question</small><span>What does <b>F</b> stand for?</span></span><span class="b"><small>Answer</small><span>Flag — surface it, don\'t decide it.</span></span></div></div>' +
-      '<div class="hv-chip">🔥 3-day streak <b>+20 XP</b></div></div>';
-  }
+  function heroVisual() { return window.EXPERIENCE.preview(false); }
   function renderHub() {
     currentCourseId = null;
     refreshTopProgress(null);
@@ -177,17 +171,17 @@
     var lessons = 0, labs = 0, minutes = 0;
     COURSES.forEach(function (c) { countable(c).forEach(function (x) { lessons++; if (isLab(x.lesson)) labs++; minutes += x.lesson.minutes || 0; }); });
     var html = '<section class="hub-hero"><div class="hub-hero-copy">';
-    html += '<span class="hero-eyebrow">✦ Claude Lab 2.0 · Hands-on · Open source</span>';
-    html += "<h1>Get genuinely good at <span class=\"grad\">Claude</span>.</h1>";
-    html += '<p class="hero-sub">' + esc(SITE.tagline) + " Learn one idea, practise it in a lab, check yourself, and let the review deck make it stick. Everything saves in your browser — no account.</p>";
-    html += '<div class="hero-cta"><a class="btn btn-primary" href="' + courseHref(COURSES[0].id) + '">' + COURSES[0].emoji + " Start with Cowork →</a>" + (COURSES[1] ? '<a class="btn btn-ghost" href="' + courseHref(COURSES[1].id) + '">' + COURSES[1].emoji + " I write code →</a>" : "") + "</div>";
+    html += '<span class="hero-eyebrow">An independent, hands-on learning lab</span>';
+    html += "<h1>Less guessing.<br>More <em>good work.</em></h1>";
+    html += '<p class="hero-sub">Learn to work with Claude by doing. Write a clear brief, steer the work, and check the evidence. Bring those habits to your next real task.</p>';
+    html += '<div class="hero-cta"><button class="btn btn-primary" type="button" data-open-planner>Find your starting point ' + icon('arrow') + '</button><a class="btn btn-ghost" href="#/studio">' + icon('play') + ' Try the practice studio</a></div><p class="hero-proof"><span>' + icon('check') + ' Free learning site</span><span>' + icon('check') + ' No account</span><span>' + icon('check') + ' Progress saved here</span></p>';
     html += "</div>" + heroVisual() + "</section>";
 
     var last = store.last && byId[store.last.c] && lessonInfo(byId[store.last.c], store.last.l);
     var st = streaks(), due = dueCards().length, xp = totalXp();
     if (last || xp) {
       html += '<div class="today-row">';
-      if (last) html += '<a class="resume-card" href="' + lessonHref(last.course.id, last.lesson.id) + '"><span class="resume-kicker">Continue where you left off</span><strong>' + esc(last.lesson.title) + "</strong><small>" + last.course.emoji + " " + esc(last.module.title) + '</small><span class="resume-go" aria-hidden="true">→</span></a>';
+      if (last) html += '<a class="resume-card" href="' + pathLessonHref(last.course.id, last.lesson.id, store.last.p) + '"><span class="resume-kicker">Continue where you left off</span><strong>' + esc(last.lesson.title) + "</strong><small>" + last.course.emoji + " " + esc(last.module.title) + '</small><span class="resume-go" aria-hidden="true">→</span></a>';
       html += '<a class="today-card" href="#/review"><b>' + due + "</b><span>" + (due === 1 ? "card" : "cards") + ' due</span></a>';
       html += '<a class="today-card" href="#/me"><b>' + st.current + '</b><span>day streak</span></a>';
       html += '<a class="today-card" href="#/me"><b>' + xp + "</b><span>XP · " + levelOf(xp).name + "</span></a></div>";
@@ -200,7 +194,8 @@
       '<div data-stat="tracks"><b>' + COURSES.length + "</b><span>tracks</span></div></div>";
 
     html += '<section class="daily-slot" id="dailySlot" aria-live="polite"></section>';
-    html += '<h2 class="section-title">Choose your track</h2><p class="section-desc">Two hands-on courses. Start wherever fits you today — progress in each is saved separately.</p>';
+    html += window.EXPERIENCE.planner();
+    html += '<div class="section-heading"><span class="micro-label">TWO WAYS TO WORK</span><h2 class="section-title">Choose your track</h2><p class="section-desc">Two hands-on courses. Start wherever fits you today — progress in each is saved separately.</p></div>';
     html += '<div class="course-grid">';
     COURSES.forEach(function (c) {
       var p = progressPct(c);
@@ -209,7 +204,7 @@
       var cta = p.done === 0 ? "Start course" : (p.pct === 100 ? "Review" : "Resume");
       var cLabs = countable(c).filter(function (x) { return isLab(x.lesson); }).length;
       html += '<a class="course-card" href="' + lessonHref(c.id, startId) + '">';
-      html += '<div class="course-card-top"><span class="course-emoji">' + c.emoji + "</span>";
+      html += '<div class="course-card-top"><span class="course-emoji">' + icon(c.id === 'claude-code' ? 'code' : 'grid') + "</span>";
       html += '<span class="course-ring" style="--p:' + p.pct + '"><span>' + p.pct + "%</span></span></div>";
       html += "<h2>" + c.title + "</h2>";
       html += '<p class="course-aud">' + esc(c.audience) + "</p>";
@@ -220,12 +215,12 @@
     });
     html += "</div>";
 
-    html += '<h2 class="section-title">How Claude Lab teaches</h2><p class="section-desc">Reading about Claude does not make you good at it. Every module runs the same four-step loop.</p><div class="how-grid">';
-    [["📖", "Learn", "Short lessons, one idea each, with the why — not just the clicks."],
-     ["🛠️", "Practise", "Labs on your real work, a terminal simulator, scenarios, and find-the-flaw reviews."],
-     ["✅", "Check", "Scored quizzes, ordering exercises, and checkers for your briefs and CLAUDE.md."],
-     ["🔁", "Remember", "Flashcards return on a schedule; your notebook keeps every reflection."]].forEach(function (s, k) {
-      html += '<div class="how-step"><span class="how-num">' + (k + 1) + '</span><span class="how-emoji">' + s[0] + "</span><h3>" + s[1] + "</h3><p>" + s[2] + "</p></div>";
+    html += '<div class="section-heading"><span class="micro-label">A HABIT, NOT A PROMPT TRICK</span><h2 class="section-title">Learn it. Try it. Question it.</h2><p class="section-desc">A small loop you can carry into every task.</p></div><div class="how-grid">';
+    [["book", "Learn", "Short lessons, one idea each, with the why — not just the clicks."],
+     ["play", "Practise", "Labs on your real work, a terminal simulator, scenarios, and find-the-flaw reviews."],
+     ["check", "Check", "Scored quizzes, ordering exercises, and checkers for your briefs and CLAUDE.md."],
+     ["repeat", "Remember", "Flashcards return on a schedule; your notebook keeps every reflection."]].forEach(function (s, k) {
+      html += '<div class="how-step"><span class="how-num">' + (k + 1) + '</span><span class="how-emoji">' + icon(s[0]) + "</span><h3>" + s[1] + "</h3><p>" + s[2] + "</p></div>";
     });
     html += "</div>";
     var usageNote = SITE.analytics ? " Anonymous usage counts help improve the lessons." : "";
@@ -233,6 +228,8 @@
     $("#content").innerHTML = html;
     window.scrollTo(0, 0);
     fillDaily();
+    window.EXPERIENCE.wireStudio($('.practice-studio'));
+    window.EXPERIENCE.wirePlanner({ store: store, save: save, byId: byId, cstate: cstate, pathLessonHref: pathLessonHref, fastPathMinutes: fastPathMinutes });
   }
 
   /* ---------- Daily 3: retrieval practice from finished lessons ---------- */
@@ -416,9 +413,9 @@
   function learnNav() {
     var due = dueCards().length;
     return '<div class="nav-learn">' +
-      '<a href="#/review" title="Review deck"><span aria-hidden="true">🔁</span><span class="nav-title">Review</span>' + (due ? '<span class="nav-count">' + due + "</span>" : "") + "</a>" +
-      '<a href="#/notebook" title="Notebook"><span aria-hidden="true">📓</span><span class="nav-title">Notebook</span></a>' +
-      '<a href="#/me" title="My progress"><span aria-hidden="true">📈</span><span class="nav-title">Progress</span></a></div>';
+      '<a href="#/review" title="Review deck"><span aria-hidden="true">' + icon('repeat') + '</span><span class="nav-title">Review</span>' + (due ? '<span class="nav-count">' + due + "</span>" : "") + "</a>" +
+      '<a href="#/notebook" title="Notebook"><span aria-hidden="true">' + icon('note') + '</span><span class="nav-title">Notebook</span></a>' +
+      '<a href="#/me" title="My progress"><span aria-hidden="true">' + icon('chart') + '</span><span class="nav-title">Progress</span></a></div>';
   }
   function pageShell(title) { currentCourseId = null; refreshTopProgress(null); buildHubNav(); document.title = title + " · " + SITE.title; window.scrollTo(0, 0); }
   function crumbs(label) { return '<div class="lesson-top"><a class="crumb" href="#/">All courses</a><span>›</span><span class="crumb">' + label + "</span></div>"; }
@@ -605,11 +602,12 @@
 
       $("#content").innerHTML = html;
       $("#content").classList.add("with-toc");
+      window.EXPERIENCE.orientLesson(l, m);
       setActiveNav(id);
       wireLesson(cid, id);
       buildToc(cid, id, path && path.id);
       linkTerms(c, id, requestVersion);
-      store.last = { c: cid, l: id, t: Date.now() }; save();
+      store.last = { c: cid, l: id, p: path && path.id, t: Date.now() }; save();
       if (section) { var target = document.getElementById(section); if (target) target.scrollIntoView(); }
       updateReadProgress();
       var cb = $("#completeBtn"); if (cb) cb.addEventListener("click", function () { toggleComplete(cid, id, path && path.id); });
@@ -708,11 +706,18 @@
     if (!rail || heads.length < 2) return;
     var kit = [[".quiz-q", "🧩", "quiz question"], [".flash", "🃏", "flashcard deck"], [".lab-box", "🧪", "lab"], [".ccsim", "⌨️", "simulation"], ["[data-scn]", "🧭", "scenario"], [".order, .spot, .lint", "🎯", "exercise"], [".reflect", "🪞", "reflection"]]
       .map(function (k) { var n = $all(k[0], $("article.lesson")).length; return n ? '<li><span aria-hidden="true">' + k[1] + "</span>" + n + " " + k[2] + (n === 1 ? "" : "s") + "</li>" : ""; }).join("");
-    rail.innerHTML = '<nav class="toc" aria-label="On this page"><p class="toc-title">On this page</p><ol>' +
+    rail.innerHTML = '<details class="lesson-outline" open><summary>On this page</summary><nav class="toc" aria-label="On this page"><p class="toc-title">On this page</p><ol>' +
       heads.map(function (h) { return '<li><a href="' + pathLessonHref(cid, id, pathId) + '" data-target="' + h.id + '">' + esc(h.textContent) + "</a></li>"; }).join("") + "</ol>" +
-      (kit ? '<p class="toc-title">In this lesson</p><ul class="toc-kit">' + kit + "</ul>" : "") + "</nav>";
+      (kit ? '<p class="toc-title">In this lesson</p><ul class="toc-kit">' + kit + "</ul>" : "") + "</nav></details>";
+    if (window.innerWidth < 1280) $(".lesson-outline", rail).open = false;
     $all(".toc a", rail).forEach(function (a) {
-      a.addEventListener("click", function (e) { e.preventDefault(); var t = document.getElementById(a.dataset.target); if (t) t.scrollIntoView({ behavior: "smooth" }); });
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        var t = document.getElementById(a.dataset.target);
+        if (!t) return;
+        if (window.innerWidth < 1280) $(".lesson-outline", rail).open = false;
+        t.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      });
     });
     if (!("IntersectionObserver" in window)) return;
     tocObserver = new IntersectionObserver(function (entries) {
@@ -785,6 +790,8 @@
     var api = { course: cid, lesson: id, state: s, store: store, save: save, toast: toast, touch: touch };
     WIDGETS.wire($("#content"), api);
     window.CHECKERS.wire($("#content"), api);
+    // Code examples can scroll horizontally on phones; keyboard users need access too.
+    $all('.codeblock pre', $('#content')).forEach(function (pre) { pre.tabIndex = 0; pre.setAttribute('aria-label', 'Code example'); });
   }
   function maybeCelebrate(label) {
     var list = label.closest(".checklist"); if (!list) return;
@@ -1042,8 +1049,16 @@
 
   /* ---------- Keyboard ---------- */
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") { var wasOpen = openTerm; closeTerm(); if (wasOpen) wasOpen.focus(); closeSearch(); closeNav(); closeShortcuts(); return; }
+    if (e.key === "Escape") { var wasOpen = openTerm; closeTerm(); if (wasOpen) wasOpen.focus(); closeSearch(); closeNav(true); closeShortcuts(); return; }
     if (!$("#shortcutsModal").hidden || !$("#searchModal").hidden) return;
+    if ($('#sidebar').classList.contains('open')) {
+      if (e.key === 'Tab' && !e.ctrlKey && !e.metaKey) {
+        var menuItems = [$('#navToggle')].concat($all('a[href],button:not([disabled])', $('#sidebar')).filter(function (el) { return el.offsetParent !== null; }));
+        var at = menuItems.indexOf(document.activeElement);
+        e.preventDefault(); menuItems[(at + (e.shiftKey ? menuItems.length - 1 : 1)) % menuItems.length].focus();
+      }
+      return;
+    }
     var typing = /input|textarea|select/i.test(e.target.tagName || "") || e.target.isContentEditable;
     if (e.key === "/" && !typing) { e.preventDefault(); openSearch(); return; }
     if (typing) return;
@@ -1059,16 +1074,29 @@
   });
 
   /* ---------- Mobile nav ---------- */
-  function openNav() { $("#sidebar").classList.add("open"); $("#scrim").hidden = false; $("#navToggle").setAttribute("aria-expanded", "true"); }
-  function closeNav() { $("#sidebar").classList.remove("open"); $("#scrim").hidden = true; $("#navToggle").setAttribute("aria-expanded", "false"); }
-  $("#navToggle").addEventListener("click", function () { $("#sidebar").classList.contains("open") ? closeNav() : openNav(); });
-  $("#scrim").addEventListener("click", closeNav);
+  function openNav() {
+    $('#sidebar').classList.add('open'); $('#sidebar').inert = false; $('#sidebar').removeAttribute('aria-hidden');
+    $('#main').inert = true; $('#scrim').hidden = false; $('#navToggle').setAttribute('aria-expanded', 'true');
+    document.body.classList.add('nav-open');
+    var first = $('a,button', $('#sidebar')); if (first) first.focus({ preventScroll: true });
+  }
+  function closeNav(restoreFocus) {
+    var open = $('#sidebar').classList.contains('open');
+    $('#sidebar').classList.remove('open'); $('#sidebar').inert = window.innerWidth <= 980;
+    if ($('#sidebar').inert) $('#sidebar').setAttribute('aria-hidden', 'true'); else $('#sidebar').removeAttribute('aria-hidden');
+    $('#main').inert = false; $('#scrim').hidden = true; $('#navToggle').setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('nav-open');
+    if (open && restoreFocus === true) $('#navToggle').focus();
+  }
+  window.matchMedia('(max-width: 980px)').addEventListener('change', function () { closeNav(); });
+  $("#navToggle").addEventListener("click", function () { $("#sidebar").classList.contains("open") ? closeNav(true) : openNav(); });
+  $("#scrim").addEventListener("click", function () { closeNav(true); });
   $("#nav").addEventListener("click", function (e) { if (e.target.closest("a") && window.innerWidth <= 980) closeNav(); });
 
   /* ---------- Reset ---------- */
   $("#resetBtn").addEventListener("click", function () {
     if (confirm("Clear ALL saved progress, checklists, and badges across every course? This can't be undone.")) {
-      store = { theme: store.theme, courses: {} }; save(); toast("Progress reset."); route();
+      store = { theme: store.theme, courses: {} }; save(); applyFocus(); toast("Progress reset."); route();
     }
   });
 
@@ -1081,9 +1109,14 @@
     var parts = raw.split("/").filter(Boolean);
     $("#content").classList.remove("with-toc");
     if (tocObserver) { tocObserver.disconnect(); tocObserver = null; }
+    closeNav();
+    document.body.dataset.view = !parts.length ? 'hub' : parts[0] === 'studio' ? 'studio' : byId[parts[0]] && lessonInfo(byId[parts[0]], parts[1]) ? 'lesson' : 'page';
+    $('#focusBtn').hidden = document.body.dataset.view !== 'lesson';
+    $all('.global-nav a').forEach(function (a) { var active = a.dataset.view === document.body.dataset.view || (a.dataset.view === 'learning' && ['me', 'review', 'notebook'].indexOf(parts[0]) !== -1); if (active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     closeShortcuts();
     closeTerm();
     if (!parts.length) { renderHub(); return; }
+    if (parts[0] === "studio") { pageShell("Practice studio"); window.EXPERIENCE.studioPage({ download: download, toast: toast }); return; }
     if (parts[0] === "review") { renderReview(); return; }
     if (parts[0] === "notebook") { renderNotebook(); return; }
     if (parts[0] === "me") { renderMe(); return; }

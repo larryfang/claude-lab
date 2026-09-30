@@ -61,6 +61,8 @@
     var parts = raw.split("/").filter(Boolean);
     var loc = { page: "hub", course: "", lesson: "", at: Date.now() };
     if (!parts.length) return loc;
+    // A practice preview is a site page, never a course called "studio".
+    if (parts[0] === "studio") { loc.page = "studio"; return loc; }
     if (parts[0] === "review" || parts[0] === "notebook") { loc.page = parts[0]; return loc; }
     if (parts[0] === "me") { loc.page = "progress"; return loc; }
     loc.course = parts[0];

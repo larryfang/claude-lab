@@ -6,7 +6,7 @@
    ============================================================ */
 window.SITE = {
   title: "Claude Lab",
-  tagline: "Hands-on, interactive courses for getting genuinely good at Claude.",
+  tagline: "Learn to brief, steer, and verify Claude through hands-on practice.",
   repo: "https://github.com/larryfang/claude-lab",
   // Public origin of the usage collector, with no path. Empty: the site sends no usage.
   analytics: "https://claude-lab-usage.vercel.app"
@@ -17,7 +17,7 @@ var COWORK_COURSE = {
   slug: "cowork-for-gtm",
   emoji: "🤝",
   title: "Claude Cowork for Sales, GTM, Product & Finance",
-  tagline: "Stop prompting. Start delegating. A hands-on lab that turns Cowork into a teammate who does your account research, launch kits, PRDs, and variance packs — no code required.",
+  tagline: "Practise delegating account research, launch kits, PRDs, and finance packs. Set clear boundaries, inspect the work, and verify the result — no code required.",
   audience: "AEs · GTM & PMM · Product managers · Finance",
   level: "No code required",
   glossary: "glossary",
@@ -33,7 +33,7 @@ var COWORK_COURSE = {
     "steering": { verifiedDate: "2026-09-25", sourceLabel: "Claude Academy", sourceUrl: "https://academy.claude.com/courses/ai-fluency-framework-foundations/the-description-discernment-loop" },
     "verify": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on" },
     "next-30-days": { verifiedDate: "2026-09-25", sourceLabel: "Claude Academy", sourceUrl: "https://academy.claude.com/products/cowork" },
-    "welcome": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/16761823" },
+    "welcome": { verifiedDate: "2026-09-30", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/16761823" },
     "what-is-cowork": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork" },
     "deliverables": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/14729249-use-live-artifacts-in-claude-cowork" },
     "lab-connect": { verifiedDate: "2026-09-25", sourceLabel: "Claude Help Center", sourceUrl: "https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities" },

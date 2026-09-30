@@ -1,10 +1,10 @@
 # Welcome: Hire Your AI Teammate 👋
 
-You already know Claude can write an email. This lab is about something else entirely.
+Start with one job you can describe and check: an account brief, a launch kit, a discovery summary, or a variance pack.
 
-By the end you will hand Claude a job like *"research these twelve accounts, cross-reference our CRM, and give me a pre-call brief for each one"* — then go make a coffee and come back to twelve finished briefs on your disk.
+You will practise giving Claude the result you need, the sources it may use, and the decisions that need your review. Then you will inspect what it produces and trace the important claims back to evidence. A finished file is a starting point for that review.
 
-That is **Cowork**: Claude that stops answering and starts **delivering**.
+**Cowork** is Claude's capability for carrying out this kind of multi-step work. Your job is to set the direction and decide whether the result is ready to use.
 
 :::note Cowork and chat are merging (16 Sep 2026)
 Anthropic is combining chat and Cowork into one Claude, starting with Pro and Max ([announcement](https://claude.com/blog/cowork-is-now-claude), [Help Center](https://support.claude.com/en/articles/16761823)). If your message box shows **Chat** and **Cowork**, choose **Cowork**. If you are on Pro or Max and there is no such choice, you already have the new Claude: every conversation can take a Cowork task. This course keeps the name **Cowork** for that capability, and every brief works the same way in both.
@@ -13,6 +13,14 @@ Anthropic is combining chat and Cowork into one Claude, starting with Pro and Ma
 :::tip This is a lab, not an article
 Every module has something you actually run in your own Claude Desktop. Reading about Cowork is like reading about swimming. The value is in the doing.
 :::
+
+## Try the habit before the tool
+
+Open the [Practice studio](#/studio) for a short warm-up. Compare a vague request with a clear brief, inspect a plan, and use three fictional source records to decide which claims are supported. You do not need a Claude account for this exercise.
+
+Your first checkpoint: **a missing amount stays missing**. A fluent report that fills the gap is less useful than one that makes the uncertainty visible.
+
+Claude Academy's [research-backed curriculum](https://academy.claude.com/tutorials/getting-good-at-claude-a-research-backed-curriculum) recommends teaching goal clarity early and revisiting critical evaluation throughout the learning journey. That is the habit this lab asks you to practise.
 
 ## Who this is for
 

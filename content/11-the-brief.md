@@ -18,7 +18,7 @@ This course uses **B.R.I.E.F.** as a checklist for that description. It is a cou
 
 ### B — Background
 
-Cowork does not know your company. Two or three sentences of context change the output more than any other single thing.
+Do not assume Cowork has the current context for your company or audience. State the situation and who will use the result, even if project instructions or memory already contain some background.
 
 > ❌ "Write a competitive battlecard for Northwind."
 >

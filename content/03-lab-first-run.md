@@ -1,8 +1,10 @@
 # Lab: Your First Cowork Job
 
-Eighteen minutes. At the end there is a finished file on your disk that you did not write.
+Plan about eighteen minutes, with extra time for setup or corrections. Your goal is a real deliverable plus evidence that its important claims match the input.
 
 The clever bit: **Cowork generates its own practice data first**, so you do not need to find any. Nothing here touches real customer information.
+
+If you want to practise the review first, the [Practice studio](#/studio) supplies a three-record CSV and a copyable brief. That is a separate, smaller exercise; the lane-specific jobs below use the richer files you generate in Part 1.
 
 :::warning Where to run this
 In the `Cowork-Lab` folder from the last lesson. If you skipped it, go back — one lesson, four minutes.

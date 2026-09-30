@@ -27,7 +27,7 @@
     var words = (text.trim().match(/\S+/g) || []).length;
     var letters = LETTERS.map(function (l) { return { key: l.key, name: l.name, ok: words > 0 && l.re.test(text), hint: l.hint }; });
     var warnings = [];
-    if (words > 0 && words < 40) warnings.push("Very short (" + words + " words). Most briefs that work first time run 120–250 words.");
+    if (words > 0 && words < 40) warnings.push("Short brief (" + words + " words). Check that the result, permitted inputs, and review criteria are explicit; length alone does not determine quality.");
     WISHES.forEach(function (w) { if (text.toLowerCase().indexOf(w) !== -1) warnings.push("“" + w + "” is a wish, not an instruction. Say what it means here: which source, which check, which limit."); });
     if (words > 0 && !/\b(\w+\.(md|csv|xlsx|docx|pptx))\b/i.test(text)) warnings.push("No file name. Naming the output file makes the result concrete and easy to find.");
     return { score: letters.filter(function (l) { return l.ok; }).length, total: 5, letters: letters, warnings: warnings, words: words };

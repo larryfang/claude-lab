@@ -104,7 +104,9 @@ const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const versions = [...html.matchAll(/assets\/[^"']+\.(?:css|js)\?v=([^"']+)/g)].map((m) => m[1]);
 const scripts = fs.readdirSync(path.join(root, "assets/js")).filter((f) => f.endsWith(".js"));
 for (const f of scripts) if (!html.includes(`assets/js/${f}?v=`)) fail(`index.html: assets/js/${f} is not loaded with a ?v= version`);
-if (versions.length !== scripts.length + 1 || new Set(versions).size !== 1) fail(`index.html: every asset URL must carry the same ?v= (found ${versions.join(", ")})`);
+const styles = fs.readdirSync(path.join(root, "assets/css")).filter((f) => f.endsWith(".css"));
+for (const f of styles) if (!html.includes(`assets/css/${f}?v=`)) fail(`index.html: assets/css/${f} is not loaded with a ?v= version`);
+if (versions.length !== scripts.length + styles.length || new Set(versions).size !== 1) fail(`index.html: every asset URL must carry the same ?v= (found ${versions.join(", ")})`);
 if (courses.length !== 2) warn.push(`expected 2 courses, found ${courses.length}`);
 
 if (errors.length) {

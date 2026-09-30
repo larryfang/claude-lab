@@ -50,7 +50,15 @@ Nearly every best practice in this course exists to manage this one constraint. 
 
 Check what has loaded with `/context` and inspect memory with `/memory`. A fresh conversation is not necessarily an empty project memory ([official memory guide](https://code.claude.com/docs/en/memory)).
 
-Your job is to give it context (next module), a plan (the workflow module), and a way to check its work (the verification lesson). Do that and you can hand off real work and walk away.
+Your job is to give it context (next module), a plan (the workflow module), and a way to check its work (the verification lesson). Set checkpoints before handing off real work, then inspect the evidence when it returns.
+
+## Try the first handoff
+
+Before you run an agent, finish this sentence: **"The task is done when…"** Name observable behaviour, one failure case, and the evidence you will inspect.
+
+For example: "An invalid date returns a helpful error; valid dates still work; the relevant tests ran; and I reviewed the diff for unrelated changes."
+
+The [official best-practices guide](https://code.claude.com/docs/en/best-practices) recommends giving Claude a verification signal it can run. Passing that signal does not answer every review question: ask what the implementation assumed and check a case that could expose a mistaken assumption.
 
 ## Official training to pair with this lab
 

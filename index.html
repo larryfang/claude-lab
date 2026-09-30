@@ -17,9 +17,10 @@
   <!-- Fonts (graceful fallback to system fonts if offline) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="assets/css/styles.css?v=2026-09-26c" />
+  <link rel="stylesheet" href="assets/css/styles.css?v=2026-09-30a" />
+  <link rel="stylesheet" href="assets/css/experience.css?v=2026-09-30a" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -35,14 +36,21 @@
       <span class="brand-text">Claude&nbsp;Lab</span>
     </a>
 
+    <nav class="global-nav" aria-label="Main navigation">
+      <a href="#/" data-view="hub">Explore</a>
+      <a href="#/studio" data-view="studio">Practice studio</a>
+      <a href="#/me" data-view="learning">My learning</a>
+    </nav>
     <div class="topbar-progress" id="topbarProgress" title="Your overall progress" role="progressbar" aria-label="Course progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
       <div class="topbar-progress-track"><div class="topbar-progress-fill" id="topbarProgressFill"></div></div>
       <span class="topbar-progress-label" id="topbarProgressLabel">0%</span>
     </div>
 
     <div class="topbar-actions">
-      <button class="icon-btn" id="searchBtn" aria-label="Search lessons (press /)" title="Search (press /)">
+      <button class="focus-btn" id="focusBtn" type="button" aria-pressed="false" hidden>Focus</button>
+      <button class="icon-btn search-trigger" id="searchBtn" aria-label="Search lessons (press /)" title="Search (press /)">
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.2-3.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Find a lesson</span><kbd>/</kbd>
       </button>
       <button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode" title="Toggle theme">
         <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M19.4 4.6l-1.8 1.8M6.4 17.6l-1.8 1.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -109,11 +117,12 @@
   <!-- Cache busting: bump every ?v= together when you ship a JS or CSS change.
        Use the same string on all asset URLs.
        Lesson Markdown does not need it — app.js fetches content/ with cache:"no-cache". -->
-  <script src="assets/js/markdown.js?v=2026-09-26c"></script>
-  <script src="assets/js/widgets.js?v=2026-09-26c"></script>
-  <script src="assets/js/checkers.js?v=2026-09-26c"></script>
-  <script src="assets/js/content.js?v=2026-09-26c"></script>
-  <script src="assets/js/usage.js?v=2026-09-26c"></script>
-  <script src="assets/js/app.js?v=2026-09-26c"></script>
+  <script src="assets/js/markdown.js?v=2026-09-30a"></script>
+  <script src="assets/js/widgets.js?v=2026-09-30a"></script>
+  <script src="assets/js/checkers.js?v=2026-09-30a"></script>
+  <script src="assets/js/content.js?v=2026-09-30a"></script>
+  <script src="assets/js/usage.js?v=2026-09-30a"></script>
+  <script src="assets/js/experience.js?v=2026-09-30a"></script>
+  <script src="assets/js/app.js?v=2026-09-30a"></script>
 </body>
 </html>

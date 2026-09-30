@@ -22,16 +22,23 @@ It's built to be **forked**: swap in your company's examples, project keys, and 
 
 | Course | For | What you'll do |
 |---|---|---|
-| 🤝 **Claude Cowork for Sales, GTM, Product & Finance** | AEs, PMM/growth, product managers, finance & RevOps | Write **briefs** that work first time, connect **CRM/Jira/mail/docs**, ship real **deliverables** (decks, live-formula spreadsheets, docs), four **role lanes** of labs, build a **Skill**, put it on a **schedule**, verify before you send — *no code required* |
+| 🤝 **Claude Cowork for Sales, GTM, Product & Finance** | AEs, PMM/growth, product managers, finance & RevOps | Write **briefs** with explicit outcomes and checks, connect **CRM/Jira/mail/docs**, produce real **deliverables** (decks, live-formula spreadsheets, docs), four **role lanes** of labs, build a **Skill**, put it on a **schedule**, verify before you send — *no code required* |
 | ⌨️ **Claude Code for Developers** | Engineers, new to Claude Code | Agentic mental model, **context engineering & CLAUDE.md**, Explore→Plan→Code→Commit, TDD, **subagents, hooks, MCP**, headless/CI, worktrees — with a **terminal simulator** |
 
 63 lessons plus 8 reference pages across both tracks, grounded in current Anthropic docs and community best practices — including worked examples (*Anatomy of a Great Run*), a diagnosis lab (*The Failure Clinic*), *Debugging With Claude Code*, and *Prompt Patterns That Work*.
 
 The [25 September training review](research/training-review-2026-09-25.md) maps official Claude Academy and product documentation to the latest content improvements: the 4D framework, iterative feedback, evidence-based capstones, verification limits, memory, and permission-mode corrections. Claude Lab is independent; its badges and certificates are self-issued completion records.
 
+The [30 September experience review](research/experience-review-2026-09-30.md) describes the new practice studio, goal-and-time session planner, lesson focus mode, and critical-review prompts throughout both tracks.
+
 ## ✨ Features
 
 **New in 2.0 — the learn → practise → check → remember loop**
+
+- **Practice studio** (`#/studio`) — compare briefs, inspect a guided plan, and review claims against three fictional source records. Download the CSV, edit and copy a brief, and run its local signal checker. No Claude account is needed for the studio.
+- **Session planner** — choose a role and 15, 30 or 60 minutes; get a session based on actual lesson estimates and your saved progress. Resume links preserve your chosen route.
+- **Lesson focus mode** — hide the desktop sidebar, retain the contents rail, and save your preference. Phones have a collapsible contents list and a keyboard-accessible course menu.
+- **Lesson orientation and judgment checks** — summaries and actual activity counts on all 71 pages, with role-specific questions before completing each of the 63 lessons.
 
 - **Flashcards with spaced repetition** — grade each card Again / Got it / Easy; every card joins a Leitner review deck (`#/review`) that brings it back just before you would forget it
 - **Scenarios** — "what would you do?" judgement calls with the consequence of every choice
@@ -42,7 +49,7 @@ The [25 September training review](research/training-review-2026-09-25.md) maps 
 - **Progress dashboard** (`#/me`) — levels and XP derived from saved state, streaks, a 16-week activity heatmap, quiz accuracy, and JSON export/import to move devices
 - **Certificates** — a printable, self-issued certificate per course at 100%
 - **Full-text search** — searches inside every lesson, shows the matching section with a highlighted snippet, and jumps straight to it
-- **New UI** — animated hub, module journey map with "you are here", lesson position chip, an on-this-page rail with scroll-spy, reading progress, and a `?` shortcut sheet
+- **Learning workspace** — editorial typography, consistent icons, light and dark themes, a module journey map with "you are here", reading progress, and a `?` shortcut sheet
 
 **Core**
 
@@ -121,13 +128,15 @@ The browser suite renders every registered lesson and checks progress persistenc
 .
 ├── index.html              # App shell
 ├── assets/
-│   ├── css/styles.css      # Design system (CSS variables to rebrand)
+│   ├── css/styles.css      # Design tokens and course components
+│   ├── css/experience.css  # Editorial workspace, studio, planner, focus mode
 │   └── js/
 │       ├── markdown.js     # Tiny Markdown engine + custom blocks (incl. terminal sim)
 │       ├── widgets.js      # Flashcards + spaced repetition, order, scenario, reflect, spot
 │       ├── checkers.js     # Heuristic brief and CLAUDE.md checkers
 │       ├── content.js      # Multi-course manifest: COURSES, modules, badges  ← edit here
 │       ├── usage.js        # Anonymous usage beacon. Sends nothing until a collector is configured.
+│       ├── experience.js   # Guided practice, session planner, lesson orientation
 │       └── app.js          # Hub, journey, lessons, search index, review, notebook, progress, certificate
 ├── analytics/              # Provider collector and private usage report
 ├── content/                # Cowork course lessons (*.md)
