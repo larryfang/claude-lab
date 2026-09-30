@@ -19,6 +19,7 @@ const skipped = [...urls].filter((url) => /example\.com|github\.com\/acme\/|YOUR
 const queue = [...urls].filter((url) => !skipped.includes(url));
 const failures = [];
 const blocked = [];
+const protectedLinks = [];
 let checked = 0;
 
 async function worker() {
@@ -31,6 +32,7 @@ async function worker() {
       checked++;
       const result = classify(url, response.status);
       if (result === "blocked") blocked.push(`${response.status} ${url}`);
+      if (result === "protected") protectedLinks.push(`${response.status} ${url}`);
       if (result === "broken") failures.push(`${response.status} ${url}`);
     } catch (error) {
       checked++;
@@ -40,8 +42,9 @@ async function worker() {
 }
 await Promise.all(Array.from({ length: 8 }, worker));
 for (const entry of blocked) console.log(`::warning title=Link UNVERIFIED (host blocks CI)::${entry}`);
+for (const entry of protectedLinks) console.log(`::notice title=Protected link (authentication required)::${entry}`);
 if (failures.length) {
   console.error(`Link check failed (${failures.length}/${checked}):\n- ${failures.join("\n- ")}`);
   process.exit(1);
 }
-console.log(`Link check passed: ${checked - blocked.length} live URLs checked, ${blocked.length} UNVERIFIED (host blocks CI), ${skipped.length} placeholders/local URLs skipped.`);
+console.log(`Link check passed: ${checked - blocked.length - protectedLinks.length} live URLs checked, ${protectedLinks.length} protected (authentication required), ${blocked.length} UNVERIFIED (host blocks CI), ${skipped.length} placeholders/local URLs skipped.`);

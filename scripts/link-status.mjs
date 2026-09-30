@@ -5,6 +5,8 @@ export function classify(url, status) {
   const authExpected = (((/^https:\/\/mcp\./.test(url) || /\/mcp\/?(?:$|\?)/.test(url)) && status === 401) || (url === "https://claude.ai/code" && status === 403));
   if (status >= 200 && status < 400) return "ok";
   if (authExpected) return "ok";
+  // The README links to this private report; CI deliberately has no report token.
+  if (url === "https://claude-lab-usage.vercel.app/report" && status === 401) return "protected";
   const host = new URL(url).hostname;
   if (status === 403 && BOT_BLOCKING_HOSTS.some((h) => host === h || host.endsWith(`.${h}`))) return "blocked";
   return "broken";

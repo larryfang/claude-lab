@@ -27,6 +27,21 @@ test("existing rules are unchanged", () => {
   assert.equal(classify("https://docs.anthropic.com/gone", 404), "broken");
 });
 
+test("the private usage report requires authentication", () => {
+  assert.equal(classify("https://claude-lab-usage.vercel.app/report", 401), "protected");
+});
+
+test("the private report exception does not hide broken pages or unrelated authentication errors", () => {
+  const report = "https://claude-lab-usage.vercel.app/report";
+  for (const status of [403, 404, 500]) assert.equal(classify(report, status), "broken");
+  for (const url of [
+    "https://claude-lab-usage.vercel.app/other",
+    "https://other.vercel.app/report",
+    "https://claude-lab-usage.vercel.app.evil.test/report",
+  ]) assert.equal(classify(url, 401), "broken");
+  assert.equal(classify(report, 200), "ok");
+});
+
 test("URLs inside inline code or followed by punctuation are extracted cleanly", () => {
   assert.deepEqual(extractUrls("Use `https://mcp.atlassian.com/v2/mcp` (current)."), ["https://mcp.atlassian.com/v2/mcp"]);
   assert.deepEqual(extractUrls("See [docs](https://code.claude.com/docs/en/hooks), then https://claude.com/blog."), ["https://code.claude.com/docs/en/hooks", "https://claude.com/blog"]);
