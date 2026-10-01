@@ -29,6 +29,12 @@ Two security-advisor warnings remain: the intentionally owner-gated report funct
 
 ## Final deployment gate
 
-Google's existing OAuth client must allow the new Supabase callback before public sign-in can be validated. The callback is `https://sbzrhwxpavjogwdnavkh.supabase.co/auth/v1/callback`. Browser security policy requires confirmation before expanding OAuth access. The code and database are ready for review; this account release has not been pushed to GitHub Pages while that configuration is pending.
+On 2 October, the owner approved adding `https://sbzrhwxpavjogwdnavkh.supabase.co/auth/v1/callback` to the existing Butterwell Google OAuth client in MoodEditor. Google Cloud reported “OAuth client saved”; reopening the client confirmed both the original Butterwell callback and the new Claude Lab callback remained configured.
+
+The real Google login returned to the local site with a Supabase external-code exchange failure. A diagnostic Google token request using the secret representation returned by the source project's management configuration confirmed HTTP 401 `invalid_client`: “The provided client secret is invalid.” That management response is not a reusable original Google client secret. No matching original secret was found in the other projects searched, and Google Cloud explicitly no longer reveals the existing secret. The earlier configuration copy therefore did not establish working Google authentication.
+
+Deployment is held. Browser security policy requires the owner to create and submit any new authentication credential personally: add a new secret to the existing Google client without deleting its existing secret, enter it directly in Claude Lab's Supabase Google provider, and save. Do not put the secret in chat, source, or Git. After that handoff, repeat real Google sign-in and verify the owner dashboard before pushing and verifying GitHub Pages. The account release remains local; no production deployment has been claimed.
+
+The release suite was rerun on 2 October: the content check, 38 unit checks and 62 browser checks passed. These checks do not substitute for the blocked real Google login.
 
 For ongoing operations and a fork's setup, see [Supabase setup](../supabase/README.md). Reference documentation: [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security), [Google Auth](https://supabase.com/docs/guides/auth/social-login/auth-google), [PKCE](https://supabase.com/docs/guides/auth/sessions/pkce-flow) and [Cron](https://supabase.com/docs/guides/cron/quickstart).
