@@ -64,7 +64,7 @@
       root.querySelector('[data-brief-hint]').textContent = mode === 'clear' ? 'Specific enough to act on. Concrete enough to check.' : 'Which file? What result? What happens when an amount is missing?';
     }
     root.querySelectorAll('[data-brief-mode]').forEach(function (b) { b.addEventListener('click', function () { setBrief(b.dataset.briefMode); }); });
-    var answered = {};
+    var answered = {}, recordedCompletion = false;
     root.querySelectorAll('[data-verdict]').forEach(function (b) {
       b.addEventListener('click', function () {
         var claim = b.closest('[data-claim]'), n = Number(claim.dataset.claim), f = feedback[n];
@@ -76,11 +76,12 @@
         var count = Object.keys(answered).length;
         root.querySelector('.review-tally').textContent = count + ' / 3 checked';
         root.querySelector('.studio-review-done').hidden = count !== 3;
+        if (count === 3 && !recordedCompletion) { recordedCompletion = true; if (window.ACCOUNT) window.ACCOUNT.record({type:'studio',done:true}); }
       });
     });
     var reset = root.querySelector('[data-studio-reset]');
     if (reset) reset.addEventListener('click', function () {
-      answered = {}; select(0, true); setBrief('clear');
+      answered = {}; recordedCompletion = false; select(0, true); setBrief('clear');
       root.querySelector('.review-tally').textContent = '0 / 3 checked';
       root.querySelector('.studio-review-done').hidden = true;
       root.querySelectorAll('[data-claim]').forEach(function (c) { delete c.dataset.result; c.querySelector('.claim-feedback').hidden = true; });

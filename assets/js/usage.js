@@ -132,6 +132,7 @@
       .catch(function () { flushing = false; again(4000); });
   }
   function queue(ev) {
+    if (window.ACCOUNT && window.ACCOUNT.isSignedIn()) { window.ACCOUNT.recordUsage(ev); return; }
     if (trackingOff()) return;
     if (!sessionSent && ev.type !== "session") {
       sessionSent = true;

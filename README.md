@@ -14,7 +14,7 @@ Learn by *doing*: labs on your real work, an **in-browser Claude Code terminal**
 
 ## What is this?
 
-Claude Lab is a self-contained, **zero-dependency** static website that hosts a multi-course, hands-on curriculum. Learners pick a track, work through short lessons with real exercises, and track progress with badges — all saved in the browser, no account needed.
+Claude Lab is a static website that hosts a multi-course, hands-on curriculum. Learners pick a track, work through short lessons with real exercises, and track progress with badges — saved in the browser for guests, with optional Google sign-in to sync learning across devices.
 
 It's built to be **forked**: swap in your company's examples, project keys, and connectors to make an internal onboarding workshop in minutes.
 
@@ -60,9 +60,9 @@ The [30 September experience review](research/experience-review-2026-09-30.md) d
 - **Freshness evidence** — volatile product lessons show the date and official source used for their latest verification
 - **Hands-on labs** in every module, with auto-saving checklists
 - **Instant-feedback quizzes** with a score, best-score tracking and retry, plus **copy-to-clipboard prompt/command cards**
-- **Progress & badges** with a little confetti 🎉 (saved locally, no account)
+- **Progress & badges** with a little confetti 🎉 (saved locally for guests, synced for signed-in learners)
 - **Beautiful, responsive UI**, light/dark mode, full keyboard nav (`/` search, `←`/`→` lessons, `?` shortcuts)
-- **No build step or runtime JavaScript dependencies** — pure HTML/CSS/JS; content is plain Markdown. Google Fonts are optional and fall back cleanly to system fonts offline.
+- **No build step** — guest learning runs on HTML/CSS/JS; accounts use a locally hosted, pinned Supabase client; content is plain Markdown. Google Fonts are optional and fall back cleanly to system fonts offline.
 
 ## 🚀 Quick start
 
@@ -87,7 +87,13 @@ python3 -m http.server 8080    # then open http://localhost:8080
 
 A GitHub Actions workflow is included at `.github/workflows/pages.yml` if you prefer Actions-based deploys (set Source: *GitHub Actions*). After deploying, update `repo` in `assets/js/content.js` (`window.SITE.repo`).
 
-## Usage report
+## Accounts and learning analytics
+
+Optional Google sign-in (`#/account`) uses Supabase Auth. Lesson completions, quiz scores, review cards, daily review results and the last lesson sync across devices. Guest progress is imported only when the learner chooses. Notebook entries and practice briefs stay in the browser. The owner dashboard (`#/admin`) shows learner journeys, lesson starts/completions, quiz accuracy and estimated active time.
+
+See [account setup and operations](supabase/README.md) for migrations, OAuth configuration, access controls, retention and live verification. The browser uses a public publishable key; privileged credentials are never shipped.
+
+## Anonymous usage report
 
 For the person running the course. Learners never see it.
 
@@ -97,9 +103,9 @@ npm run usage
 
 That serves the course on port 8787 and prints a private report URL. It is for a laptop only. Those events stay in `analytics/data/` on that machine.
 
-Live visitors are recorded by the Vercel collector at `https://claude-lab-usage.vercel.app`. That host is only the collector. The course stays on GitHub Pages. Each event is saved as a private object in the Vercel Blob store `claude-lab-usage` (Sydney). That store keeps the events across deploys. The report is `https://claude-lab-usage.vercel.app/report` and needs the `ANALYTICS_TOKEN` environment variable. The token is not in this repo. Before deploying the collector, run `node analytics/build-catalog.mjs` so the report has current lesson titles.
+Guest visitors are recorded by the Vercel collector at `https://claude-lab-usage.vercel.app`. That host is only the collector. The course stays on GitHub Pages. Each event is saved as a private object in the Vercel Blob store `claude-lab-usage` (Sydney). That store keeps the events across deploys. The report is `https://claude-lab-usage.vercel.app/report` and needs the `ANALYTICS_TOKEN` environment variable. The token is not in this repo. Before deploying the collector, run `node analytics/build-catalog.mjs` so the report has current lesson titles.
 
-The report names lessons where people stall, questions they miss, searches that find nothing, and where phone users fall behind. Events are anonymous: no names, reflections, prompts, checker text, or IP addresses. Search text that looks like an email or a key is dropped.
+The report names lessons where people stall, questions they miss, searches that find nothing, and where phone users fall behind. Guest events are anonymous: no names, reflections, prompts, checker text, or IP addresses. Search text that looks like an email or a key is dropped.
 
 `window.SITE.analytics` is the collector origin. GitHub Pages starts sending only after that value is in the published `content.js`.
 

@@ -18,6 +18,15 @@
   /* ---------- Store (with v1 → v2 migration) ---------- */
   function loadRaw(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
   var store = loadRaw(STORE_KEY);
+  // A signed-in workspace is only restored after its account is verified.
+  var storedOwner = null;
+  try { storedOwner = localStorage.getItem('claudelab.accountOwner'); } catch (e) {}
+  if (storedOwner && store) {
+    var owned = loadRaw('claudelab.account.' + storedOwner) || { base: {}, revision: 0 };
+    owned.state = store;
+    try { localStorage.setItem('claudelab.account.' + storedOwner, JSON.stringify(owned)); localStorage.removeItem('claudelab.accountOwner'); } catch (e) {}
+    store = loadRaw('claudelab.guest') || { theme: store.theme, courses: {} };
+  }
   if (!store) {
     store = { theme: null, courses: {} };
     var old = loadRaw("claudelab.v1");
@@ -27,7 +36,7 @@
     }
   }
   store.courses = store.courses || {};
-  function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (e) {} }
+  function save(localOnly) { try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (e) {} if (localOnly !== true && window.ACCOUNT) window.ACCOUNT.onSave(); }
   function cstate(id) {
     var s = store.courses[id] = store.courses[id] || {};
     s.completed = s.completed || {}; s.checks = s.checks || {}; s.collapsed = s.collapsed || {};
@@ -174,7 +183,7 @@
     html += '<span class="hero-eyebrow">An independent, hands-on learning lab</span>';
     html += "<h1>Less guessing.<br>More <em>good work.</em></h1>";
     html += '<p class="hero-sub">Learn to work with Claude by doing. Write a clear brief, steer the work, and check the evidence. Bring those habits to your next real task.</p>';
-    html += '<div class="hero-cta"><button class="btn btn-primary" type="button" data-open-planner>Find your starting point ' + icon('arrow') + '</button><a class="btn btn-ghost" href="#/studio">' + icon('play') + ' Try the practice studio</a></div><p class="hero-proof"><span>' + icon('check') + ' Free learning site</span><span>' + icon('check') + ' No account</span><span>' + icon('check') + ' Progress saved here</span></p>';
+    html += '<div class="hero-cta"><button class="btn btn-primary" type="button" data-open-planner>Find your starting point ' + icon('arrow') + '</button><a class="btn btn-ghost" href="#/studio">' + icon('play') + ' Try the practice studio</a></div><p class="hero-proof"><span>' + icon('check') + ' Free learning site</span><span>' + icon('check') + ' Guest access</span><span>' + icon('check') + ' ' + (window.ACCOUNT.isSignedIn() ? 'Progress syncs to your account' : 'Progress saved here') + '</span></p>';
     html += "</div>" + heroVisual() + "</section>";
 
     var last = store.last && byId[store.last.c] && lessonInfo(byId[store.last.c], store.last.l);
@@ -537,7 +546,7 @@
     html += '<div class="cert-controls no-print"><label for="certName">Name on the certificate</label><input id="certName" type="text" autocomplete="name" placeholder="Your name" value="' + esc(name).replace(/"/g, "&quot;") + '"><button class="btn btn-primary" id="certPrint" type="button">🖨 Print or save as PDF</button></div>';
     html += '<div class="cert"><div class="cert-inner"><span class="cert-mark">✦</span><p class="cert-kicker">Certificate of completion</p><p class="cert-small">This certifies that</p><p class="cert-name">' + (esc(name) || "Your name") + '</p><p class="cert-small">completed every lesson and lab of</p><h2 class="cert-course">' + esc(c.title) + '</h2>' +
       '<p class="cert-detail">' + p.total + " lessons · " + c.modules.filter(function (m) { return !isRef(m); }).length + " modules · " + earnedBadges(c).map(function (b) { return b.emoji; }).join(" ") + '</p><div class="cert-foot"><span>' + formatVerifiedDate(s.doneAt || WIDGETS.srs.today()) + '</span><span class="cert-sign">Claude Lab</span></div>' +
-      '<p class="cert-fine">Self-issued from progress saved in the learner\'s browser. Claude Lab is a community project, not affiliated with Anthropic.</p></div></div>';
+      '<p class="cert-fine">Self-issued from the learner\'s saved progress. Claude Lab is a community project, not affiliated with Anthropic.</p></div></div>';
     $("#content").innerHTML = html;
     $("#certName").addEventListener("input", function (e) { store.name = e.target.value.trim(); save(); $(".cert-name").textContent = store.name || "Your name"; });
     $("#certPrint").addEventListener("click", function () { window.print(); });
@@ -813,7 +822,8 @@
       function showStep() {
         if (i >= steps.length) {
           promptEl.textContent = ""; input.value = ""; input.placeholder = "✓ done — press Reset to replay"; input.disabled = true; runBtn.disabled = true;
-          var d = document.createElement("div"); d.className = "ccsim-done"; d.textContent = "✓ Simulation complete"; screen.appendChild(d); scrollDown(); return;
+          var d = document.createElement("div"); d.className = "ccsim-done"; d.textContent = "✓ Simulation complete"; screen.appendChild(d); scrollDown();
+          if (window.ACCOUNT) window.ACCOUNT.record({type:'simulation',done:true}); return;
         }
         var st = steps[i];
         promptEl.textContent = st.kind === "shell" ? "$" : "❯";
@@ -1117,6 +1127,8 @@
     closeTerm();
     if (!parts.length) { renderHub(); return; }
     if (parts[0] === "studio") { pageShell("Practice studio"); window.EXPERIENCE.studioPage({ download: download, toast: toast }); return; }
+    if (parts[0] === "account") { pageShell("Your account"); window.ACCOUNT.renderAccount(); return; }
+    if (parts[0] === "admin") { pageShell("Learning dashboard"); window.ACCOUNT.renderAdmin(); return; }
     if (parts[0] === "review") { renderReview(); return; }
     if (parts[0] === "notebook") { renderNotebook(); return; }
     if (parts[0] === "me") { renderMe(); return; }
@@ -1135,4 +1147,12 @@
 
   /* ---------- Boot ---------- */
   route();
+  window.ACCOUNT.init({
+    getState: function () { return store; }, download: download, refresh: route,
+    applyState: function (next, keepNotes) {
+      var prefs = { theme: store.theme, focus: store.focus }, notes = keepNotes ? store.notes : next.notes;
+      store = Object.assign({ courses: {} }, next, prefs, { notes: notes || {} });
+      store.courses = store.courses || {}; applyFocus(); save(true); route();
+    }
+  });
 })();

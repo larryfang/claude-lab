@@ -1,0 +1,2 @@
+# Preserve significant whitespace in upstream minified JavaScript strings.
+assets/vendor/*.js -whitespace

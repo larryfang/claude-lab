@@ -8,10 +8,13 @@
     "check:browser": "playwright test",
     "check:links": "node scripts/check-links.mjs",
     "usage": "node analytics/server.mjs",
-    "check:unit": "node --test scripts/link-status.test.mjs scripts/checkers.test.mjs scripts/contrast.test.mjs scripts/usage-report.test.mjs",
+    "check:unit": "node --test scripts/link-status.test.mjs scripts/checkers.test.mjs scripts/contrast.test.mjs scripts/usage-report.test.mjs scripts/cloud-state.test.mjs",
+    "check:accounts": "node scripts/check-accounts.mjs",
+    "build:catalog": "node scripts/build-cloud-catalog.mjs",
     "test": "npm run check:content && npm run check:unit && npm run check:browser"
   },
   "dependencies": {
+    "@supabase/supabase-js": "2.117.2",
     "@vercel/blob": "^2.4.0"
   },
   "devDependencies": {
