@@ -22,19 +22,23 @@ Two security-advisor warnings remain: the intentionally owner-gated report funct
 
 - Course manifest: two tracks, 71 registered pages and unique routes.
 - 38 unit checks passed, including privacy exclusions, initial-device merge, explicit undo and prototype-path rejection.
-- 62 browser checks passed, including all lessons, all terminal simulations, both themes, 320px layouts, account access, cached-workspace isolation and PKCE redirect generation.
+- 65 browser checks passed in the final 2 October release suite, including all lessons, all terminal simulations, both themes, 320px layouts, account access, cached-workspace isolation, PKCE redirect generation and three callback-error regressions.
 - 12 live integration checks passed: private state round trip; anonymous/cross-account denial; revision/privacy validation; event identity and deduplication; owner access; route classification; explicit guest import; simultaneous device saves and pull; offline recovery; completion undo; dashboard/export; sign-out and different-account isolation.
 - Temporary confirmed test users and all their cascaded learning rows were removed.
 - 124 live course URLs passed, one report correctly requires authentication, and one placeholder/local URL is excluded.
 
-## Final deployment gate
+## Google login verification — 2 October
 
 On 2 October, the owner approved adding `https://sbzrhwxpavjogwdnavkh.supabase.co/auth/v1/callback` to the existing Butterwell Google OAuth client in MoodEditor. Google Cloud reported “OAuth client saved”; reopening the client confirmed both the original Butterwell callback and the new Claude Lab callback remained configured.
 
 The real Google login returned to the local site with a Supabase external-code exchange failure. A diagnostic Google token request using the secret representation returned by the source project's management configuration confirmed HTTP 401 `invalid_client`: “The provided client secret is invalid.” That management response is not a reusable original Google client secret. No matching original secret was found in the other projects searched, and Google Cloud explicitly no longer reveals the existing secret. The earlier configuration copy therefore did not establish working Google authentication.
 
-Deployment is held. Browser security policy requires the owner to create and submit any new authentication credential personally: add a new secret to the existing Google client without deleting its existing secret, enter it directly in Claude Lab's Supabase Google provider, and save. Do not put the secret in chat, source, or Git. After that handoff, repeat real Google sign-in and verify the owner dashboard before pushing and verifying GitHub Pages. The account release remains local; no production deployment has been claimed.
+The owner subsequently completed the credential entry directly in Supabase and confirmed configuration. Real Google sign-in on the local origin then succeeded: the authorization code was exchanged, the account page reported “Progress synced”, and the confirmed owner account loaded the private dashboard. Sign-out restored the guest account screen, and a second real Google sign-in with the final callback handling succeeded. The Google provider remains enabled with nonce checks required and the published site URL correctly configured. No Google secret was copied into source or Git.
 
-The release suite was rerun on 2 October: the content check, 38 unit checks and 62 browser checks passed. These checks do not substitute for the blocked real Google login.
+The 12 live account checks and 124 live link checks were rerun successfully after configuration. Disposable integration accounts were removed; the server-managed owner allowlist contains one entry.
+
+The reproduced error screen was corrected before publication: provider failures and cancelled sign-ins now return to the account screen with a retry action and safe feedback. Provider error details and authorization codes are removed from the URL, and guest progress and notes remain intact. Three regression checks cover provider failure, cancellation and failed PKCE exchange. Assets use cache version `2026-10-02a`.
+
+The Google credential gate is cleared. Publication verification requires successful course and link workflows, successful GitHub Pages deployment, matching public assets and a real Google login on the published origin.
 
 For ongoing operations and a fork's setup, see [Supabase setup](../supabase/README.md). Reference documentation: [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security), [Google Auth](https://supabase.com/docs/guides/auth/social-login/auth-google), [PKCE](https://supabase.com/docs/guides/auth/sessions/pkce-flow) and [Cron](https://supabase.com/docs/guides/cron/quickstart).

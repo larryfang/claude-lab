@@ -2,7 +2,7 @@
 (function(){
  'use strict';
  var config=window.CLAUDELAB_CLOUD, core=window.CLOUD_STATE, api, user=null, client=null, ready=false;
- var base={},revision=0,syncing=false,timer=null,generation=0,status='Progress saved on this device';
+ var base={},revision=0,syncing=false,timer=null,generation=0,status='Progress saved on this device',authFeedback='';
  var guest=null,events=[],eventTimer=null,sessionId=crypto.randomUUID(),lastInput=Date.now(),lastPulse=Date.now();
  function copy(v){return JSON.parse(JSON.stringify(v));}
  function read(k,f){try{return JSON.parse(localStorage.getItem(k))||f;}catch(e){return f;}}
@@ -78,10 +78,18 @@
    else if(ready && (event==='SIGNED_IN'||event==='USER_UPDATED'))setTimeout(function(){verifySession(session);},0);
   });
   try{
-   var code=new URL(location.href).searchParams.get('code');
-   if(code){var exchanged=await client.auth.exchangeCodeForSession(code);var clean=new URL(location.href);clean.searchParams.delete('code');clean.hash='#/account';history.replaceState(null,'',clean.pathname+clean.search+clean.hash);if(exchanged.error)throw exchanged.error;}
+   var callback=new URL(location.href),code=callback.searchParams.get('code');
+   var hashParams=new URLSearchParams(callback.hash.slice(1));
+   var callbackError=callback.searchParams.get('error')||hashParams.get('error');
+   if(code||callbackError){
+    // Remove provider details and authorization codes before rendering or exchanging.
+    ['code','error','error_code','error_description','sb'].forEach(function(k){callback.searchParams.delete(k);});
+    callback.hash='#/account';history.replaceState(null,'',callback.pathname+callback.search+callback.hash);
+    if(callbackError){authFeedback=callbackError==='access_denied'?'Google sign-in was cancelled. You can try again or continue as a guest.':'Google sign-in could not finish. Please try again or continue as a guest.';throw Error('OAuth callback failed');}
+    var exchanged=await client.auth.exchangeCodeForSession(code);if(exchanged.error)throw exchanged.error;
+   }
    var s=await client.auth.getSession();if(s.error)throw s.error;await verifySession(s.data.session);
-  }catch(e){notify('Sign-in could not finish. Open your account to retry.');}
+  }catch(e){if(!authFeedback)authFeedback='Sign-in could not finish. Please try again or continue as a guest.';notify('Sign-in could not finish. Open your account to retry.');}
   ready=true;if(location.hash==='#/account')api.refresh();
   window.addEventListener('online',function(){sync();flushEvents();});
   ['pointerdown','keydown','scroll'].forEach(function(k){document.addEventListener(k,function(){lastInput=Date.now();},{passive:true});});
@@ -125,7 +133,7 @@
   var content=document.getElementById('content');if(!api||!content)return;
   var html='<section class="account-panel"><span class="micro-label">YOUR LEARNING ACCOUNT</span><h1>'+ (user?'Pick up where you left off.':'Save your learning. Keep your momentum.')+'</h1>';
   if(!ready)html+='<p role="status">Checking your account…</p>';
-  else if(!user){html+='<p>Sign in to keep course progress across devices and resume your last lesson. Your existing progress stays on this device until you choose to import it.</p><button class="btn btn-primary" id="googleSignIn" type="button">Continue with Google</button><p id="authFeedback" role="status"></p><p class="account-note">The course owner can see your name, email and learning activity to improve the course. Your notebook and typed practice briefs stay on this device.</p><a href="#/">Keep exploring as a guest →</a>';}
+  else if(!user){html+='<p>Sign in to keep course progress across devices and resume your last lesson. Your existing progress stays on this device until you choose to import it.</p><button class="btn btn-primary" id="googleSignIn" type="button">Continue with Google</button><p id="authFeedback" role="status">'+esc(authFeedback)+'</p><p class="account-note">The course owner can see your name, email and learning activity to improve the course. Your notebook and typed practice briefs stay on this device.</p><a href="#/">Keep exploring as a guest →</a>';}
   else{
    html+='<p>Signed in as <strong>'+esc(user.email)+'</strong></p><p id="accountStatus" role="status">'+esc(status)+'</p><div class="account-actions"><button class="btn btn-primary" id="syncNow" type="button">Sync now</button><button class="btn btn-ghost" id="accountExport" type="button">Export my learning data</button><button class="btn btn-ghost" id="accountSignOut" type="button">Sign out</button></div>';
    if(guestHasProgress())html+='<div class="account-import"><h2>Bring your guest progress with you?</h2><p>Import completed lessons, quiz results and review cards from this browser. Your notebook stays in its guest workspace. Existing account progress is preserved.</p><button class="btn btn-primary" id="importGuest" type="button">Import guest progress</button><button class="btn btn-ghost" id="dismissImport" type="button">Keep it separate</button></div>';
