@@ -70,7 +70,9 @@
   if(location.hash==='#/account')renderAccount();
  }
  async function init(adapter){
-  api=adapter;guest=read('claudelab.guest',copy(api.getState()));
+  api=adapter;guest=copy(api.getState());
+  // Existing local progress must survive the first account switch without import.
+  write('claudelab.guest',guest);
   if(!config||!config.url||!config.publishableKey){ready=true;return;}
   client=window.supabase.createClient(config.url,config.publishableKey,{auth:{flowType:'pkce',detectSessionInUrl:false,persistSession:true,autoRefreshToken:true}});
   client.auth.onAuthStateChange(function(event,session){

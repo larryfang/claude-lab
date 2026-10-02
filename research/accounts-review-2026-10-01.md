@@ -23,7 +23,7 @@ Two security-advisor warnings remain: the intentionally owner-gated report funct
 - Course manifest: two tracks, 71 registered pages and unique routes.
 - 38 unit checks passed, including privacy exclusions, initial-device merge, explicit undo and prototype-path rejection.
 - 65 browser checks passed in the final 2 October release suite, including all lessons, all terminal simulations, both themes, 320px layouts, account access, cached-workspace isolation, PKCE redirect generation and three callback-error regressions.
-- 12 live integration checks passed: private state round trip; anonymous/cross-account denial; revision/privacy validation; event identity and deduplication; owner access; route classification; explicit guest import; simultaneous device saves and pull; offline recovery; completion undo; dashboard/export; sign-out and different-account isolation.
+- 13 live integration checks cover: private state round trip; anonymous/cross-account denial; revision/privacy validation; event identity and deduplication; owner access; route classification; explicit guest import; simultaneous device saves and pull; offline recovery; completion undo; dashboard/export; sign-out and different-account isolation; first-login preservation of unimported guest progress and notes.
 - Temporary confirmed test users and all their cascaded learning rows were removed.
 - 124 live course URLs passed, one report correctly requires authentication, and one placeholder/local URL is excluded.
 
@@ -35,10 +35,14 @@ The real Google login returned to the local site with a Supabase external-code e
 
 The owner subsequently completed the credential entry directly in Supabase and confirmed configuration. Real Google sign-in on the local origin then succeeded: the authorization code was exchanged, the account page reported “Progress synced”, and the confirmed owner account loaded the private dashboard. Sign-out restored the guest account screen, and a second real Google sign-in with the final callback handling succeeded. The Google provider remains enabled with nonce checks required and the published site URL correctly configured. No Google secret was copied into source or Git.
 
-The 12 live account checks and 124 live link checks were rerun successfully after configuration. Disposable integration accounts were removed; the server-managed owner allowlist contains one entry.
+The live account checks and 124 live link checks were rerun successfully after configuration. Disposable integration accounts were removed; the server-managed owner allowlist contains one entry.
 
-The reproduced error screen was corrected before publication: provider failures and cancelled sign-ins now return to the account screen with a retry action and safe feedback. Provider error details and authorization codes are removed from the URL, and guest progress and notes remain intact. Three regression checks cover provider failure, cancellation and failed PKCE exchange. Assets use cache version `2026-10-02a`.
+The reproduced error screen was corrected before publication: provider failures and cancelled sign-ins now return to the account screen with a retry action and safe feedback. Provider error details and authorization codes are removed from the URL. Three regression checks cover provider failure, cancellation and failed PKCE exchange.
+
+Published Google login was verified on GitHub Pages: the callback returned to `/claude-lab/#/account` without authorization codes or error parameters, and the account reported “Progress synced”. A subsequent sign-out check exposed an additional first-login edge case: existing guest data had not always been persisted separately before switching to the account. The current guest snapshot is now written at initialization; an integration regression verifies that a guest completion and notebook survive login and sign-out without import, with both missing and stale older guest caches. Final assets use cache version `2026-10-02b`.
 
 The Google credential gate is cleared. Publication verification requires successful course and link workflows, successful GitHub Pages deployment, matching public assets and a real Google login on the published origin.
+
+The shared Google project's audience is External and its publishing status is Testing. [Google's audience documentation](https://support.google.com/cloud/answer/15549945) explicitly exempts requests limited to `openid`, email and profile from test-user restrictions and seven-day authorization expiry. Claude Lab requests only those basic scopes; changing the shared project's publishing status is not required for this login flow. Real Google validation used the owner account; additional identities were exercised through disposable Supabase integration accounts.
 
 For ongoing operations and a fork's setup, see [Supabase setup](../supabase/README.md). Reference documentation: [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security), [Google Auth](https://supabase.com/docs/guides/auth/social-login/auth-google), [PKCE](https://supabase.com/docs/guides/auth/sessions/pkce-flow) and [Cron](https://supabase.com/docs/guides/cron/quickstart).

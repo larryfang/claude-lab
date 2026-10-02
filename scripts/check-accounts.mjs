@@ -35,15 +35,16 @@ async function createLearner(n){
 }
 async function save(c,state,rev){const r=await c.rpc('save_learning_state',{expected_revision:rev,body:state});assert.equal(r.error,null,'Save progress');return r.data;}
 async function state(c){const r=await c.from('learner_state').select('state,revision').maybeSingle();assert.equal(r.error,null);return r.data;}
-async function open(learner,guest){
+async function open(learner,guest,staleGuest){
  const context=await browser.newContext();contexts.push(context);
- await context.addInitScript(({session,ref,guest})=>{
+ await context.addInitScript(({session,ref,guest,staleGuest})=>{
   if(localStorage.getItem('claudelab.test.seeded'))return;
   localStorage.setItem('claudelab.test.seeded','1');
   if(session)localStorage.setItem('sb-'+ref+'-auth-token',JSON.stringify(session));
   localStorage.setItem('claudelab.usage.allow','1');
   if(guest)localStorage.setItem('claudelab.v2',JSON.stringify(guest));
- },{session:learner?.session,ref,guest});
+  if(staleGuest)localStorage.setItem('claudelab.guest',JSON.stringify({courses:{}}));
+ },{session:learner?.session,ref,guest,staleGuest});
  const page=await context.newPage();await page.goto(host+'#/account');
  if(learner)await page.waitForSelector('#syncNow');else await page.waitForSelector('#googleSignIn');
  return {context,page};
@@ -124,6 +125,16 @@ try{
  const other=await open(b);assert.equal((await stored(other.page)).courses.cowork?.completed?.steering,undefined);
  await other.page.evaluate(()=>location.hash='#/admin');await until(async()=> (await other.page.locator('#content').innerText()).includes('requires the course owner'),'Unauthorized dashboard missing');
  ok('sign-out restores guest workspace; another account cannot see prior progress or analytics');
+ for(const staleGuest of [false,true]){
+  // Each case needs its own session because sign-out revokes that session.
+  const fresh=await createLearner(staleGuest?'stale-guest':'first-guest');
+  const untouchedGuest=await open(fresh,{courses:{cowork:{completed:{welcome:true}}},notes:{original:{a:'Unimported guest reflection'}}},staleGuest);
+  await untouchedGuest.page.locator('#accountSignOut').click();await untouchedGuest.page.waitForSelector('#googleSignIn');
+  const restoredGuest=await stored(untouchedGuest.page);
+  assert.equal(restoredGuest.courses.cowork.completed.welcome,true,'Unimported guest completion must survive first login, including an older guest cache');
+  assert.equal(restoredGuest.notes.original.a,'Unimported guest reflection');
+ }
+ ok('first login preserves existing guest progress and notes without requiring import');
  // All temporary identities and their cascaded records are removed in finally.
  console.log('Verified '+checks+' live account checks.');
 }finally{
