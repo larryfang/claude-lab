@@ -10,6 +10,27 @@
   function $(s, r) { return (r || document).querySelector(s); }
   function $all(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
   function parse(json, fallback) { try { return JSON.parse(json); } catch (e) { return fallback; } }
+  // Saved cards can come from a backup. Retain inline formatting without
+  // trusting event handlers, scripts, embedded media, or arbitrary URLs.
+  function cardHtml(value) {
+    var template = document.createElement('template'); template.innerHTML = String(value || '');
+    var allowed = /^(STRONG|B|EM|I|DEL|S|CODE|BR|A)$/;
+    function clean(parent) {
+      Array.from(parent.childNodes).forEach(function (node) {
+        if (node.nodeType !== 1) { if (node.nodeType !== 3) node.remove(); return; }
+        if (/^(SCRIPT|STYLE|IFRAME|OBJECT|SVG|MATH|IMG)$/i.test(node.tagName)) { node.remove(); return; }
+        clean(node);
+        if (!allowed.test(node.tagName)) { node.replaceWith.apply(node, Array.from(node.childNodes)); return; }
+        var href = node.tagName === 'A' ? node.getAttribute('href') || '' : null;
+        Array.from(node.attributes).forEach(function (a) { node.removeAttribute(a.name); });
+        if (href !== null) {
+          node.setAttribute('href', /^(https?:\/\/|mailto:|#|\/|\.\.?\/)/i.test(href.trim()) && !/[\u0000-\u0020]/.test(href) ? href : '#');
+          node.setAttribute('rel', 'noopener');
+        }
+      });
+    }
+    clean(template.content); return template.innerHTML;
+  }
 
   /* ---------- Spaced repetition (Leitner boxes 1–5) ---------- */
   var INTERVALS = { 1: 0, 2: 1, 3: 3, 4: 7, 5: 16 }; // days until the card is due again
@@ -45,7 +66,7 @@
   function deck(root, cards, opts) {
     var stage = $(".flash-stage", root), count = $(".flash-count", root);
     var i = 0, flipped = false;
-    function boxOf(card) { var saved = opts.lookup && opts.lookup(card.id); return saved ? saved.box : 1; }
+    function boxOf(card) { var saved = opts.lookup && opts.lookup(card.id); return saved && saved.box || 1; }
     function show() {
       if (i >= cards.length) {
         if (count) count.textContent = cards.length + " / " + cards.length;
@@ -57,9 +78,9 @@
       flipped = false;
       if (count) count.textContent = (i + 1) + " / " + cards.length;
       stage.innerHTML =
-        '<button class="flash-card" type="button" aria-label="Flashcard ' + (i + 1) + " of " + cards.length + '. Select to flip.">' +
-          '<span class="flash-face flash-front"><span class="flash-side">Question</span><span class="flash-text">' + card.f + "</span></span>" +
-          '<span class="flash-face flash-back" aria-hidden="true"><span class="flash-side">Answer</span><span class="flash-text">' + card.b + "</span></span>" +
+        '<button class="flash-card" type="button" title="Select to flip the card">' +
+          '<span class="flash-face flash-front"><span class="flash-side">Question</span><span class="flash-text">' + cardHtml(card.f) + "</span></span>" +
+          '<span class="flash-face flash-back" aria-hidden="true"><span class="flash-side">Answer</span><span class="flash-text">' + cardHtml(card.b) + "</span></span>" +
         "</button>" +
         '<div class="flash-dots" aria-hidden="true">' + cards.map(function (_, k) { return '<i class="' + (k < i ? "done" : k === i ? "now" : "") + '"></i>'; }).join("") + "</div>" +
         '<p class="flash-hint">' + (TOUCH ? "Tap the card to flip it." : "Select the card (or press Space) to flip it.") + " Recall the answer first.</p>" +
@@ -78,7 +99,8 @@
       btn.classList.toggle("flipped", flipped);
       $(".flash-front", btn).setAttribute("aria-hidden", String(flipped));
       $(".flash-back", btn).setAttribute("aria-hidden", String(!flipped));
-      if (flipped) { $(".flash-grades", stage).hidden = false; $(".flash-hint", stage).textContent = "How well did you recall it?"; }
+      $(".flash-grades", stage).hidden = !flipped;
+      $(".flash-hint", stage).textContent = flipped ? "How well did you recall it?" : "Select the card to flip it. Recall the answer first.";
     }
     function rate(r) {
       if (!flipped) return;
@@ -140,7 +162,9 @@
       if (up && li.previousElementSibling) list.insertBefore(li, li.previousElementSibling);
       if (down && li.nextElementSibling) list.insertBefore(li.nextElementSibling, li);
       moved();
-      var btn = $(up ? ".order-up" : ".order-down", li); if (btn && !btn.disabled) btn.focus();
+      var btn = $(up ? ".order-up" : ".order-down", li);
+      if (btn && btn.disabled) btn = $(up ? ".order-down" : ".order-up", li);
+      if (btn && !btn.disabled) btn.focus();
     });
     list.addEventListener("dragstart", function (e) { dragged = e.target.closest(".order-item"); if (dragged) { dragged.classList.add("dragging"); e.dataTransfer.effectAllowed = "move"; } });
     list.addEventListener("dragend", function () { if (dragged) dragged.classList.remove("dragging"); dragged = null; moved(); });
@@ -194,12 +218,15 @@
     if (notes[id]) { box.value = notes[id].a; status.textContent = "Saved in your notebook"; }
     box.addEventListener("input", function () {
       status.textContent = "Saving…";
+      var a = box.value.trim();
+      if (a) notes[id] = { q: root.dataset.q, a: box.value, c: api.course, l: api.lesson, t: Date.now() };
+      else delete notes[id];
+      if (!timer) api.touch();
+      // Save before navigation can replace the lesson or switch accounts.
+      api.save();
       clearTimeout(timer);
       timer = setTimeout(function () {
-        var a = box.value.trim();
-        if (a) notes[id] = { q: root.dataset.q, a: box.value, c: api.course, l: api.lesson, t: Date.now() };
-        else delete notes[id];
-        api.touch(); api.save();
+        timer = null;
         status.textContent = a ? "Saved ✓" : "Cleared";
       }, 450);
     });

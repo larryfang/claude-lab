@@ -7,3 +7,8 @@ test('first sync from two devices preserves newly created courses and lessons',(
 test('explicit undo and reset survive merging with remote progress',()=>{const base={courses:{cowork:{completed:{welcome:true,steering:true}}}};const local={courses:{cowork:{completed:{welcome:false}}}};const result=plain(core.apply(base,core.diff(base,local)));assert.deepEqual(result,local);});
 test('guest import preserves account results and adds guest completions',()=>{const remote={courses:{cowork:{completed:{verify:true},quiz:{a:2}}},notes:{}};const local={courses:{cowork:{completed:{welcome:true},quiz:{a:0,b:1}}}};const result=plain(core.mergeImport(remote,local));assert.deepEqual(result.courses.cowork.completed,{verify:true,welcome:true});assert.deepEqual(result.courses.cowork.quiz,{a:2,b:1});});
 test('sync rejects prototype pollution paths',()=>{assert.throws(()=>core.apply({},[{path:['__proto__','polluted'],value:true}]),/Invalid state path/);assert.equal({}.polluted,undefined);});
+test('guest import keeps the better best quiz score from either workspace',()=>{
+ const remote={courses:{cowork:{quiz:{'the-brief:0':{c:1,t:3}}}}},guest={courses:{cowork:{quiz:{'the-brief:0':{c:3,t:3}}}}};
+ assert.deepEqual(plain(core.mergeImport(remote,guest)).courses.cowork.quiz['the-brief:0'],{c:3,t:3});
+ assert.deepEqual(plain(core.mergeImport(guest,remote)).courses.cowork.quiz['the-brief:0'],{c:3,t:3});
+});

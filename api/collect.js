@@ -28,9 +28,9 @@ function allow(visitor, now) {
 function readBody(req, limit) {
   return new Promise((resolve, reject) => {
     if (req.body != null && req.body !== "") {
-      if (typeof req.body === "string") return resolve(req.body);
-      if (Buffer.isBuffer(req.body)) return resolve(req.body.toString("utf8"));
-      if (typeof req.body === "object") return resolve(JSON.stringify(req.body));
+      const raw = typeof req.body === 'string' ? req.body : Buffer.isBuffer(req.body) ? req.body.toString('utf8') : JSON.stringify(req.body);
+      if (Buffer.byteLength(raw, 'utf8') > limit) return reject(Object.assign(new Error('too big'), { status: 413 }));
+      return resolve(raw);
     }
     const chunks = [];
     let size = 0;

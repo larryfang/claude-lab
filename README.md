@@ -89,7 +89,7 @@ A GitHub Actions workflow is included at `.github/workflows/pages.yml` if you pr
 
 ## Accounts and learning analytics
 
-Optional Google sign-in (`#/account`) uses Supabase Auth. Lesson completions, quiz scores, review cards, daily review results and the last lesson sync across devices. Guest progress is imported only when the learner chooses. Notebook entries and practice briefs stay in the browser. The owner dashboard (`#/admin`) shows learner journeys, lesson starts/completions, quiz accuracy and estimated active time.
+Google/Gmail is the recommended sign-in option (`#/account`). GitHub is the alternative, also using Supabase Auth. Email/password registration is not offered. Lesson completions, quiz scores, review cards, daily review results and the last lesson sync across devices. Guest progress is imported only when the learner chooses. Notebook entries and practice briefs stay in the browser. The owner dashboard (`#/admin`) shows learner journeys, lesson starts/completions, quiz accuracy and estimated active time.
 
 See [account setup and operations](supabase/README.md) for migrations, OAuth configuration, access controls, retention and live verification. The browser uses a public publishable key; privileged credentials are never shipped.
 

@@ -18,6 +18,7 @@
   /* ---------- Store (with v1 → v2 migration) ---------- */
   function loadRaw(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
   var store = loadRaw(STORE_KEY);
+  if (store && !window.CLOUD_STATE.validState(store)) store = null;
   // A signed-in workspace is only restored after its account is verified.
   var storedOwner = null;
   try { storedOwner = localStorage.getItem('claudelab.accountOwner'); } catch (e) {}
@@ -25,14 +26,16 @@
     var owned = loadRaw('claudelab.account.' + storedOwner) || { base: {}, revision: 0 };
     owned.state = store;
     try { localStorage.setItem('claudelab.account.' + storedOwner, JSON.stringify(owned)); localStorage.removeItem('claudelab.accountOwner'); } catch (e) {}
-    store = loadRaw('claudelab.guest') || { theme: store.theme, courses: {} };
+    var restoredGuest = loadRaw('claudelab.guest');
+    store = restoredGuest && window.CLOUD_STATE.validState(restoredGuest) ? restoredGuest : { theme: store.theme, courses: {} };
   }
   if (!store) {
     store = { theme: null, courses: {} };
     var old = loadRaw("claudelab.v1");
     if (old) {
       store.theme = old.theme || null;
-      store.courses.pm = { completed: old.completed || {}, checks: old.checks || {}, collapsed: old.collapsed || {} };
+      var migrated = { theme: store.theme, courses: { cowork: { completed: old.completed || {}, checks: old.checks || {}, collapsed: old.collapsed || {} } } };
+      if (window.CLOUD_STATE.validState(migrated)) store = migrated;
     }
   }
   store.courses = store.courses || {};
@@ -75,8 +78,9 @@
     return path.lessons.reduce(function (total, id) { var info = lessonInfo(c, id); return total + (info && info.lesson.minutes ? info.lesson.minutes : 0); }, 0);
   }
   function formatVerifiedDate(iso) {
-    var p = String(iso || "").split("-");
-    if (p.length !== 3) return iso;
+    iso = String(iso || "");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return esc(iso);
+    var p = iso.split("-");
     var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     return parseInt(p[2], 10) + " " + months[parseInt(p[1], 10) - 1] + " " + p[0];
   }
@@ -186,6 +190,7 @@
     html += '<div class="hero-cta"><button class="btn btn-primary" type="button" data-open-planner>Find your starting point ' + icon('arrow') + '</button><a class="btn btn-ghost" href="#/studio">' + icon('play') + ' Try the practice studio</a></div><p class="hero-proof"><span>' + icon('check') + ' Free learning site</span><span>' + icon('check') + ' Guest access</span><span>' + icon('check') + ' ' + (window.ACCOUNT.isSignedIn() ? 'Progress syncs to your account' : 'Progress saved here') + '</span></p>';
     html += "</div>" + heroVisual() + "</section>";
 
+    html += '<div data-guest-prompt>' + window.ACCOUNT.guestPrompt() + '</div>';
     var last = store.last && byId[store.last.c] && lessonInfo(byId[store.last.c], store.last.l);
     var st = streaks(), due = dueCards().length, xp = totalXp();
     if (last || xp) {
@@ -281,7 +286,7 @@
         if (info && q.c < q.t) quizzes.push({ ratio: q.c / q.t, href: lessonHref(c.id, lid), icon: "🧩", title: "Retry the quiz — " + info.lesson.title, detail: "Best score " + q.c + " / " + q.t + ". Reread the explanations first." });
       });
     });
-    objVals(store.cards).forEach(function (card) { if (card.box === 1) { var key = card.c + "/" + card.l; shaky[key] = (shaky[key] || 0) + 1; } });
+    objVals(store.cards).forEach(function (card) { if ((card.box || 1) === 1) { var key = card.c + "/" + card.l; shaky[key] = (shaky[key] || 0) + 1; } });
     var cards = Object.keys(shaky).map(function (key) {
       var bits = key.split("/"), c = byId[bits[0]], info = c && lessonInfo(c, bits[1]), n = shaky[key];
       return { href: "#/review", icon: "🃏", title: n + (n === 1 ? " shaky card" : " shaky cards") + " — " + (info ? info.lesson.title : bits[1]), detail: n === 1 ? "Still in box 1. Review it today and it starts to stick." : "Still in box 1. Review them today and they start to stick." };
@@ -393,12 +398,13 @@
   // XP is derived from saved state, never accumulated, so it cannot drift or double-count.
   function courseXp(c) {
     var s = cstate(c.id), xp = 0;
-    xp += Object.keys(s.completed).length * 20 + Object.keys(s.checks).length * 2 + Object.keys(s.ex).length * 15;
-    objVals(s.quiz).forEach(function (q) { xp += q.c * 5; });
-    objVals(store.cards).forEach(function (card) { if (card.c === c.id) xp += 2 + (card.box - 1) * 3; });
+    xp += Object.keys(s.completed).filter(function(k){return s.completed[k]&&lessonInfo(c,k);}).length * 20 + completedActivities(c,s.checks) * 2 + completedActivities(c,s.ex) * 15;
+    Object.keys(s.quiz).forEach(function(k){if(lessonInfo(c,k.split(':')[0]))xp += s.quiz[k].c * 5;});
+    objVals(store.cards).forEach(function (card) { if (card.c === c.id) xp += 2 + ((card.box || 1) - 1) * 3; });
     objVals(store.notes).forEach(function (n) { if (n.c === c.id) xp += 10; });
     return xp;
   }
+  function completedActivities(c,values){return Object.keys(values).filter(function(k){return values[k]&&lessonInfo(c,k.split(':')[0]);}).length;}
   function totalXp() { return COURSES.reduce(function (t, c) { return t + courseXp(c); }, 0) + objVals(store.daily).reduce(function (t, d) { return t + d.c * 5; }, 0); }
   function levelOf(xp) {
     var i = 0; LEVELS.forEach(function (l, k) { if (xp >= l.xp) i = k; });
@@ -435,8 +441,8 @@
     pageShell("Review deck");
     var all = objVals(store.cards);
     var due = Object.keys(store.cards || {}).filter(function (id) { return WIDGETS.srs.isDue(store.cards[id]); }).map(function (id) { var c = store.cards[id]; return { id: id, f: c.f, b: c.b, c: c.c, l: c.l, box: c.box, due: c.due }; })
-      .sort(function (a, b) { return a.box - b.box || (a.due || "").localeCompare(b.due || ""); });
-    var boxes = [1, 2, 3, 4, 5].map(function (b) { return all.filter(function (c) { return c.box === b; }).length; });
+      .sort(function (a, b) { return (a.box || 1) - (b.box || 1) || (a.due || "").localeCompare(b.due || ""); });
+    var boxes = [1, 2, 3, 4, 5].map(function (b) { return all.filter(function (c) { return (c.box || 1) === b; }).length; });
     var html = crumbs("🔁 Review deck");
     html += '<section class="page-hero"><span class="hero-eyebrow">🔁 Spaced repetition</span><h1>Review deck</h1><p class="hero-sub">Every flashcard you meet in a lesson lands here and comes back just before you would forget it. Five minutes a day keeps each framework within reach.</p></section>';
     html += '<div class="review-stats"><div class="review-due"><b>' + due.length + '</b><span>due today</span></div><div><b>' + all.length + '</b><span>cards in your deck</span></div><div><b>' + boxes[4] + '</b><span>mastered</span></div></div>';
@@ -492,8 +498,8 @@
     pageShell("My progress");
     var xp = totalXp(), lv = levelOf(xp), st = streaks(), cards = objVals(store.cards);
     var q = { c: 0, t: 0 }, ex = 0, lessons = 0;
-    COURSES.forEach(function (c) { var s = cstate(c.id); objVals(s.quiz).forEach(function (r) { q.c += r.c; q.t += r.t; }); ex += Object.keys(s.ex).length; lessons += progressPct(c).done; });
-    var html = crumbs("📈 My progress");
+    COURSES.forEach(function (c) { var s = cstate(c.id); Object.keys(s.quiz).forEach(function(k){if(lessonInfo(c,k.split(':')[0])){q.c += s.quiz[k].c;q.t += s.quiz[k].t;}}); ex += completedActivities(c,s.ex); lessons += progressPct(c).done; });
+    var html = crumbs("📈 My progress") + '<div data-guest-prompt>' + window.ACCOUNT.guestPrompt() + '</div>';
     html += '<section class="page-hero level-hero"><span class="hero-eyebrow">📈 Level ' + lv.idx + "</span><h1>" + lv.name + "</h1>";
     html += '<div class="xp-bar"><div class="xp-fill" style="width:' + lv.pct + '%"></div></div><p class="xp-note">' + xp + " XP" + (lv.next ? " · " + (lv.next.xp - xp) + " XP to " + lv.next.name : " · top level reached") + "</p></section>";
     html += '<div class="stat-grid">' +
@@ -515,15 +521,18 @@
       html += '<a class="course-stat" href="' + courseHref(c.id) + '"><span class="course-ring" style="--p:' + p.pct + '"><span>' + p.pct + '%</span></span><div><h3>' + c.emoji + " " + esc(c.title) + "</h3><p>" + p.done + " of " + p.total + " lessons · " + courseXp(c) + " XP · " + earned.length + " of " + c.badges.length + ' badges</p><p class="badge-line">' + earned.map(function (b) { return b.emoji; }).join(" ") + "</p></div></a>";
     });
     html += "</div>";
-    html += '<h2 class="section-title">Your data</h2><p class="section-desc">Progress lives only in this browser. Export it to move to another device or keep a backup.</p>';
+    html += '<h2 class="section-title">Your data</h2><p class="section-desc">' + (window.ACCOUNT.isSignedIn() ? 'Learning progress syncs to your account. Your notebook stays in this browser. Export to keep a local backup.' : 'Progress lives only in this browser. Sign in to sync across devices, or export to keep a backup.') + '</p>';
     html += '<div class="data-actions"><button class="btn btn-ghost" id="progressExport" type="button">⬇ Export progress</button><label class="btn btn-ghost file-btn">⬆ Import progress<input type="file" id="progressImport" accept="application/json,.json"></label></div>';
     $("#content").innerHTML = html;
     $("#progressExport").addEventListener("click", function () { download("claude-lab-progress.json", "application/json", JSON.stringify(store, null, 2)); });
     $("#progressImport").addEventListener("change", function (e) {
-      var file = e.target.files && e.target.files[0]; if (!file) return;
+      var input = e.target, file = input.files && input.files[0], importRoute = location.hash; if (!file) return;
       file.text().then(function (text) {
+        // Account switches and navigation replace this control. A late file
+        // read must not overwrite the workspace that is now on screen.
+        if (!input.isConnected || location.hash !== importRoute) return;
         var data = JSON.parse(text);
-        if (!data || typeof data !== "object" || typeof data.courses !== "object") throw new Error("not a progress export");
+        if (!window.CLOUD_STATE.validState(data)) throw new Error("invalid progress data");
         store = data; store.courses = store.courses || {}; save(); renderMe(); toast("✓ Progress imported");
       }).catch(function (err) { toast("⚠️ Import failed: that file is not a Claude Lab progress export (" + err.message + ")"); });
     });
@@ -601,6 +610,7 @@
         html += '<div class="complete-row"><button class="complete-btn' + (done ? " done" : "") + '" id="completeBtn">' + completeLabel(done, !!nextId, !!path) + "</button>";
         html += '<span class="complete-hint">' + completeHint(done, !!nextId) + "</span></div>";
       }
+      html += '<div data-guest-prompt>' + window.ACCOUNT.guestPrompt() + '</div>';
       html += '<div class="pager">';
       if (prevId) { var pi = lessonInfo(c, prevId); html += '<a href="' + pathLessonHref(c.id, prevId, path && path.id) + '"><span class="dir">← Previous</span><span class="ptitle">' + pi.lesson.title + "</span></a>"; }
       else { html += '<a href="' + (path ? fastPathHref(c.id, path.id) : courseHref(c.id)) + '"><span class="dir">← Back</span><span class="ptitle">' + (path ? "Route overview" : "Course home") + "</span></a>"; }
@@ -620,7 +630,11 @@
       if (section) { var target = document.getElementById(section); if (target) target.scrollIntoView(); }
       updateReadProgress();
       var cb = $("#completeBtn"); if (cb) cb.addEventListener("click", function () { toggleComplete(cid, id, path && path.id); });
-    }).catch(function (err) { if (requestVersion === routeVersion) $("#content").innerHTML = errorHtml(l.file, err); });
+    }).catch(function (err) {
+      if (requestVersion !== routeVersion) return;
+      $("#content").innerHTML = errorHtml(l.file, err);
+      var retry = $('#retryLesson'); if (retry) retry.addEventListener('click', route);
+    });
   }
 
   /* ---------- Glossary terms: first mention in a lesson opens its definition ---------- */
@@ -755,7 +769,7 @@
     return '<div class="error-box"><h3>⚠️ Couldn\'t load this lesson</h3>' +
       (isFile
         ? '<p>You opened the files directly from disk. Browsers block loading lesson files that way.</p><p><strong>Run a tiny local server:</strong></p><div class="codeblock"><div class="codeblock-head"><span class="codeblock-lang">terminal</span></div><pre><code>python3 -m http.server 8080\n# then open http://localhost:8080</code></pre></div>'
-        : "<p>Tried <code>content/" + file + "</code> → <code>" + (err && err.message ? err.message : err) + "</code>.</p>") + "</div>";
+        : '<p>Check your connection, then try loading the lesson again.</p><button class="btn btn-primary" id="retryLesson" type="button">Try again</button><details><summary>Load details</summary><p>Content: <code>' + esc(file) + '</code> · ' + esc(err && err.message ? err.message : err) + '</p></details>') + "</div>";
   }
 
   function completeLabel(done, hasNext, onPath) { return done ? "✓ Completed — nice!" : hasNext ? "✓ Complete and continue →" : onPath ? "✓ Complete this route" : "✓ Complete the course"; }
@@ -815,7 +829,7 @@
       var steps; try { steps = JSON.parse(sim.dataset.steps || "[]"); } catch (e) { steps = []; }
       var intro = sim.dataset.intro || "";
       var screen = $("[data-screen]", sim), input = $("[data-input]", sim), runBtn = $("[data-run]", sim), promptEl = $("[data-prompt]", sim), resetBtn = $(".ccsim-reset", sim);
-      var i = 0, busy = false;
+      var i = 0, busy = false, runVersion = 0;
       function scrollDown() { screen.scrollTop = screen.scrollHeight; }
       function resp(t) { return esc(t).replace(/\n/g, "<br>"); }
       function clearMismatch() { var old = $(".ccsim-mismatch", sim); if (old) old.remove(); input.removeAttribute("aria-invalid"); }
@@ -830,6 +844,7 @@
         input.placeholder = st.cmd || "type a command…";
       }
       function reset() {
+        runVersion++;
         i = 0; busy = false; input.disabled = false; runBtn.disabled = false; input.value = "";
         clearMismatch();
         screen.innerHTML = intro ? '<div class="ccsim-intro">' + resp(intro) + "</div>" : "";
@@ -837,6 +852,7 @@
       }
       function run() {
         if (busy || i >= steps.length) return;
+        var version = ++runVersion;
         var st = steps[i];
         var entered = input.value.trim(), expected = (st.cmd || "").trim();
         if (entered && expected && entered.replace(/\s+/g, " ") !== expected.replace(/\s+/g, " ")) {
@@ -859,13 +875,14 @@
           if (!text) { finish(); return; }
           var n = text.length, k = 0, stepN = Math.max(2, Math.round(n / 90));
           (function tick() {
+            if (version !== runVersion || !sim.isConnected) return;
             k = Math.min(n, k + stepN);
             body.innerHTML = resp(text.slice(0, k)) + (k < n ? '<span class="ccsim-caret">▋</span>' : "");
             scrollDown();
             if (k < n) setTimeout(tick, 16); else finish();
           })();
         })();
-        function finish() { busy = false; input.disabled = false; runBtn.disabled = false; i++; showStep(); scrollDown(); input.focus(); }
+        function finish() { if(version!==runVersion||!sim.isConnected)return;busy = false; input.disabled = false; runBtn.disabled = false; i++; showStep(); scrollDown(); input.focus(); }
       }
       runBtn.addEventListener("click", run);
       input.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); run(); } });
@@ -886,10 +903,17 @@
     else { var pc = btn.closest(".prompt-card"); if (pc) { var b = pc.querySelector(".prompt-body"); text = b ? b.textContent : ""; } }
     if (!text) return;
     var done = function () { var old = btn.textContent; btn.textContent = "Copied!"; btn.classList.add("copied"); setTimeout(function () { btn.textContent = old; btn.classList.remove("copied"); }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(function () { legacyCopy(text); done(); });
-    else { legacyCopy(text); done(); }
+    function fallback() {
+      if (legacyCopy(text)) { done(); return; }
+      var source = code || b, focus = source && (source.closest('pre') || btn);
+      if (focus) focus.focus({preventScroll:true});
+      if (source) { var selection=window.getSelection(),range=document.createRange();range.selectNodeContents(source);selection.removeAllRanges();selection.addRange(range); }
+      toast('Text selected — use your device’s Copy action.');
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(fallback);
+    else fallback();
   }
-  function legacyCopy(text) { var ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); } catch (e) {} document.body.removeChild(ta); }
+  function legacyCopy(text) { var ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.select(); var copied=false;try { copied=document.execCommand("copy"); } catch (e) {} document.body.removeChild(ta);return copied; }
   function handleQuiz(opt) {
     var q = opt.closest(".quiz-q"); if (!q || q.classList.contains("answered")) return;
     q.classList.add("answered");
@@ -949,22 +973,23 @@
   }
 
   /* ---------- Search (across all courses) ---------- */
-  var searchSel = -1, searchHits = [], searchReturnFocus = null;
+  var searchSel = -1, searchHits = [], searchReturnFocus = null, searchQuery = null;
   function allSearchItems() { var items = []; COURSES.forEach(function (c) { courseLessons(c).forEach(function (x) { items.push({ course: c, module: x.module, lesson: x.lesson }); }); }); return items; }
   function openSearch() {
     var modal = $("#searchModal"); if (modal.hidden) searchReturnFocus = document.activeElement; modal.hidden = false;
-    var input = $("#searchInput"); input.value = ""; input.focus(); runSearch("");
-    if (!textIndex) buildIndex().then(function () { if (!modal.hidden) runSearch(input.value); });
+    var input = $("#searchInput"); input.setAttribute('aria-expanded','true'); input.value = ""; searchQuery = null; input.focus(); runSearch("");
+    if (!textIndex || indexIncomplete) buildIndex().then(function () { if (!modal.hidden) runSearch(input.value); });
   }
-  function closeSearch() { var modal = $("#searchModal"); if (modal.hidden) return; modal.hidden = true; searchSel = -1; var target = searchReturnFocus && searchReturnFocus.isConnected ? searchReturnFocus : $("#searchBtn"); searchReturnFocus = null; if (target && target.focus) target.focus(); }
+  function closeSearch() { var modal = $("#searchModal"); if (modal.hidden) return; modal.hidden = true; searchSel = -1;$('#searchInput').setAttribute('aria-expanded','false');$('#searchInput').removeAttribute('aria-activedescendant');var target = searchReturnFocus && searchReturnFocus.isConnected ? searchReturnFocus : $("#searchBtn"); searchReturnFocus = null; if (target && target.focus) target.focus(); }
   /* Full-text index: every lesson body split into ## sections, built lazily on first search. */
-  var textIndex = null, indexing = null;
+  var textIndex = null, indexing = null, indexIncomplete = false;
   function plain(md) {
     return md.replace(/^```[\w-]*\s*$/gm, " ").replace(/^\s*[-*]\s+\[[ xX]\]\s+/gm, " ").replace(/^:::\w*\s*/gm, " ").replace(/\[\[([^|\]]*)\|[^\]]*\]\]/g, "$1")
       .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/^(Q:|A:|S:|[+~-]\s|>\s*|\$\s|#+\s)/gm, " ").replace(/[`*_|]/g, " ").replace(/\s+/g, " ").trim();
   }
   function buildIndex() {
     if (indexing) return indexing;
+    indexIncomplete = false;
     indexing = Promise.all(allSearchItems().map(function (x) {
       return fetchBody(x.lesson.file).then(function (md) {
         var parts = md.split(/^## /m), out = [];
@@ -973,8 +998,8 @@
           out.push({ item: x, heading: head, slug: head ? MD.slug(head) : "", text: plain(body) });
         });
         return out;
-      }).catch(function () { return []; });
-    })).then(function (lists) { textIndex = [].concat.apply([], lists); return textIndex; });
+      }).catch(function () { indexIncomplete = true; return []; });
+    })).then(function (lists) { textIndex = [].concat.apply([], lists); indexing = null; return textIndex; });
     return indexing;
   }
   function snippet(text, words) {
@@ -986,6 +1011,8 @@
   }
   function runSearch(q) {
     q = q.trim().toLowerCase();
+    var prior = q === searchQuery ? $("#searchResults a.sel") : null;
+    var selectedHref = prior && prior.getAttribute('href'); searchQuery = q;
     var items = allSearchItems(), words = q.split(/\s+/).filter(Boolean), hits = [];
     if (!q) hits = items.slice(0, 8).map(function (x) { return { x: x }; });
     else {
@@ -1009,15 +1036,20 @@
     }
     searchHits = hits; searchSel = hits.length ? 0 : -1;
     var ul = $("#searchResults");
-    if (!hits.length) { ul.innerHTML = '<li class="search-empty">' + (textIndex ? "No matches. Try “plan mode”, “CLAUDE.md”, or “connector”." : "Searching lesson text…") + "</li>"; return; }
+    if (!hits.length) { ul.innerHTML = '<li class="search-empty">' + (indexing || !textIndex ? "Searching lesson text…" : indexIncomplete ? "Some lesson text could not load. Check your connection and reopen search to retry." : "No matches. Try “plan mode”, “CLAUDE.md”, or “connector”.") + "</li>"; setSel(-1); return; }
     ul.innerHTML = hits.map(function (h, i) {
       var x = h.x, href = lessonHref(x.course.id, x.lesson.id) + (h.sec && h.sec.slug ? "?s=" + encodeURIComponent(h.sec.slug) : "");
-      return '<li><a href="' + href + '" class="' + (i === 0 ? "sel" : "") + '" data-i="' + i + '"><span class="sr-main"><span class="sr-title">' + esc(x.lesson.title) + (h.sec && h.sec.heading ? ' <span class="sr-sec">› ' + esc(h.sec.heading) + "</span>" : "") + "</span>" +
+      return '<li id="search-option-' + i + '" role="option" aria-selected="' + (i===0) + '"><a href="' + href + '" class="' + (i === 0 ? "sel" : "") + '" data-i="' + i + '"><span class="sr-main"><span class="sr-title">' + esc(x.lesson.title) + (h.sec && h.sec.heading ? ' <span class="sr-sec">› ' + esc(h.sec.heading) + "</span>" : "") + "</span>" +
         (h.snip ? '<span class="sr-snippet">' + h.snip + "</span>" : "") + '</span><span class="sr-group">' + x.course.emoji + " " + esc(x.module.title) + "</span></a></li>";
     }).join("") + (textIndex ? "" : '<li class="search-empty sr-loading">Searching lesson text…</li>');
+    if (selectedHref) {
+      var previousIndex = $all("#searchResults a").findIndex(function (a) { return a.getAttribute('href') === selectedHref; });
+      if (previousIndex >= 0) searchSel = previousIndex;
+    }
+    setSel(searchSel);
     $all("#searchResults a").forEach(function (a) { a.addEventListener("click", closeSearch); a.addEventListener("mousemove", function () { setSel(parseInt(a.dataset.i, 10)); }); });
   }
-  function setSel(i) { searchSel = i; $all("#searchResults a").forEach(function (a, idx) { a.classList.toggle("sel", idx === i); }); }
+  function setSel(i) { searchSel = i; $all("#searchResults a").forEach(function (a, idx) { a.classList.toggle("sel", idx === i);a.parentElement.setAttribute('aria-selected',String(idx===i)); });var input=$('#searchInput'),active=$('#search-option-'+i);if(active)input.setAttribute('aria-activedescendant',active.id);else input.removeAttribute('aria-activedescendant'); }
   $("#searchBtn").addEventListener("click", openSearch);
   $("#searchInput").addEventListener("input", function (e) { runSearch(e.target.value); });
   $all("[data-close-search]").forEach(function (el) { el.addEventListener("click", closeSearch); });
@@ -1106,7 +1138,7 @@
   /* ---------- Reset ---------- */
   $("#resetBtn").addEventListener("click", function () {
     if (confirm("Clear ALL saved progress, checklists, and badges across every course? This can't be undone.")) {
-      store = { theme: store.theme, courses: {} }; save(); applyFocus(); toast("Progress reset."); route();
+      store = { theme: store.theme, focus: store.focus, name: store.name, notes: store.notes || {}, learning: store.learning, courses: {} }; save(); applyFocus(); toast("Progress reset. Your notebook is kept."); route();
     }
   });
 
@@ -1151,6 +1183,7 @@
     getState: function () { return store; }, download: download, refresh: route,
     applyState: function (next, keepNotes) {
       var prefs = { theme: store.theme, focus: store.focus }, notes = keepNotes ? store.notes : next.notes;
+      if (keepNotes) prefs.name = store.name;
       store = Object.assign({ courses: {} }, next, prefs, { notes: notes || {} });
       store.courses = store.courses || {}; applyFocus(); save(true); route();
     }

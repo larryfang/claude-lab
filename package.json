@@ -8,7 +8,7 @@
     "check:browser": "playwright test",
     "check:links": "node scripts/check-links.mjs",
     "usage": "node analytics/server.mjs",
-    "check:unit": "node --test scripts/link-status.test.mjs scripts/checkers.test.mjs scripts/contrast.test.mjs scripts/usage-report.test.mjs scripts/cloud-state.test.mjs",
+    "check:unit": "node --test scripts/link-status.test.mjs scripts/checkers.test.mjs scripts/contrast.test.mjs scripts/usage-report.test.mjs scripts/cloud-state.test.mjs scripts/account-lifecycle.test.mjs scripts/collector.test.mjs",
     "check:accounts": "node scripts/check-accounts.mjs",
     "build:catalog": "node scripts/build-cloud-catalog.mjs",
     "test": "npm run check:content && npm run check:unit && npm run check:browser"

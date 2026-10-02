@@ -150,6 +150,8 @@ test("focus mode persists, leaves exercises usable, and restores navigation", as
   page.once("dialog", (dialog) => dialog.accept());
   await page.locator("#resetBtn").click();
   await page.goto("/#/cowork/steering");
+  await expect(page.locator("#focusBtn")).toHaveAttribute("aria-pressed", "true");
+  await page.locator("#focusBtn").click();
   await expect(page.locator("#focusBtn")).toHaveAttribute("aria-pressed", "false");
   await expect(page.locator("#sidebar")).toBeVisible();
   await page.goto("/#/");
