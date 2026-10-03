@@ -11,6 +11,10 @@ if(!token)throw Error('Set SUPABASE_ACCESS_TOKEN privately to run live account c
 const ctx={window:{}};
 vm.runInNewContext(fs.readFileSync(new URL('../assets/js/cloud-config.js',import.meta.url),'utf8'),ctx);
 const config=ctx.window.CLAUDELAB_CLOUD,ref=new URL(config.url).hostname.split('.')[0];
+const settingsResponse=await fetch(config.url+'/auth/v1/settings',{headers:{apikey:config.publishableKey}});
+if(!settingsResponse.ok)throw Error('Could not verify the account test provider configuration.');
+const settings=await settingsResponse.json();
+if(!settings.external?.email)throw Error('Password-based disposable account checks require a separate test project with Email enabled. Production allows Google/GitHub only; do not enable Email just to run this check.');
 const host=process.env.COURSE_TEST_URL||'http://127.0.0.1:4173/';
 async function management(path,body){
  const r=await fetch('https://api.supabase.com/v1/projects/'+ref+path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});

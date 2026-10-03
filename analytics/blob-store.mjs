@@ -21,20 +21,22 @@ async function readBlob(pathname) {
   try { return JSON.parse(text); } catch { return null; }
 }
 
-export async function readEvents() {
+export async function readEventStore() {
   const found = [];
   let cursor;
   do {
     const page = await list({ prefix: PREFIX, limit: 1000, cursor });
     found.push(...page.blobs);
     cursor = page.hasMore ? page.cursor : undefined;
-  } while (cursor && found.length < 5000);
+  } while (cursor && found.length < 20000);
   found.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
   const chosen = found.slice(0, 5000);
   const events = [];
-  for (let i = 0; i < chosen.length; i += 20) {
-    const chunk = await Promise.all(chosen.slice(i, i + 20).map((blob) => readBlob(blob.pathname)));
+  for (let i = 0; i < chosen.length; i += 64) {
+    const chunk = await Promise.all(chosen.slice(i, i + 64).map((blob) => readBlob(blob.pathname).catch(() => null)));
     for (const event of chunk) if (event) events.push(event);
   }
-  return events;
+  return { events, coverage: { loaded_events: events.length, listed_events: found.length, event_limit: 5000, listing_limit: 20000, partial: !!cursor || found.length > chosen.length || events.length < chosen.length } };
 }
+
+export async function readEvents() { return (await readEventStore()).events; }

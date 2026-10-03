@@ -1222,7 +1222,7 @@
     $("#content").classList.remove("with-toc");
     if (tocObserver) { tocObserver.disconnect(); tocObserver = null; }
     closeNav();
-    document.body.dataset.view = !parts.length ? 'hub' : parts[0] === 'studio' ? 'studio' : byId[parts[0]] && lessonInfo(byId[parts[0]], parts[1]) ? 'lesson' : 'page';
+    document.body.dataset.view = !parts.length ? 'hub' : parts[0] === 'admin' ? 'admin' : parts[0] === 'studio' ? 'studio' : byId[parts[0]] && lessonInfo(byId[parts[0]], parts[1]) ? 'lesson' : 'page';
     $('#focusBtn').hidden = document.body.dataset.view !== 'lesson';
     $all('.global-nav a').forEach(function (a) { var active = a.dataset.view === document.body.dataset.view || (a.dataset.view === 'learning' && ['me', 'review', 'notebook'].indexOf(parts[0]) !== -1); if (active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     closeShortcuts();

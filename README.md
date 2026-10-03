@@ -89,7 +89,7 @@ A GitHub Actions workflow is included at `.github/workflows/pages.yml` if you pr
 
 ## Accounts and learning analytics
 
-Google/Gmail is the recommended sign-in option (`#/account`). GitHub is the alternative, also using Supabase Auth. Email/password registration is not offered. Lesson completions, quiz scores, review cards, daily review results and the last lesson sync across devices. Guest progress is imported only when the learner chooses. Notebook entries and practice briefs stay in the browser. The owner dashboard (`#/admin`) shows learner journeys, lesson starts/completions, quiz accuracy and estimated active time.
+Google/Gmail is the recommended sign-in option (`#/account`). GitHub is the alternative, also using Supabase Auth. Email/password registration is not offered. Lesson completions, quiz scores, review cards, daily review results and the last lesson sync across devices. Guest progress is imported only when the learner chooses. Notebook entries and practice briefs stay in the browser. The private owner dashboard (`#/admin`) brings together registered learner and guest browser metrics. It includes 7/30/90-day and course filters, activity trends, new-account activation, provider mix, second-week returns, course and lesson diagnostics, a searchable learner directory, and CSV / Markdown reports. Guest IDs remain separate from accounts; the dashboard does not invent a guest-to-signup conversion rate.
 
 See [account setup and operations](supabase/README.md) for migrations, OAuth configuration, access controls, retention and live verification. The browser uses a public publishable key; privileged credentials are never shipped.
 
@@ -103,9 +103,9 @@ npm run usage
 
 That serves the course on port 8787 and prints a private report URL. It is for a laptop only. Those events stay in `analytics/data/` on that machine.
 
-Guest visitors are recorded by the Vercel collector at `https://claude-lab-usage.vercel.app`. That host is only the collector. The course stays on GitHub Pages. Each event is saved as a private object in the Vercel Blob store `claude-lab-usage` (Sydney). That store keeps the events across deploys. The report is `https://claude-lab-usage.vercel.app/report` and needs the `ANALYTICS_TOKEN` environment variable. The token is not in this repo. Before deploying the collector, run `node analytics/build-catalog.mjs` so the report has current lesson titles.
+Guest visitors are recorded by the Vercel collector at `https://claude-lab-usage.vercel.app`. That host is only the collector. The course stays on GitHub Pages. Each event is saved as a private object in the Vercel Blob store `claude-lab-usage` (Sydney). That store keeps the events across deploys. The owner dashboard reads aggregate guest metrics from `/api/report?format=json` using the verified owner session. The separate HTML report at `https://claude-lab-usage.vercel.app/report` still accepts the private `ANALYTICS_TOKEN` environment variable for existing workflows. The token is not in this repo. Before deploying the collector, run `node analytics/build-catalog.mjs` so the report has current lesson titles.
 
-The report names lessons where people stall, questions they miss, searches that find nothing, and where phone users fall behind. Guest events are anonymous: no names, reflections, prompts, checker text, or IP addresses. Search text that looks like an email or a key is dropped.
+The report flags patterns worth reviewing: low completion among viewers, difficult quiz questions, search gaps, and differences between screen sizes. These patterns do not establish why someone left. Reads cover up to 5,000 events from at most 20,000 listed objects, with an explicit partial-coverage notice when history is capped or objects cannot be read. Guest events are anonymous: no names, reflections, prompts, checker text, or IP addresses. Search text that looks like an email or a key is dropped.
 
 `window.SITE.analytics` is the collector origin. GitHub Pages starts sending only after that value is in the published `content.js`.
 
@@ -126,7 +126,7 @@ npm test              # content structure + unit tests + all browser interaction
 npm run check:links   # live external-link check
 ```
 
-The browser suite renders every registered lesson and checks progress persistence, quizzes and scores, every learning block, the review deck, notebook export, progress export/import, the certificate, full-text search, keyboard navigation, guided simulations, route pages, accessibility state, and 390 px / 320 px layouts. A smoke test uses every interactive block on every lesson at phone width and fails on any browser error. Unit tests cover the checker heuristics, the link-check rules, WCAG AA colour contrast for every text/background pair in both themes, and the usage report. GitHub Actions runs the main suite on every push and pull request, plus a weekly external-link check.
+The browser suite renders every registered lesson and checks progress persistence, quizzes and scores, every learning block, the review deck, notebook export, progress export/import, the certificate, full-text search, keyboard navigation, guided simulations, route pages, accessibility state, and 390 px / 320 px layouts. A smoke test uses every interactive block on every lesson at phone width and fails on any browser error. Database regression tests use a disposable local PostgreSQL cluster to verify owner authorization, row isolation, period calculations, session status, imports, pagination and cohort windows. PostgreSQL tools are required in CI. Unit tests cover the checker heuristics, the link-check rules, WCAG AA colour contrast for every text/background pair in both themes, and the usage report. GitHub Actions runs the main suite on every push and pull request, plus a weekly external-link check.
 
 ## 📁 Project structure
 
@@ -136,11 +136,14 @@ The browser suite renders every registered lesson and checks progress persistenc
 ├── assets/
 │   ├── css/styles.css      # Design tokens and course components
 │   ├── css/experience.css  # Editorial workspace, studio, planner, focus mode
+│   ├── css/admin.css       # Responsive private analytics dashboard
 │   └── js/
 │       ├── markdown.js     # Tiny Markdown engine + custom blocks (incl. terminal sim)
 │       ├── widgets.js      # Flashcards + spaced repetition, order, scenario, reflect, spot
 │       ├── checkers.js     # Heuristic brief and CLAUDE.md checkers
 │       ├── content.js      # Multi-course manifest: COURSES, modules, badges  ← edit here
+│       ├── admin.js        # Owner dashboard, charts, filters and reports
+│       ├── account.js      # Provider accounts, private progress sync and events
 │       ├── usage.js        # Anonymous usage beacon. Sends nothing until a collector is configured.
 │       ├── experience.js   # Guided practice, session planner, lesson orientation
 │       └── app.js          # Hub, journey, lessons, search index, review, notebook, progress, certificate

@@ -68,3 +68,24 @@ test("two people keep their own sessions, including a second visit", async ({ br
   await ada.close();
   await bea.close();
 });
+
+test('sign-in button clicks record only the provider and no email or account identity',async({page})=>{
+ const events=[];await page.addInitScript(()=>localStorage.setItem('claudelab.usage.allow','1'));
+ await page.route('**/api/collect',async r=>{events.push(...JSON.parse(r.request().postData()||'{}').events||[]);await r.fulfill({status:204,body:''});});
+ await page.route('**/auth/v1/authorize?**',r=>r.abort());
+ await page.goto('/#/account');await page.locator('#googleSignIn').click();
+ await expect.poll(()=>events.filter(e=>e.type==='auth').length).toBe(1);
+ const start=events.find(e=>e.type==='auth');expect(start.provider).toBe('google');expect(start.page).toBe('account');
+ expect(start.email).toBeUndefined();expect(start.user_id).toBeUndefined();expect(start.access_token).toBeUndefined();
+ await page.evaluate(()=>{if(window.SITE)window.SITE.analytics='';});
+});
+
+test('admin visits and finished-session pages are not mistaken for unknown lessons',async({page})=>{
+ const events=[];await page.addInitScript(()=>localStorage.setItem('claudelab.usage.allow','1'));
+ await page.route('**/api/collect',async r=>{events.push(...JSON.parse(r.request().postData()||'{}').events||[]);await r.fulfill({status:204,body:''});});
+ await page.goto('/#/admin');await expect(page.locator('#content')).toContainText('Sign in with the course owner');
+ await page.waitForTimeout(2200);expect(events).toEqual([]);
+ await page.goto('/#/cowork/session?path=essentials&session=welcome');await expect.poll(()=>events.filter(e=>e.type==='view').length).toBeGreaterThan(0);
+ expect(events.find(e=>e.type==='view')).toMatchObject({page:'session-summary',course:'cowork'});expect(events.some(e=>e.lesson==='session')).toBe(false);
+ await page.evaluate(()=>{if(window.SITE)window.SITE.analytics='';});
+});

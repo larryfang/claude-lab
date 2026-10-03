@@ -134,6 +134,7 @@
  function record(input){
   if(!user||!client||(navigator.webdriver&&read('claudelab.usage.allow',null)!==1))return;
   var e=Object.assign({id:crypto.randomUUID(),session_id:sessionId,type:input.type},currentPlace());
+  if(input.type!=='studio'&&(!e.course||!e.lesson))return;
   ['correct','done','active_seconds'].forEach(function(k){if(input[k]!==undefined)e[k]=input[k];});
   events.push(e);if(events.length>500)events.splice(0,events.length-500);write('claudelab.events.'+user.id,events);
   if(!eventTimer)eventTimer=setTimeout(flushEvents,2000);
@@ -218,19 +219,26 @@
    if(r.error)throw r.error;out=out.concat(r.data);if(r.data.length<500)break;
   }return out;
  }
- function lessonHref(last){return last&&last.c&&last.l?'#/'+encodeURIComponent(last.c)+'/'+encodeURIComponent(last.l)+(last.p?'?path='+encodeURIComponent(last.p):''):'#/';}
+ function isAdminRoute(){return (location.hash||'').replace(/^#\/?/,'').split('?')[0].split('/').filter(Boolean)[0]==='admin';}
  async function renderAdmin(){
   var request=++adminRequest,turn=generation,uid=user&&user.id;
   var content=document.getElementById('content');content.innerHTML='<section class="account-panel"><h1>Learning dashboard</h1><p role="status">Checking administrator access…</p></section>';
-  if(!ready){setTimeout(function(){if(location.hash==='#/admin')renderAdmin();},300);return;}
+  function current(){return isAdminRoute()&&request===adminRequest&&turn===generation&&!!user&&user.id===uid;}
+  if(!ready){setTimeout(function(){if(isAdminRoute())renderAdmin();},300);return;}
   if(!user){content.innerHTML='<section class="account-panel"><h1>Course administration</h1><p>Sign in with the course owner account to view learning analytics.</p><a class="btn btn-primary" href="#/account">Sign in</a></section>';return;}
-  var r;
-  try{r=await client.rpc('learning_admin_report').retry(false).abortSignal(AbortSignal.timeout(15000));}catch(e){r={error:e};}
-  if(location.hash!=='#/admin'||request!==adminRequest||turn!==generation||!user||user.id!==uid)return;
-  if(r.error){var denied=r.error.code==='42501';content.innerHTML='<section class="account-panel"><h1>Course administration</h1><p>'+(denied?'This dashboard requires the course owner account. Learners can view their own progress.':'The dashboard could not load. Check your connection and try again.')+'</p><a href="#/me">My progress →</a>'+(!denied?'<button class="btn btn-ghost" id="retryAdmin" type="button">Try again</button>':'')+'</section>';var retry=document.getElementById('retryAdmin');if(retry)retry.onclick=renderAdmin;return;}
-  var d=r.data,s=d.summary;
-  content.innerHTML='<section class="admin-page"><span class="micro-label">PRIVATE COURSE ANALYTICS</span><h1>See where learning pauses.</h1><p>Last activity shows where a learner was seen. “Likely paused” means an unfinished selected route or course with no recorded activity for 7 days. Active time is an estimate based on visible, recently active tabs.</p><div class="admin-stats">'+[[s.learners,'learners'],[s.active_7_days,'active in 7 days'],[Math.round(s.active_seconds_30_days/60),'active minutes · 30 days'],[s.events_30_days,'events · 30 days']].map(function(x){return '<div><strong>'+x[0]+'</strong><span>'+esc(x[1])+'</span></div>';}).join('')+'</div><button class="btn btn-ghost" id="refreshAdmin" type="button">Refresh dashboard</button><h2>Learner journeys</h2><p>Showing up to '+s.learner_limit+' learners, most recently active first.</p><div class="admin-table" tabindex="0" role="region" aria-label="Learner journeys"><table><thead><tr><th>Learner</th><th>Last lesson</th><th>Completed</th><th>Quiz accuracy</th><th>Last seen</th><th>Status</th></tr></thead><tbody>'+d.learners.map(function(u){var last=u.last_lesson,c=window.COURSES.find(function(c){return last&&c.id===last.c;}),lesson=c&&c.modules.flatMap(function(m){return m.lessons;}).find(function(l){return l.id===last.l;});return '<tr><td><strong>'+esc(u.display_name)+'</strong><small>'+esc(u.email)+'</small></td><td><a href="'+lessonHref(last)+'">'+esc(lesson?lesson.title:'Not started')+'</a></td><td>'+u.completed_lessons+'</td><td>'+(u.quiz_attempts?Math.round(100*u.quiz_correct/u.quiz_attempts)+'%':'—')+'</td><td>'+esc(u.last_seen?new Date(u.last_seen).toLocaleString():'No activity yet')+'</td><td>'+({not_started:'Not started',completed:'Selected route complete',paused:'Likely paused',active:'Recently active'}[u.learning_status]||'Not started')+'</td></tr>';}).join('')+'</tbody></table></div><h2>Lesson funnel</h2><div class="admin-table" tabindex="0" role="region" aria-label="Lesson funnel"><table><thead><tr><th>Lesson</th><th>Opened</th><th>Currently completed</th><th>Quiz accuracy</th></tr></thead><tbody>'+d.lessons.filter(function(l){return l.learners_started||l.learners_completed||l.quiz_attempts;}).map(function(l){return '<tr><td>'+esc(l.title)+'</td><td>'+l.learners_started+'</td><td>'+l.learners_completed+'</td><td>'+(l.quiz_attempts?Math.round(100*l.quiz_correct/l.quiz_attempts)+'%':'—')+'</td></tr>';}).join('')+'</tbody></table></div><p class="account-note">Quizzes and completions record course activity; they do not certify real-world competence. Guest visits remain in the separate anonymous report. Raw activity is retained for 90 days; daily totals preserve trends. Database size: '+Math.round(s.database_bytes/1024/1024)+' MB of the 500 MB free allowance.</p></section>';
-  document.getElementById('refreshAdmin').onclick=renderAdmin;
+  await window.ADMIN_DASHBOARD.mount(content,{
+   isCurrent:current,
+   load:function(params){return client.rpc('learning_admin_dashboard',params).retry(false).abortSignal(AbortSignal.timeout(20000));},
+   legacy:function(){return client.rpc('learning_admin_report').retry(false).abortSignal(AbortSignal.timeout(15000));},
+   guest:async function(days,course){
+    var base=window.SITE&&window.SITE.analytics;
+    if(!base||!/^https?:\/\/[^/?#]+$/.test(base))throw Error('Collector not configured');
+    var session=await client.auth.getSession();if(!current()||session.error||!session.data.session)throw Error('Account changed');
+    var url=new URL('/api/report',base);url.searchParams.set('format','json');url.searchParams.set('days',days);if(course)url.searchParams.set('course',course);
+    var response=await fetch(url.href,{headers:{Authorization:'Bearer '+session.data.session.access_token},cache:'no-store',signal:AbortSignal.timeout(30000)});
+    if(!current()||!response.ok)throw Error('Guest report unavailable');return response.json();
+   }
+  });
  }
  window.ACCOUNT={init:init,onSave:localSave,sync:sync,recordUsage:usage,record:record,isSignedIn:function(){return !!user;},renderAccount:renderAccount,renderAdmin:renderAdmin,guestPrompt:guestPrompt};
 })();

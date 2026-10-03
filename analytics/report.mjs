@@ -5,14 +5,17 @@ import vm from "node:vm";
 
 const ACT = { viewers: 8, answers: 8, people: 5, searches: 3, views: 10, jumps: 5 };
 const EARLY = { viewers: 3, answers: 3, people: 3, searches: 2, views: 4, jumps: 3 };
-const PAGES = new Set(["hub", "lesson", "review", "notebook", "progress", "path", "certificate", "course"]);
+const PAGES = new Set(["hub", "lesson", "review", "notebook", "progress", "path", "certificate", "course", "studio", "session-summary", "account"]);
 const SLUG = /^[a-z0-9-]{1,80}$/;
 const ID = /^[a-z0-9]{8,64}$/;
 const HOST = /^[a-z0-9.-]{1,120}$/;
-const TYPES = new Set(["session", "view", "leave", "complete", "quiz", "search"]);
+const TYPES = new Set(["session", "view", "leave", "complete", "quiz", "search", "auth"]);
 const COURSE_ORIGIN = "https://larryfang.github.io/claude-lab";
 const PAGE_LABELS = {
   hub: "Home",
+  studio: "Practice studio",
+  "session-summary": "Learning session summary",
+  account: "Account",
   review: "Review deck",
   notebook: "Notebook",
   progress: "Progress",
@@ -64,6 +67,10 @@ export function cleanEvent(raw, now = Date.now()) {
     ev.hits = clamp(Math.round(Number(raw.hits) || 0), 0, 50);
     ev.redacted = !ev.q && (raw.redacted === true || String(raw.q || "").trim().length > 0);
     if (!ev.q && !ev.redacted) return null;
+  }
+  if (raw.type === "auth") {
+    if (!["google", "github"].includes(raw.provider)) return null;
+    ev.provider = raw.provider;
   }
   if (raw.type === "session") {
     const ref = String(raw.ref || "").toLowerCase();
@@ -300,7 +307,7 @@ function recommend(model, catalog, mins) {
     const meta = catalog.get(key);
     if (!meta) continue;
     const viewers = lesson.viewers.size;
-    const finishers = lesson.finishers.size;
+    const finishers = [...lesson.viewers].filter(visitor=>lesson.finishers.has(visitor)).length;
     const finishRate = viewers ? finishers / viewers : 0;
     const avgDwell = lesson.dwellN ? lesson.dwellSum / lesson.dwellN : 0;
     const avgScroll = lesson.scrollN ? lesson.scrollSum / lesson.scrollN : 100;
@@ -321,7 +328,7 @@ function recommend(model, catalog, mins) {
         severity: "high",
         score: lesson.bounces,
         title: `“${meta.title}” is opened and left`,
-        detail: `${lesson.bounces} of ${lesson.views} visits lasted under 12 seconds. The title or the opening is missing what people came for.`,
+        detail: `${lesson.bounces} of ${lesson.views} visits lasted under 12 seconds. Review the title and opening; short visits alone do not explain why people left.`,
         href
       });
     }
@@ -420,7 +427,7 @@ function recommend(model, catalog, mins) {
     const nextMeta = catalog.get(meta.nextKey);
     if (!current || !next || !nextMeta) continue;
     const viewers = current.viewers.size;
-    const nextViewers = next.viewers.size;
+    const nextViewers = [...current.viewers].filter(visitor=>next.viewers.has(visitor)).length;
     if (viewers < mins.viewers || nextViewers / viewers >= 0.55) continue;
     const drop = viewers - nextViewers;
     const prev = worst.get(meta.course);
@@ -432,7 +439,7 @@ function recommend(model, catalog, mins) {
       severity: "high",
       score: drop.drop,
       title: `People stop after “${drop.meta.title}”`,
-      detail: `${drop.viewers} people opened it and ${drop.nextViewers} opened the next lesson, “${drop.nextMeta.title}”. Look at the ending of this lesson and the start of the next one.`,
+      detail: `${drop.viewers} people opened it and ${drop.nextViewers} also opened the next lesson, “${drop.nextMeta.title}”. Look at the ending of this lesson and the start of the next one.`,
       href: courseHref(drop.meta.course, drop.meta.id)
     });
   }
@@ -446,8 +453,8 @@ function recommend(model, catalog, mins) {
       id: `path:${fast.course}/${fast.id}`,
       severity: "high",
       score: stat.viewers.size - finished,
-      title: `The “${fast.title}” path is not getting finished`,
-      detail: `${stat.viewers.size} people opened this path and ${finished} reached the last lesson, “${fast.lastTitle}”. The path is too long, or an early lesson is where they drop.`,
+      title: `Review the ending of the “${fast.title}” path`,
+      detail: `${stat.viewers.size} people opened this path and ${finished} marked the final lesson complete, “${fast.lastTitle}”. Review the path length and early lessons; this pattern alone does not establish the cause.`,
       href: courseHref(fast.course, `path/${fast.id}`)
     });
   }
@@ -472,6 +479,7 @@ function publish(model, catalog, actions, early) {
       views: lesson.views,
       viewers: lesson.viewers.size,
       finishers: lesson.finishers.size,
+      viewerFinishers: [...lesson.viewers].filter(visitor=>lesson.finishers.has(visitor)).length,
       avgDwell: lesson.dwellN ? Math.round(lesson.dwellSum / lesson.dwellN) : null,
       avgScroll: lesson.scrollN ? Math.round(lesson.scrollSum / lesson.scrollN) : null,
       bounces: lesson.bounces,
@@ -540,12 +548,42 @@ function publish(model, catalog, actions, early) {
   };
 }
 
-export function summarize(rawEvents, catalog, now = Date.now()) {
-  const model = fold(rawEvents, catalog, now);
-  const actions = recommend(model, catalog, ACT).slice(0, 8);
-  const seen = new Set(actions.map((action) => action.id));
-  const early = recommend(model, catalog, EARLY).filter((action) => !seen.has(action.id)).slice(0, 6);
-  return publish(model, catalog, actions, early);
+export function summarize(rawEvents, catalog, now = Date.now(), {days=null,course=""}={}) {
+  const seen=new Set();
+  const history=rawEvents.map(ev=>cleanEvent(ev,now)).filter(ev=>{
+    if(!ev)return false;
+    // Tolerate small browser clock skew without placing activity in future days.
+    ev.t=Math.min(ev.t,now);
+    if(ev.id&&seen.has(ev.id))return false;
+    if(ev.id)seen.add(ev.id);return true;
+  });
+  const today=Math.floor(now/864e5)*864e5;
+  const start=days?today-(days-1)*864e5:history.length?Math.floor(Math.min(...history.map(ev=>ev.t))/864e5)*864e5:today;
+  const end=now,windowDays=days||Math.max(1,Math.round((today-start)/864e5)+1);
+  function scope(from,to) {
+    const timed=history.filter(ev=>ev.t>=from&&ev.t<=to);
+    const sessions=new Set(timed.filter(ev=>ev.course===course).map(ev=>ev.session));
+    return timed.filter(ev=>!course||ev.course===course||(ev.type==='session'&&sessions.has(ev.session)));
+  }
+  const selected=scope(start,end),model=fold(selected,catalog,now);
+  const actions=recommend(model,catalog,ACT).slice(0,8),acted=new Set(actions.map(a=>a.id));
+  const result=publish(model,catalog,actions,recommend(model,catalog,EARLY).filter(a=>!acted.has(a.id)).slice(0,6));
+  const previous=fold(scope(start-windowDays*864e5,start-1),catalog,now);
+  const priorVisitors=new Set(history.filter(ev=>ev.t<start).map(ev=>ev.visitor));
+  const activeVisitors=new Set(selected.map(ev=>ev.visitor));
+  result.returningVisitors=[...activeVisitors].filter(id=>priorVisitors.has(id)).length;
+  result.newBrowserIds=result.visitors-result.returningVisitors;
+  result.signInStarts={google:0,github:0};result.quizAttempts=0;result.quizCorrect=0;
+  for(const ev of selected){if(ev.type==='auth')result.signInStarts[ev.provider]++;if(ev.type==='quiz'){result.quizAttempts++;if(ev.correct)result.quizCorrect++;}}
+  result.daily=[];
+  for(let day=start;day<=today;day+=864e5){
+    const events=selected.filter(ev=>ev.t>=day&&ev.t<day+864e5);
+    result.daily.push({day:new Date(day).toISOString().slice(0,10),visitors:new Set(events.map(ev=>ev.visitor)).size,sessions:new Set(events.map(ev=>ev.session)).size,lessonOpens:events.filter(ev=>ev.type==='view'&&ev.page==='lesson'&&catalog.has(lessonKey(ev))).length,signInStarts:events.filter(ev=>ev.type==='auth').length});
+  }
+  result.filters={days:days||null,course,from:new Date(start).toISOString().slice(0,10),to:new Date(today).toISOString().slice(0,10),timezone:'UTC'};
+  result.previous={visitors:previous.visitors.size,sessions:previous.sessions.size,lessonOpens:previous.lessonOpens};
+  result.generated_at=new Date(now).toISOString();
+  return result;
 }
 
 function esc(value) {
@@ -567,8 +605,8 @@ function actionList(actions) {
 }
 
 export function renderReport(report) {
-  const range = report.from ? `${fmtDay(report.from)} – ${fmtDay(report.to)}` : "No visits yet";
-  const lessonRows = report.lessons.map((lesson) => `<tr><td><a href="${esc(lesson.href)}">${esc(lesson.title)}</a></td><td class="num">${lesson.viewers}</td><td class="num">${lesson.views}</td><td class="num">${lesson.finishers} / ${lesson.viewers}</td><td class="num">${fmtClock(lesson.avgDwell)}</td><td class="num">${lesson.avgScroll == null ? "—" : `${lesson.avgScroll}%`}</td><td class="num">${lesson.bounces}</td></tr>`).join("");
+  const range = report.filters ? `${report.filters.from} – ${report.filters.to} (UTC)` : report.from ? `${fmtDay(report.from)} – ${fmtDay(report.to)}` : "No visits yet";
+  const lessonRows = report.lessons.map((lesson) => `<tr><td><a href="${esc(lesson.href)}">${esc(lesson.title)}</a></td><td class="num">${lesson.viewers}</td><td class="num">${lesson.views}</td><td class="num">${lesson.viewerFinishers} / ${lesson.viewers}</td><td class="num">${fmtClock(lesson.avgDwell)}</td><td class="num">${lesson.avgScroll == null ? "—" : `${lesson.avgScroll}%`}</td><td class="num">${lesson.bounces}</td></tr>`).join("");
   const questionRows = report.questions.map((q) => `<tr><td><a href="${esc(q.href)}">${esc(q.title)}</a><div class="sub">Question ${q.question + 1}${q.text ? ` · ${esc(q.text)}` : ""}</div></td><td class="num">${q.misses} / ${q.answers}</td><td class="num">${pct(q.misses, q.answers)}</td><td class="num">${q.people}</td></tr>`).join("");
   const searchRows = report.searches.map((search) => `<tr><td>${esc(search.q)}</td><td class="num">${search.n}</td><td class="num">${search.zero}</td><td class="num">${search.people}</td></tr>`).join("");
   const maxPage = report.pages.reduce((max, page) => Math.max(max, page.views), 0);
@@ -637,11 +675,13 @@ export function renderReport(report) {
   <h1>What to change</h1>
   <p class="range">${esc(range)}. Refresh this page for the latest numbers.</p>
   <ul class="stats">
-    <li><b>${report.visitors}</b><span>People</span></li>
+    <li><b>${report.visitors}</b><span>Guest browser IDs</span></li>
     <li><b>${report.sessions}</b><span>Sessions</span></li>
     <li><b>${report.lessonOpens}</b><span>Lesson opens</span></li>
-    <li><b>${report.completions}</b><span>Lessons finished</span></li>
+    <li><b>${report.completions}</b><span>Recorded lesson completions</span></li>
   </ul>
+  ${report.coverage?.partial ? `<p class="hint">Partial event sample: ${report.coverage.loaded_events} events were read. More events exist or could not be read. Totals may be understated.</p>` : ""}
+  ${report.daily?.length ? `<h2>Daily browser activity</h2><div class="wrap"><table><thead><tr><th>Day · UTC</th><th>Browser IDs</th><th>Sessions</th><th>Lesson opens</th><th>Sign-in starts · clicks</th></tr></thead><tbody>${report.daily.map(day=>`<tr><td>${esc(day.day)}</td><td>${day.visitors}</td><td>${day.sessions}</td><td>${day.lessonOpens}</td><td>${day.signInStarts}</td></tr>`).join("")}</tbody></table></div>` : ""}
   ${waiting}
   <h2>Change the course</h2>
   ${change}
@@ -656,7 +696,7 @@ export function renderReport(report) {
   ${report.pages.length ? `<div class="wrap"><table><thead><tr><th>Page</th><th class="num">People</th><th class="num">Opens</th><th class="num">Avg time</th><th>Volume</th></tr></thead><tbody>${pageRows}</tbody></table></div>` : `<p class="hint">No page opens yet.</p>`}
   ${referrerRows ? `<h2>Arrived from</h2><div class="wrap"><table><thead><tr><th>Site</th><th class="num">Sessions</th></tr></thead><tbody>${referrerRows}</tbody></table></div>` : ""}
   <footer>
-    <p>Anonymous events only. No names, reflections, prompts, checker text, or IP addresses. Search text is kept only when it is a short topic.</p>
+    <p>Anonymous browser IDs are separate from signed-in accounts and can change across devices or storage resets. Time is measured on the page, not attention. Anonymous events only. No names, reflections, prompts, checker text, or IP addresses. Search text is kept only when it is a short topic.</p>
     ${notes.length ? `<p class="notes">${esc(notes.join(" "))}</p>` : ""}
   </footer>
 </main>

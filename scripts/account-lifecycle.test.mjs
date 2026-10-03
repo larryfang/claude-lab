@@ -6,7 +6,7 @@ async function harness(options={}){
  const doc={getElementById:id=>elements[id]||null,querySelectorAll:()=>[],querySelector:()=>null,addEventListener:()=>{},body:{dataset:{view:'page'}},hidden:false};
  const client={auth:{onAuthStateChange:cb=>listener=cb,getSession:async()=>options.getSession?options.getSession(listener):({data:{session:active?{user:active}:null}}),getUser:async()=>options.getUser?options.getUser():({data:{user:active}})},from:()=>{const q={select:()=>q,eq:()=>q,maybeSingle:()=>q,retry:()=>q,abortSignal:()=>options.remote?options.remote():Promise.resolve({data:{state:{courses:{}},revision:0}})};return q;},rpc:async()=>({data:{state:{courses:{}},revision:1}})};
  const context={window:{CLOUD_STATE:null,CLAUDELAB_CLOUD:{url:'https://test.supabase.co',publishableKey:'public'},supabase:{createClient:()=>client},COURSES:[],addEventListener:()=>{}},document:doc,crypto:{randomUUID},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},sessionStorage:{getItem:()=>null},location:{hash:'#/me',href:'http://127.0.0.1:4173/#/me'},history:{replaceState:()=>{}},navigator:{onLine:true,webdriver:true},AbortSignal,URL,URLSearchParams,setTimeout:(fn,ms)=>{const t={fn,ms};timers.push(t);return t;},clearTimeout:t=>{if(t)t.cancelled=true;},setInterval:()=>{},Date,console};
- vm.createContext(context);vm.runInContext(fs.readFileSync('assets/js/cloud-state.js','utf8'),context);vm.runInContext(fs.readFileSync('assets/js/account.js','utf8'),context);
+ vm.createContext(context);vm.runInContext(fs.readFileSync('assets/js/cloud-state.js','utf8'),context);vm.runInContext(fs.readFileSync('assets/js/admin.js','utf8'),context);vm.runInContext(fs.readFileSync('assets/js/account.js','utf8'),context);
  const api={getState:()=>state,applyState:next=>state=plain(next),refresh:()=>{},download:()=>{}};
  const init=context.window.ACCOUNT.init(api);if(!options.deferInit)await init;
  return {context,storage,timers,elements,init,getState:()=>state,setActive:u=>{active=u;},emit:(ev,s)=>listener(ev,s),runTimers:async()=>{for(const t of timers.splice(0))if(!t.cancelled&&t.ms===0){t.fn();await new Promise(r=>setImmediate(r));}}};
@@ -46,7 +46,7 @@ test('offline sign-in keeps guest edits made while account progress loads',async
 
 test('a stale owner report cannot render after signing out',async()=>{
  const h=await harness();const report=deferred();
- h.context.location.hash='#/admin';h.elements.content={innerHTML:''};h.elements.refreshAdmin={};
+ h.context.location.hash='#/admin';h.elements.content={innerHTML:'',querySelector:()=>null,querySelectorAll:()=>[]};h.elements.refreshAdmin={};
  // The client returned by the factory is the same instance used by ACCOUNT.
  const c=h.context.window.supabase.createClient();c.rpc=()=>({retry(){return this;},abortSignal(){return report.promise;}});
  const pending=h.context.window.ACCOUNT.renderAdmin();h.emit('SIGNED_OUT',null);await h.runTimers();

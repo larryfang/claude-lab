@@ -65,9 +65,12 @@
     if (parts[0] === "studio") { loc.page = "studio"; return loc; }
     if (parts[0] === "review" || parts[0] === "notebook") { loc.page = parts[0]; return loc; }
     if (parts[0] === "me") { loc.page = "progress"; return loc; }
+    if (parts[0] === "account") { loc.page = "account"; return loc; }
+    if (parts[0] === "admin" || !(window.COURSES || []).some(function(c){return c.id === parts[0];})) { loc.ignore = true; return loc; }
     loc.course = parts[0];
     if (!parts[1]) { loc.page = "course"; return loc; }
     if (parts[1] === "path") { loc.page = "path"; loc.lesson = parts[2] || ""; return loc; }
+    if (parts[1] === "session") { loc.page = "session-summary"; return loc; }
     if (parts[1] === "certificate") { loc.page = "certificate"; return loc; }
     loc.page = "lesson";
     loc.lesson = parts[1];
@@ -161,6 +164,7 @@
     var next = parseHash();
     if (same(current, next)) return;
     if (current) leave();
+    if (next.ignore) { current = null; return; }
     current = next;
     maxScroll = 0;
     queue(Object.assign({ type: "view" }, place(next)));
@@ -190,6 +194,8 @@
   document.addEventListener("click", function (e) {
     var el = e.target && e.target.closest ? e.target : (e.target && e.target.parentElement);
     if (!el || !el.closest) return;
+    var auth = el.closest('[data-auth-provider]');
+    if (auth && !auth.disabled) { queue({ type: "auth", provider: auth.dataset.authProvider, page: "account" }); flush(false); return; }
     var done = el.closest("#completeBtn");
     if (done) {
       var loc = current && current.page === "lesson" ? current : parseHash();

@@ -1,6 +1,9 @@
 # The course stays on GitHub Pages. Do not upload it with the collector.
 /index.html
-/assets
+/assets/*
+!/assets/js
+/assets/js/*
+!/assets/js/cloud-config.js
 /content
 /tests
 /scripts
