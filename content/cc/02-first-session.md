@@ -17,8 +17,8 @@ Work through this guided session. Type each suggested command exactly and press 
 
 ```claude-sim
 # A tiny Node project is open. You launched Claude Code in it.
-$ cd todo-api && claude
-Claude Code — ready. Working directory: ~/code/todo-api
+$ cd todo-api && claude --permission-mode manual
+Claude Code — ready in Manual mode. Working directory: ~/code/todo-api
 Type a request, or /help. Tip: press Shift+Tab to switch modes.
 > what does this project do and what's the test command?
 I read package.json, README.md, and src/. Summary:
@@ -53,14 +53,14 @@ You **asked** (orientation), **described an outcome** (Claude proposed a plan an
 
 ## Part 2 — Now do it for real
 
-Pick any small project you have (or `git clone` a tiny repo). Then run these in your **own terminal** — copy each, paste, and go.
+Use a small practice repository, or a new branch in an approved project. Check for existing work first, keep it intact, and commit only the files changed by this lab. Then run these in your **own terminal** — adapt each to your project.
 
 :::lab Run your first real session
 **Start Claude in your project:**
 
 ```bash
 cd path/to/your-project
-claude
+claude --permission-mode manual
 ```
 
 - [ ] Claude Code started in my project
@@ -99,7 +99,7 @@ Commit this change with a clear, conventional commit message.
 :::
 
 :::warning If Claude asks permission
-In Manual mode, Claude asks before editing files or running commands. (On Pro, Max and Team plans you start in auto mode, so you may see few prompts.) **Read the request, then approve.** That's the safety model working — you stay in control. (We'll tune this in the Permissions lesson so you're not clicking forever.)
+This lab explicitly starts in **Manual** mode. Actions requiring approval prompt; in-scope reads and already allowed actions can run without one. **Read the request, then approve.** Interactive terminal sessions now start in Auto by default on v2.1.283 or later when supported and not overridden. Check the active mode rather than inferring it from your plan. The Permissions lesson explains the controls.
 :::
 
 ## Reflect
@@ -119,11 +119,11 @@ Which run or test command proves a change works in your project, and how will yo
 
 ```quiz
 Q: In the session, why did Claude show the `npm test` output instead of just saying "done"?
-+ Evidence beats assertion — showing passing tests lets you trust the work without re-checking it yourself
++ Passing output gives you evidence to inspect alongside the diff and the test's coverage
 - To use more tokens
 - It's required by git
 - To look impressive
-> "Show me it works" is the habit that makes unattended runs trustworthy. Always give Claude a way to verify and ask it to show the result.
+> Ask for the real output, then check that the test covers the behavior you requested. Passing tests do not replace reviewing the change or checking important cases they omit.
 
 Q: What's the atomic loop you practiced?
 + Ask (orient) → make a change → verify → commit

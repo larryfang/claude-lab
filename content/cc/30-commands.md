@@ -8,14 +8,17 @@ A custom slash command is just a Markdown file. Drop one in `.claude/commands/` 
 
 ```markdown
 <!-- .claude/commands/pr.md  →  invoked as /pr -->
+---
+disable-model-invocation: true
+---
 Review the current git diff, then:
 1. Summarize what changed and why.
 2. Run the test suite and report results.
-3. Create a conventional-commit message.
-4. Open a PR with `gh pr create`, using the summary as the body.
+3. Use a feature branch, stage only the reviewed changes, and commit with a conventional message.
+4. Push that branch to the agreed remote, then open a draft PR with `gh pr create --draft`, using the summary and test results as the body.
 ```
 
-Now `/pr` runs that whole workflow. Put commands in:
+Use this publishing command only in a repository you own or an agreed fork, with `gh` authenticated. The frontmatter makes it manual-only. If you are practising locally, stop at the commit. Put commands in:
 - `.claude/commands/` — **project** (commit it; shared with your team)
 - `~/.claude/commands/` — **personal**, available in all your projects
 
@@ -27,12 +30,15 @@ Use `$ARGUMENTS` to accept input:
 
 ```markdown
 <!-- .claude/commands/fix-issue.md  →  /fix-issue 1234 -->
+---
+disable-model-invocation: true
+---
 Analyze and fix GitHub issue: $ARGUMENTS
 
 1. Run `gh issue view $ARGUMENTS` to read the issue.
 2. Find the relevant files and implement a fix.
 3. Write and run tests to verify.
-4. Commit with a descriptive message and open a PR.
+4. On a feature branch, stage only this fix, commit, push to the agreed remote and open a draft PR. Report the checks actually run.
 ```
 
 Run `/fix-issue 1234` and Claude executes the workflow against issue 1234.
@@ -100,7 +106,8 @@ Running /pr…
   • Diff: 3 files changed (rate limiter + tests + config)
   $ npm test  →  12 passed ✓
   • Commit message: "feat(api): add token-bucket rate limiting"
-  $ gh pr create --fill
+  • Reviewed changes committed and feature branch pushed to the agreed remote
+  $ gh pr create --draft --fill
   ✓ Opened PR #42: feat(api): add token-bucket rate limiting
 Anything to adjust before I mark it ready for review?
 ```

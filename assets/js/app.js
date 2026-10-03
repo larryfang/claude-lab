@@ -14,6 +14,7 @@
   var bodyCache = {};
   var currentCourseId = null;
   var routeVersion = 0;
+  var focusAfterComplete = false;
 
   /* ---------- Store (with v1 → v2 migration) ---------- */
   function loadRaw(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
@@ -71,7 +72,25 @@
     });
   }
   function lessonHref(cid, lid) { return "#/" + cid + "/" + lid; }
-  function pathLessonHref(cid, lid, pid) { return lessonHref(cid, lid) + (pid ? "?path=" + encodeURIComponent(pid) : ""); }
+  function pathLessonHref(cid, lid, pid, session) { return lessonHref(cid, lid) + (pid ? "?path=" + encodeURIComponent(pid) : "") + (pid && session ? "&session=" + encodeURIComponent(session) : ""); }
+  function sessionLessons(c, path, token, lid) {
+    if (!path || typeof token !== 'string' || !token || token.length > 1500) return null;
+    var ids = token.split(','), positions = ids.map(function (id) { return path.lessons.indexOf(id); });
+    if (!ids.length || ids.length > path.lessons.length || (lid && ids.indexOf(lid) < 0)) return null;
+    return positions.every(function (pos, i) { return pos >= 0 && (!i || pos > positions[i - 1]); }) ? ids : null;
+  }
+  function sessionHref(cid, pid, token) { return courseHref(cid) + '/session?path=' + encodeURIComponent(pid) + '&session=' + encodeURIComponent(token); }
+  function resumePlace() {
+    var last = store.last, c = last && byId[last.c], info = c && lessonInfo(c, last.l);
+    if (!info || isRef(info.module)) return null;
+    var path = (c.fastPaths || []).filter(function (p) { return p.id === last.p; })[0];
+    var session = sessionLessons(c, path, last.s, last.l), completed = cstate(c.id).completed;
+    if (session && session.every(function (id) { return completed[id]; })) return { course:c, module:info.module, lesson:info.lesson, href:sessionHref(c.id,path.id,session.join(',')), label:'Review your finished session' };
+    var order = session || (path ? path.lessons : countable(c).map(function (x) { return x.lesson.id; }));
+    var id = completed[last.l] ? order.filter(function (id) { return !completed[id]; })[0] : last.l;
+    if (!id) return { course:c, module:info.module, lesson:info.lesson, href:path ? fastPathHref(c.id,path.id) : courseHref(c.id), label:'Choose your next practice' };
+    var next = lessonInfo(c,id); next.href = pathLessonHref(c.id,id,path && path.id,session && session.join(',')); next.label = 'Continue where you left off'; return next;
+  }
   function courseHref(cid) { return "#/" + cid; }
   function fastPathHref(cid, pid) { return "#/" + cid + "/path/" + pid; }
   function fastPathMinutes(c, path) {
@@ -156,7 +175,7 @@
         a.className = "nav-link" + (s.completed[l.id] ? " done" : "") + (l.id === activeId ? " active" : "");
         a.href = lessonHref(c.id, l.id); a.dataset.lesson = l.id;
         if (l.id === activeId) a.setAttribute('aria-current', 'page');
-        a.innerHTML = '<span class="nav-check">✓</span><span class="nav-title">' + l.title + "</span>" + (l.minutes ? '<span class="nav-min">' + l.minutes + "m</span>" : "");
+        a.innerHTML = '<span class="nav-check" aria-hidden="true">✓</span><span class="nav-title">' + l.title + '</span><span class="nav-status sr-only">' + (s.completed[l.id] ? ' Completed' : '') + '</span>' + (l.minutes ? '<span class="nav-min" aria-hidden="true">' + l.minutes + 'm</span><span class="sr-only"> ' + l.minutes + ' minutes</span>' : '');
         li.appendChild(a); ul.appendChild(li);
       });
       group.appendChild(ul);
@@ -183,23 +202,23 @@
     document.title = SITE.title + " — Hands-on courses for Claude Cowork and Claude Code";
     var lessons = 0, labs = 0, minutes = 0;
     COURSES.forEach(function (c) { countable(c).forEach(function (x) { lessons++; if (isLab(x.lesson)) labs++; minutes += x.lesson.minutes || 0; }); });
+    var last = resumePlace();
     var html = '<section class="hub-hero"><div class="hub-hero-copy">';
     html += '<span class="hero-eyebrow">An independent, hands-on learning lab</span>';
-    html += "<h1>Less guessing.<br>More <em>good work.</em></h1>";
-    html += '<p class="hero-sub">Learn to work with Claude by doing. Write a clear brief, steer the work, and check the evidence. Bring those habits to your next real task.</p>';
-    html += '<div class="hero-cta"><button class="btn btn-primary" type="button" data-open-planner>Find your starting point ' + icon('arrow') + '</button><a class="btn btn-ghost" href="#/studio">' + icon('play') + ' Try the practice studio</a></div><p class="hero-proof"><span>' + icon('check') + ' Free learning site</span><span>' + icon('check') + ' Guest access</span><span>' + icon('check') + ' ' + (window.ACCOUNT.isSignedIn() ? 'Progress syncs to your account' : 'Progress saved here') + '</span></p>';
+    html += last ? '<h1>Your next step.<br>At <em>your pace.</em></h1>' : '<h1>Less guessing.<br>More <em>good work.</em></h1>';
+    html += last ? '<p class="hero-sub">' + esc(last.label) + ': <strong>' + esc(last.lesson.title) + '</strong>. Continue your learning, or plan a short session for the time you have today.</p>' : '<p class="hero-sub">Learn to work with Claude by doing. Write a clear brief, steer the work, and check the evidence. Bring those habits to your next real task.</p>';
+    html += '<div class="hero-cta">' + (last ? '<a class="btn btn-primary" data-resume-primary href="' + last.href + '">' + esc(last.label) + ' ' + icon('arrow') + '</a><button class="btn btn-ghost" type="button" data-open-planner>Plan a session</button>' : '<button class="btn btn-primary" type="button" data-open-planner>Find your starting point ' + icon('arrow') + '</button><a class="btn btn-ghost" href="#/studio">' + icon('play') + ' Try the practice studio</a>') + '</div><p class="hero-proof"><span>' + icon('check') + ' Free learning site</span><span>' + icon('check') + ' Guest access</span><span>' + icon('check') + ' ' + (window.ACCOUNT.isSignedIn() ? 'Progress syncs to your account' : 'Progress saved here') + '</span></p>';
     html += "</div>" + heroVisual() + "</section>";
 
-    html += '<div data-guest-prompt>' + window.ACCOUNT.guestPrompt() + '</div>';
-    var last = store.last && byId[store.last.c] && lessonInfo(byId[store.last.c], store.last.l);
     var st = streaks(), due = dueCards().length, xp = totalXp();
     if (last || xp) {
       html += '<div class="today-row">';
-      if (last) html += '<a class="resume-card" href="' + pathLessonHref(last.course.id, last.lesson.id, store.last.p) + '"><span class="resume-kicker">Continue where you left off</span><strong>' + esc(last.lesson.title) + "</strong><small>" + last.course.emoji + " " + esc(last.module.title) + '</small><span class="resume-go" aria-hidden="true">→</span></a>';
+      if (last) html += '<a class="resume-card" href="' + last.href + '"><span class="resume-kicker">' + last.label + '</span><strong>' + esc(last.lesson.title) + "</strong><small>" + last.course.emoji + " " + esc(last.module.title) + '</small><span class="resume-go" aria-hidden="true">→</span></a>';
       html += '<a class="today-card" href="#/review"><b>' + due + "</b><span>" + (due === 1 ? "card" : "cards") + ' due</span></a>';
       html += '<a class="today-card" href="#/me"><b>' + st.current + '</b><span>day streak</span></a>';
       html += '<a class="today-card" href="#/me"><b>' + xp + "</b><span>XP · " + levelOf(xp).name + "</span></a></div>";
     }
+    html += '<div data-guest-prompt>' + window.ACCOUNT.guestPrompt() + '</div>';
 
     html += '<div class="stats-strip">' +
       '<div data-stat="lessons"><b>' + lessons + "</b><span>lessons</span></div>" +
@@ -217,7 +236,9 @@
       var startId = resume ? resume.lesson.id : c.modules[0].lessons[0].id;
       var cta = p.done === 0 ? "Start course" : (p.pct === 100 ? "Review" : "Resume");
       var cLabs = countable(c).filter(function (x) { return isLab(x.lesson); }).length;
-      html += '<a class="course-card" href="' + lessonHref(c.id, startId) + '">';
+      var cardHref = last && last.course.id === c.id && p.pct < 100 ? last.href : lessonHref(c.id, startId);
+      if (last && last.course.id === c.id && p.done === 0) cta = 'Continue';
+      html += '<a class="course-card" href="' + cardHref + '">';
       html += '<div class="course-card-top"><span class="course-emoji">' + icon(c.id === 'claude-code' ? 'code' : 'grid') + "</span>";
       html += '<span class="course-ring" style="--p:' + p.pct + '"><span>' + p.pct + "%</span></span></div>";
       html += "<h2>" + c.title + "</h2>";
@@ -306,6 +327,8 @@
     var resume = countable(c).filter(function (x) { return !s.completed[x.lesson.id]; })[0];
     var resumeId = resume ? resume.lesson.id : c.modules[0].lessons[0].id;
     var resumeLabel = p.done === 0 ? "Start the course" : (p.pct === 100 ? "Review from the top" : "Resume where you left off");
+    var last = resumePlace(), resumeHref = lessonHref(c.id, resumeId);
+    if (last && last.course.id === c.id && p.pct < 100) { resumeHref = last.href; resumeLabel = last.label; }
     var earned = earnedBadges(c);
 
     var html = "";
@@ -315,9 +338,11 @@
     html += "<h1>" + c.title + "</h1>";
     html += '<p class="hero-sub">' + esc(c.tagline) + "</p>";
     html += '<div class="hero-cta">';
-    html += '<a class="btn btn-primary" href="' + lessonHref(c.id, resumeId) + '">' + resumeLabel + ' <svg viewBox="0 0 24 24" width="18" height="18"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>';
+    html += '<a class="btn btn-primary" href="' + resumeHref + '">' + resumeLabel + ' <svg viewBox="0 0 24 24" width="18" height="18"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></a>';
     html += '<a class="btn btn-ghost" href="#/">← All courses</a>';
     html += "</div></section>";
+
+    if (p.pct === 100) html += '<section class="session-takeaway"><h2>Course finished. Show what you can do.</h2><p>Apply the capstone rubric to a real task. Keep the source evidence, review the result, and choose one practice to repeat. Lesson completion records your activity here; it does not establish professional competence.</p><a class="btn btn-primary" href="#/studio">Practise the whole loop ' + icon('arrow') + '</a></section>';
 
     html += '<div class="dash">';
     html += '<div class="ring" style="--p:' + p.pct + '"><span class="ring-label">' + p.pct + "%</span></div>";
@@ -363,6 +388,7 @@
     }
     $("#content").innerHTML = html;
     window.scrollTo(0, 0);
+    if (focusAfterComplete) { focusAfterComplete = false; focusPageHeading(); }
   }
 
   function renderFastPath(cid, pid) {
@@ -375,9 +401,12 @@
     document.title = path.title + " · " + c.title;
     var s = cstate(cid);
     var firstOpen = path.lessons.filter(function (id) { return !s.completed[id]; })[0] || path.lessons[0];
+    var doneN = path.lessons.filter(function (id) { return s.completed[id]; }).length;
     var html = '<div class="lesson-top"><a class="crumb" href="#/">All courses</a><span>›</span><a class="crumb" href="' + courseHref(c.id) + '">' + c.emoji + ' ' + c.title + '</a><span>›</span><span class="crumb">' + path.emoji + ' ' + esc(path.title) + '</span></div>';
     html += '<section class="path-hero"><span class="hero-eyebrow">' + path.emoji + ' Curated learning route</span><h1>' + esc(path.title) + '</h1><p class="hero-sub">' + esc(path.desc) + '</p><p class="path-audience"><strong>Best for:</strong> ' + esc(path.audience) + '</p><div class="hero-cta"><a class="btn btn-primary" href="' + pathLessonHref(cid, firstOpen, pid) + '">' + (s.completed[firstOpen] ? 'Review route' : 'Start or resume') + ' →</a><a class="btn btn-ghost" href="' + courseHref(cid) + '">← Course home</a></div></section>';
     html += '<div class="path-summary"><strong>' + path.lessons.length + ' lessons</strong><span>·</span><strong>about ' + fastPathMinutes(c, path) + ' minutes</strong><span>·</span><span>complete in this order</span></div>';
+    html += '<div class="route-progress"><p>' + doneN + ' of ' + path.lessons.length + ' lessons complete</p><progress value="' + doneN + '" max="' + path.lessons.length + '" aria-label="Route lessons completed"></progress></div>';
+    if (doneN === path.lessons.length) html += '<section class="session-takeaway"><h2>Route finished. Put one habit to work.</h2><p>Explain one idea without looking back, then use it on a task you can check. Choose another route when you want to build on it.</p><a class="btn btn-primary" href="#/?plan=1">Plan your next session ' + icon('arrow') + '</a></section>';
     html += '<ol class="path-list">';
     path.lessons.forEach(function (id, index) {
       var info = lessonInfo(c, id); if (!info) return;
@@ -387,6 +416,34 @@
     html += '</ol>';
     $("#content").innerHTML = html;
     window.scrollTo(0, 0);
+    if (focusAfterComplete) { focusAfterComplete = false; focusPageHeading(); }
+  }
+
+  function focusPageHeading() {
+    var heading = $('#content h1');
+    if (heading) { heading.tabIndex = -1; heading.focus({preventScroll:true}); }
+  }
+  function renderSession(cid, pid, token) {
+    var c = byId[cid], path = c && (c.fastPaths || []).filter(function (p) { return p.id === pid; })[0];
+    var ids = c && sessionLessons(c,path,token);
+    if (!ids) { location.hash = path ? fastPathHref(cid,pid) : courseHref(cid); return; }
+    currentCourseId = cid; buildCourseNav(c,null); refreshTopProgress(cid);
+    var state = cstate(cid), completed = ids.filter(function (id) { return state.completed[id]; }), finished = completed.length === ids.length;
+    var next = ids.filter(function (id) { return !state.completed[id]; })[0];
+    var minutes = ids.reduce(function (sum,id) { return sum + (lessonInfo(c,id).lesson.minutes || 0); },0);
+    document.title = (finished ? 'Session finished' : 'Your learning session') + ' · ' + SITE.title;
+    var html = '<section class="session-summary"><a class="crumb" href="' + fastPathHref(cid,pid) + '">' + esc(path.title) + ' →</a><span class="hero-eyebrow">' + (finished ? 'A GOOD PLACE TO PAUSE' : 'YOUR LEARNING SESSION') + '</span><h1>' + (finished ? 'Session finished. Keep what you learned.' : 'One session. A clear finish line.') + '</h1><p>' + completed.length + ' of ' + ids.length + ' lessons complete · about ' + minutes + ' minutes of learning.</p><progress value="' + completed.length + '" max="' + ids.length + '" aria-label="Session lessons completed"></progress>';
+    if (finished) html += '<div class="hero-cta"><a class="btn btn-primary" href="#/?plan=1">Plan your next session ' + icon('arrow') + '</a><a class="btn btn-ghost" href="#/studio">Practise the whole loop</a><a href="#/review">Review your cards</a></div>';
+    else html += '<div class="hero-cta"><a class="btn btn-primary" href="' + pathLessonHref(cid,next,pid,ids.join(',')) + '">Continue this session ' + icon('arrow') + '</a><a class="btn btn-ghost" href="#/">Pause for now</a></div>';
+    html += '<ol class="path-list">';
+    ids.forEach(function (id,i) { var l = lessonInfo(c,id).lesson; html += '<li><a href="' + pathLessonHref(cid,id,pid,ids.join(',')) + '"><span class="path-step">' + (state.completed[id] ? '✓' : i+1) + '</span><span class="path-copy"><strong>' + esc(l.title) + '</strong><small>' + (state.completed[id] ? 'Completed' : 'Still to do') + ' · ' + l.minutes + ' min</small></span></a></li>'; });
+    html += '</ol>';
+    if (finished) {
+      html += '<div class="session-takeaway"><h2>Make it useful outside the lesson.</h2><p>Without looking back, explain one idea you learned and name a task where you will use it. Revisit a lesson if you cannot yet explain it.</p><p>Completion records your learning activity. It does not certify that a real-world result is ready.</p></div>';
+    }
+    html += '<div data-guest-prompt>' + window.ACCOUNT.guestPrompt() + '</div></section>';
+    $('#content').innerHTML = html; window.scrollTo(0,0);
+    if (focusAfterComplete) { focusAfterComplete = false; focusPageHeading(); }
   }
 
   /* ---------- Learner stats: XP, levels, streaks ---------- */
@@ -567,16 +624,18 @@
     return fetch("content/" + file, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); }).then(function (t) { bodyCache[file] = t; return t; });
   }
 
-  function renderLesson(cid, id, section, pathId) {
+  function renderLesson(cid, id, section, pathId, sessionToken) {
     var c = byId[cid]; if (!c) { location.hash = "#/"; return; }
     var info = lessonInfo(c, id); if (!info) { location.hash = courseHref(cid); return; }
     currentCourseId = cid;
     var l = info.lesson, m = info.module;
     var path = (c.fastPaths || []).filter(function (x) { return x.id === pathId && x.lessons.indexOf(id) !== -1; })[0];
-    var order = path ? path.lessons : flatOrder(c), pos = order.indexOf(id);
+    var session = sessionLessons(c, path, sessionToken, id), token = session && session.join(',');
+    var order = session || (path ? path.lessons : isRef(m) ? flatOrder(c) : countable(c).map(function (x) { return x.lesson.id; })), pos = order.indexOf(id);
     var prevId = pos > 0 ? order[pos - 1] : null;
     var nextId = pos < order.length - 1 ? order[pos + 1] : null;
     var requestVersion = routeVersion;
+    var shouldFocus = focusAfterComplete; focusAfterComplete = false;
 
     $("#content").innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading lesson…</p></div>';
     window.scrollTo(0, 0);
@@ -600,22 +659,25 @@
       var modIdx = c.modules.indexOf(m) + 1, lessonIdx = m.lessons.indexOf(l) + 1;
       html += '<div class="lesson-pos">' + (isRef(m) ? "Reference" : "Module " + modIdx) + " · Lesson " + lessonIdx + " of " + m.lessons.length + '<span class="lesson-pos-dots" aria-hidden="true">' +
         m.lessons.map(function (x) { return '<i class="' + (x.id === id ? "now" : s.completed[x.id] ? "done" : "") + '"></i>'; }).join("") + "</span></div>";
-      if (path) html += '<div class="path-context"><span>' + path.emoji + ' <strong>' + esc(path.title) + '</strong></span><span class="path-step-count">Step ' + (pos + 1) + ' of ' + order.length + '</span><a href="' + fastPathHref(cid, path.id) + '">View route</a></div>';
+      if (path) html += '<div class="path-context"><span>' + path.emoji + ' <strong>' + esc(path.title) + '</strong></span><span class="path-step-count">Step ' + (path.lessons.indexOf(id) + 1) + ' of ' + path.lessons.length + '</span><a href="' + fastPathHref(cid, path.id) + '">View route</a></div>';
+      if (session) html += '<aside class="session-context" aria-label="Your learning session"><span>' + icon('clock') + ' <strong>This session: lesson ' + (pos + 1) + ' of ' + session.length + '</strong></span><p>Finish these lessons, then pause and choose your next step.</p><a href="' + sessionHref(cid,path.id,token) + '">Session overview</a></aside>';
+      var referenceReturn = isRef(m) && resumePlace();
+      if (referenceReturn) html += '<aside class="session-context" aria-label="Return to your learning"><span>Keep your place while you look this up.</span><a href="' + referenceReturn.href + '">Back to your learning ' + icon('arrow') + '</a></aside>';
       html += '<div class="lesson-grid"><div class="lesson-main">';
       html += '<article class="lesson">' + bodyHtml + "</article>";
 
       html += '<div class="lesson-foot">';
       if (!isRef(m)) {
         var done = !!s.completed[id];
-        html += '<div class="complete-row"><button class="complete-btn' + (done ? " done" : "") + '" id="completeBtn">' + completeLabel(done, !!nextId, !!path) + "</button>";
+        html += '<div class="complete-row"><button class="complete-btn' + (done ? " done" : "") + '" id="completeBtn">' + (session && !nextId && !done ? '✓ Finish this session' : completeLabel(done, !!nextId, !!path)) + "</button>";
         html += '<span class="complete-hint">' + completeHint(done, !!nextId) + "</span></div>";
       }
       html += '<div data-guest-prompt>' + window.ACCOUNT.guestPrompt() + '</div>';
       html += '<div class="pager">';
-      if (prevId) { var pi = lessonInfo(c, prevId); html += '<a href="' + pathLessonHref(c.id, prevId, path && path.id) + '"><span class="dir">← Previous</span><span class="ptitle">' + pi.lesson.title + "</span></a>"; }
+      if (prevId) { var pi = lessonInfo(c, prevId); html += '<a href="' + pathLessonHref(c.id, prevId, path && path.id, token) + '"><span class="dir">← Previous</span><span class="ptitle">' + pi.lesson.title + "</span></a>"; }
       else { html += '<a href="' + (path ? fastPathHref(c.id, path.id) : courseHref(c.id)) + '"><span class="dir">← Back</span><span class="ptitle">' + (path ? "Route overview" : "Course home") + "</span></a>"; }
-      if (nextId) { var ni = lessonInfo(c, nextId); html += '<a class="next" href="' + pathLessonHref(c.id, nextId, path && path.id) + '"><span class="dir">Next →</span><span class="ptitle">' + ni.lesson.title + "</span></a>"; }
-      else { html += '<a class="next" href="' + (path ? fastPathHref(c.id, path.id) : courseHref(c.id)) + '"><span class="dir">Done →</span><span class="ptitle">' + (path ? "Route overview" : "Course home") + "</span></a>"; }
+      if (nextId) { var ni = lessonInfo(c, nextId); html += '<a class="next" href="' + pathLessonHref(c.id, nextId, path && path.id, token) + '"><span class="dir">Next →</span><span class="ptitle">' + ni.lesson.title + "</span></a>"; }
+      else { html += '<a class="next" href="' + (session ? sessionHref(cid,path.id,token) : path ? fastPathHref(c.id, path.id) : courseHref(c.id)) + '"><span class="dir">' + (session ? 'Session review →' : 'Done →') + '</span><span class="ptitle">' + (session ? 'Pause and choose your next step' : path ? "Route overview" : "Course home") + "</span></a>"; }
       html += "</div></div>";
       html += '</div><aside class="toc-rail"></aside></div>';
 
@@ -624,12 +686,13 @@
       window.EXPERIENCE.orientLesson(l, m);
       setActiveNav(id);
       wireLesson(cid, id);
-      buildToc(cid, id, path && path.id);
+      buildToc(cid, id, path && path.id, session && session.join(','));
       linkTerms(c, id, requestVersion);
-      store.last = { c: cid, l: id, p: path && path.id, t: Date.now() }; save();
+      if (!isRef(m)) { store.last = { c: cid, l: id, p: path && path.id, s: token || undefined, t: Date.now() }; save(); }
       if (section) { var target = document.getElementById(section); if (target) target.scrollIntoView(); }
       updateReadProgress();
-      var cb = $("#completeBtn"); if (cb) cb.addEventListener("click", function () { toggleComplete(cid, id, path && path.id); });
+      if (shouldFocus) focusPageHeading();
+      var cb = $("#completeBtn"); if (cb) cb.addEventListener("click", function () { toggleComplete(cid, id, path && path.id, token); });
     }).catch(function (err) {
       if (requestVersion !== routeVersion) return;
       $("#content").innerHTML = errorHtml(l.file, err);
@@ -723,14 +786,14 @@
 
   /* ---------- On this page + reading progress ---------- */
   var tocObserver = null;
-  function buildToc(cid, id, pathId) {
+  function buildToc(cid, id, pathId, sessionToken) {
     if (tocObserver) { tocObserver.disconnect(); tocObserver = null; }
     var rail = $(".toc-rail"), heads = $all("article.lesson h2");
     if (!rail || heads.length < 2) return;
     var kit = [[".quiz-q", "🧩", "quiz question"], [".flash", "🃏", "flashcard deck"], [".lab-box", "🧪", "lab"], [".ccsim", "⌨️", "simulation"], ["[data-scn]", "🧭", "scenario"], [".order, .spot, .lint", "🎯", "exercise"], [".reflect", "🪞", "reflection"]]
       .map(function (k) { var n = $all(k[0], $("article.lesson")).length; return n ? '<li><span aria-hidden="true">' + k[1] + "</span>" + n + " " + k[2] + (n === 1 ? "" : "s") + "</li>" : ""; }).join("");
     rail.innerHTML = '<details class="lesson-outline" open><summary>On this page</summary><nav class="toc" aria-label="On this page"><p class="toc-title">On this page</p><ol>' +
-      heads.map(function (h) { return '<li><a href="' + pathLessonHref(cid, id, pathId) + '" data-target="' + h.id + '">' + esc(h.textContent) + "</a></li>"; }).join("") + "</ol>" +
+      heads.map(function (h) { return '<li><a href="' + pathLessonHref(cid, id, pathId, sessionToken) + '" data-target="' + h.id + '">' + esc(h.textContent) + "</a></li>"; }).join("") + "</ol>" +
       (kit ? '<p class="toc-title">In this lesson</p><ul class="toc-kit">' + kit + "</ul>" : "") + "</nav></details>";
     if (window.innerWidth < 1280) $(".lesson-outline", rail).open = false;
     $all(".toc a", rail).forEach(function (a) {
@@ -740,6 +803,7 @@
         if (!t) return;
         if (window.innerWidth < 1280) $(".lesson-outline", rail).open = false;
         t.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+        t.tabIndex = -1; t.focus({preventScroll:true});
       });
     });
     if (!("IntersectionObserver" in window)) return;
@@ -774,7 +838,7 @@
 
   function completeLabel(done, hasNext, onPath) { return done ? "✓ Completed — nice!" : hasNext ? "✓ Complete and continue →" : onPath ? "✓ Complete this route" : "✓ Complete the course"; }
   function completeHint(done, hasNext) { return done ? "Select it again to mark the lesson not done." : "Do the activities above first. This records your progress" + (hasNext ? " and opens the next lesson." : "."); }
-  function toggleComplete(cid, id, pathId) {
+  function toggleComplete(cid, id, pathId, sessionToken) {
     var c = byId[cid], s = cstate(cid);
     var was = !!s.completed[id];
     var prev = earnedBadges(c).map(function (b) { return b.id; });
@@ -782,17 +846,21 @@
     if (!was && progressPct(c).pct === 100 && !s.doneAt) s.doneAt = WIDGETS.srs.today();
     save();
     var path = (c.fastPaths || []).filter(function (x) { return x.id === pathId && x.lessons.indexOf(id) !== -1; })[0];
-    var order = path ? path.lessons : flatOrder(c), nextId = order[order.indexOf(id) + 1] || null;
+    var session = sessionLessons(c,path,sessionToken,id), token = session && session.join(',');
+    var order = session || (path ? path.lessons : countable(c).map(function (x) { return x.lesson.id; })), nextId = order[order.indexOf(id) + 1] || null;
     var cb = $("#completeBtn");
     if (cb) { cb.classList.toggle("done", !was); cb.textContent = completeLabel(!was, !!nextId, !!path); var hint = $(".complete-hint"); if (hint) hint.textContent = completeHint(!was, !!nextId); }
-    var navA = $('.nav-link[data-lesson="' + id + '"]'); if (navA) navA.classList.toggle("done", !was);
+    var navA = $('.nav-link[data-lesson="' + id + '"]'); if (navA) { navA.classList.toggle("done", !was); var status = $('.nav-status',navA); if (status) status.textContent = was ? '' : ' Completed'; }
     refreshTopProgress(cid); refreshNavMeters(c);
     if (!was) {
       var fresh = earnedBadges(c).filter(function (b) { return prev.indexOf(b.id) === -1; });
       if (fresh.length) { burstConfetti(); toast("🎉 Badge unlocked: " + fresh[0].emoji + " " + fresh[0].label); }
       else toast("✓ Lesson complete");
-      if (nextId) location.hash = pathLessonHref(cid, nextId, path && path.id);
+      focusAfterComplete = true;
+      if (nextId) location.hash = pathLessonHref(cid, nextId, path && path.id, token);
+      else if (session) location.hash = sessionHref(cid,path.id,token);
       else if (path) location.hash = fastPathHref(cid, path.id);
+      else location.hash = courseHref(cid);
     }
   }
 
@@ -1107,11 +1175,13 @@
     if (e.key === "?") { e.preventDefault(); openShortcuts(); return; }
     var m = location.hash.split("?")[0].match(/#\/([^/]+)\/(.+)$/);
     if (m && byId[m[1]]) {
-      var c = byId[m[1]], pathId = new URLSearchParams(location.hash.split("?")[1] || "").get("path");
+      var c = byId[m[1]], params = new URLSearchParams(location.hash.split("?")[1] || ""), pathId = params.get("path");
       var path = (c.fastPaths || []).filter(function (x) { return x.id === pathId && x.lessons.indexOf(m[2]) !== -1; })[0];
-      var order = path ? path.lessons : flatOrder(c), pos = order.indexOf(m[2]);
-      if (e.key === "ArrowRight" && pos > -1 && pos < order.length - 1) location.hash = pathLessonHref(c.id, order[pos + 1], path && path.id);
-      if (e.key === "ArrowLeft" && pos > 0) location.hash = pathLessonHref(c.id, order[pos - 1], path && path.id);
+      var session = sessionLessons(c,path,params.get('session'),m[2]), token = session && session.join(',');
+      var info = lessonInfo(c,m[2]);
+      var order = session || (path ? path.lessons : info && isRef(info.module) ? flatOrder(c) : countable(c).map(function (x) { return x.lesson.id; })), pos = order.indexOf(m[2]);
+      if (e.key === "ArrowRight" && pos > -1 && pos < order.length - 1) location.hash = pathLessonHref(c.id, order[pos + 1], path && path.id, token);
+      if (e.key === "ArrowLeft" && pos > 0) location.hash = pathLessonHref(c.id, order[pos - 1], path && path.id, token);
     }
   });
 
@@ -1146,7 +1216,7 @@
   function route() {
     routeVersion++;
     var raw = location.hash.replace(/^#\/?/, "");
-    var query = new URLSearchParams(raw.split("?")[1] || ""), section = query.get("s"), pathId = query.get("path");
+    var query = new URLSearchParams(raw.split("?")[1] || ""), section = query.get("s"), pathId = query.get("path"), sessionToken = query.get('session');
     raw = raw.split("?")[0];
     var parts = raw.split("/").filter(Boolean);
     $("#content").classList.remove("with-toc");
@@ -1167,10 +1237,11 @@
     if (parts[0] === "lesson" && parts[1]) { renderLesson(currentCourseId || COURSES[0].id, parts.slice(1).join("/")); return; }
     var c = byId[parts[0]];
     if (c) {
+      if (parts[1] === 'session') { renderSession(c.id,pathId,sessionToken); return; }
       if (parts[1] === "path" && parts[2]) { renderFastPath(c.id, parts.slice(2).join("/")); return; }
       if (parts[1] === "certificate") { renderCertificate(c.id); return; }
       if (parts[1] === "lesson" && parts[2]) { renderLesson(c.id, parts.slice(2).join("/")); return; }
-      if (parts[1]) { renderLesson(c.id, parts.slice(1).join("/"), section, pathId); return; }
+      if (parts[1]) { renderLesson(c.id, parts.slice(1).join("/"), section, pathId, sessionToken); return; }
       renderCourseHome(c.id); return;
     }
     renderHub();

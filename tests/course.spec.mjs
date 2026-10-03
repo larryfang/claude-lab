@@ -13,7 +13,8 @@ test("every registered lesson renders without browser errors", async ({ page }) 
     await expect(page.locator(".error-box")).toHaveCount(0);
     const text = await page.locator("article.lesson").innerText();
     expect(text, `${lesson.id} leaks block syntax`).not.toMatch(/^\s*(```|:::)/m);
-    expect(text, `${lesson.id} leaks spot markup`).not.toContain("[[");
+    // Bash [[ ... ]] is valid lesson code; spot markers also have a | explanation.
+    expect(text, `${lesson.id} leaks spot markup`).not.toMatch(/\[\[[^\]\n]*\|[^\]\n]*\]\]/);
   }
   expect(errors).toEqual([]);
 });
@@ -69,7 +70,7 @@ test("route pages and freshness evidence render", async ({ page }) => {
   await page.locator('.fast-path-card[href="#/cowork/path/essentials"]').click();
   await expect(page.locator(".path-list li")).toHaveCount(8);
   await page.goto("/#/claude-code/cc-subagents");
-  await expect(page.locator(".freshness")).toContainText("Verified 25 Sep 2026");
+  await expect(page.locator(".freshness")).toContainText("Verified 3 Oct 2026");
 });
 
 for (const width of [390, 320]) {

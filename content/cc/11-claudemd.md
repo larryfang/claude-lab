@@ -27,7 +27,7 @@ This table is the whole art. Memorize the vibe:
 | Common gotchas / non-obvious behaviors | Self-evident advice like "write clean code" |
 
 :::warning Keep it short — bloat backfires
-A long `CLAUDE.md` is loaded **every turn**, eating context, and worse: **Claude starts ignoring it** because the important rules get buried. Aim for **under ~200 lines**: the official [memory docs](https://code.claude.com/docs/en/memory) say to "target under 200 lines per CLAUDE.md file", and to move sometimes-relevant knowledge into skills or path-scoped rules. For each line ask: *"Would removing this cause Claude to make a mistake?"* If not, cut it.
+A long `CLAUDE.md` occupies session context and can bury important rules. Aim for **under ~200 lines**: the official [memory docs](https://code.claude.com/docs/en/memory) recommend short files and moving sometimes-relevant knowledge into skills or path-scoped rules. For each line ask: *"Would removing this cause Claude to make a mistake?"* If not, cut it.
 :::
 
 Here's the shape of a good one:
@@ -62,16 +62,16 @@ Claude merges `CLAUDE.md` files from several places — so you can scope context
 | Location | Scope |
 |---|---|
 | `~/.claude/CLAUDE.md` | **Global** — applies to all your projects (personal prefs) |
-| `./CLAUDE.md` | **Project** — check into git to share with your team |
+| `./CLAUDE.md` or `./.claude/CLAUDE.md` | **Project** — check into git to share with your team |
 | `./CLAUDE.local.md` | **Personal project notes** — add to `.gitignore` |
-| `.claude/rules/*.md` | **Path-scoped rules** — a `paths:` frontmatter limits each rule file to matching files ([memory docs](https://code.claude.com/docs/en/memory)) |
+| `.claude/rules/*.md` | Rules load unconditionally unless `paths:` frontmatter scopes them to matching files ([memory docs](https://code.claude.com/docs/en/memory)) |
 | Parent dirs | Monorepo: `root/CLAUDE.md` + `root/app/CLAUDE.md` both apply |
 | Child dirs | Loaded **on demand** when Claude reads files in that subfolder |
 
 Two newer pieces complete the picture ([memory docs](https://code.claude.com/docs/en/memory)):
 
-- **Auto memory** — Claude also keeps its **own** notes per project (`~/.claude/projects/<project>/memory/`), loading the first ~200 lines of its index each session. It learns your repo's gotchas without you writing them down; manage it with `/memory`.
-- **`AGENTS.md`** — if your repo standardizes on the cross-tool `AGENTS.md` convention, Claude reads it directly when there is no `CLAUDE.md`. If you keep both, don't duplicate: put `@AGENTS.md` at the top of your `CLAUDE.md`.
+- **Auto memory** — Claude keeps notes per repository (`~/.claude/projects/<project>/memory/`); the index has a startup limit of 200 lines or 25 KB. Review those notes with `/memory` rather than assuming they stay correct.
+- **`AGENTS.md`** — with current versions and the built-in support enabled, the default uses it when no project `CLAUDE.md` or `CLAUDE.local.md` exists in the working directory or above. `/config` → **Project instructions** can change which files load. If you keep both, choose the combined setting or import `@AGENTS.md`; avoid duplicating instructions.
 
 :::concept Subfolders append, not replace
 Child `CLAUDE.md` files add to context when relevant, keeping module-specific rules out of every session. Put **universal** rules at the root; put **module-specific** rules deeper. This cascade is how big repos stay manageable.
@@ -92,12 +92,12 @@ See @README.md for the overview and @package.json for scripts.
 
 Check it into git so the team contributes — it **compounds in value**. And debug it like code:
 
-- If Claude **keeps breaking a rule** you wrote → the file's probably too long; the rule got lost. **Prune.**
-- If Claude **asks about something that's in there** → the phrasing is ambiguous. **Reword.**
+- First use `/context` to confirm the file loaded. Check excluded files, settings and conflicting instructions.
+- If a loaded rule is buried in repetition, **prune**. If its meaning is unclear, **reword**.
 - Prune regularly; test changes by watching whether Claude's behavior actually shifts.
 
 :::tip Sometimes-relevant knowledge → Skills, not CLAUDE.md
-If something only matters *occasionally* (a niche workflow, deep domain docs), don't put it in `CLAUDE.md` (which loads every turn). Make it a **Skill** — Claude loads it on demand. More on that in the Customize module.
+If something only matters *occasionally* (a niche workflow, deep domain docs), use a **Skill** rather than adding it to the standing session context. Claude loads the skill when needed. More on that in the Customize module.
 :::
 
 ## Lock it in
@@ -112,16 +112,16 @@ Q: What question decides whether a `CLAUDE.md` line stays?
 A: *"Would removing this cause Claude to make a mistake?"* If not, cut it.
 
 Q: Why does a long `CLAUDE.md` backfire?
-A: It loads every turn, eating context, and Claude starts ignoring it because the important rules get buried.
+A: It occupies session context and can bury important instructions in repetition.
 
 Q: Where does a rule for ALL your projects go?
 A: `~/.claude/CLAUDE.md`. Team-shared rules go in `./CLAUDE.md`; personal, gitignored notes go in `./CLAUDE.local.md`.
 
 Q: Claude keeps breaking a rule you wrote. What is the likely fix?
-A: **Prune.** The file is probably too long and the rule got lost. If Claude asks about something already in there, reword it instead.
+A: Confirm the file loaded, then check conflicts, unclear wording and repetition. Prune or reword based on what you find.
 
 Q: Where does sometimes-relevant knowledge belong?
-A: In a **Skill**, which Claude loads on demand — not in `CLAUDE.md`, which loads every turn.
+A: In a **Skill**, which Claude loads on demand, rather than adding it to standing instructions for every task.
 ```
 
 ```quiz
@@ -133,11 +133,11 @@ Q: What's the fastest way to create a solid first CLAUDE.md?
 > /init detects your build/test/structure and gives you a draft. Refinement over time is where the value compounds.
 
 Q: Claude keeps ignoring a rule that's clearly written in your CLAUDE.md. Most likely fix?
-+ The file is too long — prune it so the important rules aren't buried
++ Confirm it loaded, check conflicts, then prune repetition or clarify the rule
 - Write the rule in ALL CAPS five times
 - Add more rules
 - Delete CLAUDE.md entirely
-> Bloat causes Claude to deprioritize content. Keep it under ~200 lines; cut anything that wouldn't cause a mistake if removed.
+> Diagnose the actual cause. A missing file, conflicting instruction and bloated file need different fixes. Keep loaded guidance concise and test the behavior again.
 
 Q: Where do you put a rule that should apply to ALL your projects?
 + ~/.claude/CLAUDE.md (global/home)

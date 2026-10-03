@@ -26,7 +26,7 @@ Press **Shift+Tab** to cycle the permission/working mode: **Manual → Accept ed
 | **Manual** | Prompts for actions requiring approval; in-scope reads and pre-approved actions can run without a prompt |
 | **Accept edits** | Applies file edits without asking (faster when you trust the task) |
 | **Plan mode** | Research and propose changes; source edits are normally blocked while planning. See the bypass exception below |
-| **Auto** | A classifier reviews actions; explicit ask rules can still prompt. The usual starting mode on supported Pro/Max/Team terminal and VS Code sessions; settings and availability can change it |
+| **Auto** | A classifier reviews actions; explicit ask rules can still prompt. With v2.1.283 or later, the built-in starting mode for interactive terminal and VS Code sessions, subject to support, settings and organisation policy |
 
 (The full set, including `dontAsk` and `bypassPermissions`, is in the [permission-modes docs](https://code.claude.com/docs/en/permission-modes) — more in the Permissions lesson.)
 

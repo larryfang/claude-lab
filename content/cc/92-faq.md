@@ -5,11 +5,11 @@ When Claude Code misbehaves, start here. Expand the section that matches.
 ## Quality & behavior
 
 :::details Claude keeps making mistakes / "forgetting" instructions
-Your **context is probably full**. As the window fills, performance degrades. Fixes: `/clear` between unrelated tasks, `/compact` mid-task, delegate research to **subagents**, and keep `CLAUDE.md` short. A fresh session with a sharp prompt beats a long, polluted one.
+Check the actual failure: missing task details, conflicting instructions, unavailable tools and noisy context can all cause mistakes. Use `/context` to inspect what is loaded. Try `/clear` between unrelated tasks, `/compact` mid-task, focused research subagents and a lean `CLAUDE.md`; verify the result rather than diagnosing every mistake as a full window.
 :::
 
 :::details Claude ignores a rule in my CLAUDE.md
-Two likely causes: (1) the file is **too long**, so the rule got buried — prune it; (2) the rule is **ambiguous** — reword it, add `IMPORTANT:`/`YOU MUST`. For must-happen rules, convert them to a **hook** (deterministic).
+First confirm that the intended file is loaded with `/memory`. Check for conflicting instructions and ambiguous wording, then prune material that is not needed. Use tested hooks for automatic checks and permission rules for tool restrictions; emphasizing an advisory instruction does not make it an enforced boundary.
 :::
 
 :::details It solved the wrong problem

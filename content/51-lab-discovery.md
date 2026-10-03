@@ -3,9 +3,9 @@
 Twenty-two minutes. Six or eight interviews become a themed, quote-backed report you could defend in a leadership review where two directors already have preferred answers.
 
 :::note Data
-Use real transcripts if you have them — anonymise first if that is your policy. Otherwise use the practice `product/` transcripts from Module 1, which include two customers who deliberately contradict each other.
+Use approved customer transcripts, with any required anonymisation completed before uploading them. Otherwise use the practice `product/` transcripts from Module 1, which include two customers who deliberately contradict each other.
 
-Want real-world scale instead? About 300 transcripts of Lenny's Podcast are open-sourced ([github.com/ChatPRD/lennys-podcast-transcripts](https://github.com/ChatPRD/lennys-podcast-transcripts)) — Lenny Rachitsky himself ran a theme synthesis over a folder of 320 transcripts with Cowork in about 15 minutes ([his account](https://x.com/lennysan/status/2010840092865413254)). Download a dozen into a separate `product/lenny/` folder for a bigger practice run, and point the briefs at that folder.
+For a separate synthesis practice, use [Lenny's Podcast transcript archive](https://github.com/ChatPRD/lennys-podcast-transcripts). Download a few episodes into `product/lenny/` and change the briefs to analyse podcast guests and their advice. These interviews are not your customer sample: they cannot establish demand, customer counts or ARR for your product. Keep them separate from customer research.
 :::
 
 ## Part 1 — Inventory before synthesis (5 min)
@@ -53,16 +53,16 @@ RESULT. Two files in `output/`:
 `discovery-report.md`, in this order:
 
 1. WHAT WE HEARD — one paragraph. The honest headline
-2. THE FIVE STRONGEST THEMES — ranked by weight of evidence, not by how compelling they sound. For each: the theme in the customer's own language, how many customers raised it and who, two verbatim quotes attributed to customer and source file, what the support tickets confirm or contradict, and how confident we should be and why
+2. THE STRONGEST THEMES — up to five, ranked by weight of evidence, not by how compelling they sound. For each: the theme in the customer's own language, how many distinct customers raised it and who, available verbatim quotes attributed to customer and source file, what the support tickets confirm or contradict, and how confident we should be and why. Do not count repeat interviews with one customer as additional customers; flag an unknown identity
 3. CONTRADICTIONS — anywhere two customers disagreed. Quote both sides. Do NOT resolve it. Add one line on what the disagreement might be telling us about segmentation
-4. THE QUIET SIGNAL — one theme raised by only one or two customers that you think matters strategically. Flag your reasoning explicitly as inference
+4. THE QUIET SIGNAL — if supported, one theme raised by only one or two customers that you think matters strategically. Flag your reasoning explicitly as inference; otherwise say none identified
 5. WHAT WE ASSUMED THAT IS NOT SUPPORTED — anything in my own framing or questions that the evidence does not back up
-6. WHAT WE STILL DO NOT KNOW — the three questions to ask on the next call, and who to ask
-7. HOW TO ATTACK THIS REPORT — the three strongest objections a sceptical director could raise about this evidence base
+6. WHAT WE STILL DO NOT KNOW — up to three questions to ask on the next call, and who to ask
+7. HOW TO ATTACK THIS REPORT — up to three supported objections a sceptical director could raise about this evidence base. Do not invent an objection to fill a quota
 
 INPUTS. Only the transcripts and ticket export in `product/`, plus `output/evidence-inventory.md`.
 
-EDGES. Every claim needs a verbatim quote or a ticket ID. Label anything inferred as "inference". Never invent or paraphrase a quote — if you cannot quote it exactly, do not claim it. Never estimate ARR or a customer count; write "not recorded". Rank by weight of evidence, not rhetorical force.
+EDGES. Every evidence claim needs a verbatim quote or a ticket ID. Label anything inferred as "inference" and show the evidence behind it. Never invent or paraphrase a quote — if you cannot quote it exactly, do not claim it. Never estimate ARR or a customer count; write "not recorded". If only one quote supports a theme, show one. Rank by weight of evidence, not rhetorical force.
 
 FLAG: any theme driven mainly by one loud customer; any theme where the quotes are weaker than the ranking implies; anywhere a customer's words could support two different themes.
 ```

@@ -1,11 +1,11 @@
 # Lab: The Evidence-Backed PRD
 
-Twenty-two minutes. A brain-dump plus real evidence becomes a PRD where every requirement traces to something a customer actually said — and then Cowork attacks it.
+Twenty-two minutes. A brain-dump plus evidence becomes a PRD where each requirement traces to customer research, a documented constraint or an explicit assumption — and then Cowork critiques it.
 
 This lab uses `output/discovery-report.md` and `output/themes.csv` from Lab 1. If you skipped it, run Lab 1 Parts 1–2 first.
 
-:::warning You write the problem statement
-This is one of the two things you must not delegate — the other is the decisions. A generated problem statement produces a spec that solves a problem nobody has, expressed beautifully. Write two or three honest sentences yourself, in your own words, before you start.
+:::warning You own the problem statement
+Write or confirm two or three honest sentences about the problem before you start. Claude can help tighten the wording; you must check it against the evidence and own the decisions and tradeoffs. Fluent wording does not establish that the problem is real or worth solving.
 :::
 
 ## Part 1 — Your input (3 min)
@@ -44,7 +44,7 @@ RESULT. `output/prd.md`:
 11. REQUIREMENTS WITH NO EVIDENCE — every requirement in section 5 whose source column is empty
 12. WHERE I MAY BE WRONG — your honest assessment of the weakest parts of my thinking, including the problem statement
 
-Also produce `output/prd-requirements.csv` with columns id, requirement, evidence_ref, evidence_type (quote / ticket / theme / none).
+Also produce `output/prd-requirements.csv` with columns id, requirement, evidence_ref, evidence_type (quote / ticket / theme / documented constraint / strategic decision / assumption / none).
 
 INPUTS. Only `product/prd-braindump.md`, `output/discovery-report.md`, `output/themes.csv`, and the transcripts and tickets in `product/`.
 
@@ -54,15 +54,15 @@ FLAG: any requirement that seems to come from my assumptions rather than the evi
 ```
 
 - [ ] Section 5 requirements all have IDs and source citations
-- [ ] Section 11 is populated — if it is empty, be suspicious
-- [ ] Section 12 tells me something uncomfortable
+- [ ] Section 11 accurately records unsupported requirements, or says none were found
+- [ ] I checked the concerns in section 12 against the evidence
 - [ ] The problem statement still means what I meant
 :::
 
 :::tip Section 11 is the honest one
-Requirements with no evidence are not automatically wrong — plenty come from strategy, from technical necessity, from a commitment you have already made. But you should know **which** requirements are in that category, because they are the ones to cut first when the estimate comes back too big.
+Customer research is one evidence source. Technical constraints, compliance obligations and explicit strategic decisions can also justify requirements; supply those records and label the basis. An assumption may be worth testing, but it should not be disguised as a customer quote. Decide what to cut using value, dependencies and obligations, not just whether a requirement has a quote.
 
-If section 11 is empty on a first pass, that almost always means unsupported requirements were quietly given plausible-sounding evidence. Check three citations in section 5 against the actual source.
+Check decision-critical citations and an additional sample against the source. An empty section 11 can be correct; it does not prove that the citations are sound or that the review failed.
 :::
 
 ## Part 3 — The adversarial pass (6 min)
@@ -77,16 +77,16 @@ REVIEW 2 — THE SCEPTICAL EXEC. Why is this not worth doing? What is the opport
 
 REVIEW 3 — THE CUSTOMER FROM THE RESEARCH. You said the things quoted in the evidence section. Does this solution actually solve your problem? What would still be annoying? What did the PM misunderstand about your situation? What would make you not adopt this?
 
-For each review, be specific and quote the PRD directly. End with the single strongest objection across all three.
+For each review, quote the PRD and distinguish evidence-backed findings from hypotheses. If no supported objection is found, say so. End with the strongest supported objection, if any. These are simulated perspectives, not feedback from the actual engineer, executive or customer.
 ```
 
-- [ ] At least one attack landed
-- [ ] I edited the PRD in response
+- [ ] I checked the critique against the source evidence
+- [ ] I fixed confirmed problems, or recorded that none were found
 - [ ] The strongest objection is either addressed or explicitly accepted
 :::
 
 :::tip Review 3 is the one people skip
-The customer review is uncomfortable and it is the most valuable, because it is the only one that checks whether you solved the problem rather than the request. "You asked for a bulk export because the report is too slow — this PRD gives you a faster export and the report is still slow" is exactly the kind of finding that saves a quarter.
+The simulated customer perspective can expose a hypothesis such as "a faster export still leaves the slow report unresolved". Check it against the research and, where consequential, ask real customers. A role-play does not establish that customers would adopt the solution.
 :::
 
 ## Part 4 — Estimation readiness (4 min)
@@ -104,7 +104,8 @@ Use only the PRD. Do not estimate anything — just tell me what is blocking an 
 ```
 
 - [ ] I know exactly what is underspecified
-- [ ] I fixed the top three items myself
+- [ ] I resolved the most consequential confirmed gaps with the appropriate owner
+- [ ] Our actual engineering lead reviewed readiness; the simulated verdict is a preparation aid
 :::
 
 :::concept The pattern across all three labs in this lane
@@ -112,7 +113,7 @@ Generate → attack → fix. Every time.
 
 Cowork produces fluent, well-structured documents on the first pass. Fluency is not correctness, and a well-structured document is harder to critique than a rough one because the structure itself feels like rigour.
 
-The adversarial pass is not optional politeness towards the process. It is the only reliable way you find out that a beautifully-written spec is ambiguous in four places.
+A simulated critique is one review aid. Source checks, engineering review and customer validation provide evidence the model cannot create by adopting a role.
 :::
 
 ## Make it repeatable
@@ -135,26 +136,26 @@ What did the customer review say you misunderstood? For a real feature you are s
 ```
 
 ```quiz
-Q: Why must you write the problem statement yourself?
+Q: Why must you own and confirm the problem statement?
 - Cowork writes them badly
-+ A generated problem statement produces a spec that beautifully solves a problem nobody has
++ You must check that it reflects the evidence and own the decisions; fluent wording does not establish the problem's value
 - It is faster
 - Legal requires it
-> The problem and the decisions cannot be derived from the artefacts. The structure, evidence links and edge cases can.
+> Drafting can be delegated; responsibility for the problem and tradeoffs remains with you.
 
 Q: Section 11 lists requirements with no supporting evidence and comes back empty. What should you do?
 - Nothing; the PRD is well evidenced
-+ Check three citations in section 5 against their sources — an empty section 11 usually means unsupported requirements were given plausible evidence
++ Check consequential citations and an additional sample against their sources; an empty section alone proves nothing
 - Delete the section
 - Add more requirements
-> An honest first pass nearly always has some. Empty is a signal.
+> Judge traceability by the actual evidence, not by requiring a minimum number of findings.
 
-Q: Which of the three adversarial reviews do people most often skip, and why does it matter most?
+Q: What is the value and limit of the simulated customer review?
 - The engineer — it is too technical
-+ The customer — it is the only one that checks whether you solved the problem rather than the request
++ It can suggest a problem-versus-request gap to check against research; it does not replace actual customer feedback
 - The exec — it is discouraging
 - None; all three are equally used
-> "Faster export, report still slow" is the class of finding that saves a quarter.
+> Treat the model's role-play as a hypothesis, then validate it with evidence and people.
 
 Q: Why is a well-structured generated document harder to critique than a rough one?
 - It is longer

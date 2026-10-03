@@ -5,9 +5,9 @@ Twenty minutes. A competitor battlecard with a citation on every claim, then an 
 The second half is the point. A battlecard is repeated out loud to the person best placed to contradict it, so an unverified battlecard is worse than no battlecard.
 
 :::note Setup
-Ideal: **Claude in Chrome** connected, on a dedicated profile, granted only on the sites you will research (Module 3).
+Start with **Research / web search** for public pages (Module 3). Use Claude in Chrome only when the task needs browser interaction, on a dedicated profile with access limited to the sites you will research.
 
-Without it: save the competitor's pricing page, homepage and docs pages as text into your workspace folder and point the brief at those files. The practice `gtm/competitor-*.txt` files from Module 1 also work.
+Without web access: save the competitor's pricing page, homepage and docs pages as text and point the brief at those files. The practice `gtm/competitor-*.txt` files from Module 1 also work. Also supply approved documentation for **your own product**; competitor research alone cannot establish where you win or lose.
 :::
 
 ## Part 1 — Research, with sourcing enforced (8 min)
@@ -42,17 +42,17 @@ Show me your plan and the exact list of URLs you intend to visit before you star
 
 - [ ] I reviewed the URL list before it went
 - [ ] Every claim has a URL or filename and a date
-- [ ] Section 8 is populated — it should never be empty
+- [ ] Section 8 records the research limits, including whether our own product evidence is available
 - [ ] OBSERVED and INFERRED are visibly separated
 :::
 
 :::tip Save the sources
-Have Cowork save the page text it read into `snapshots/[competitor]/[date]/`. In six weeks the pages will have changed and you will need to know what they actually said. This is also what makes the monitoring play in Module 8 possible — you cannot diff against a snapshot you did not keep. (For that scheduled version, keep the snapshots in a connected Google Drive, OneDrive or SharePoint folder: cloud scheduled tasks cannot read local folders.)
+Save the page text into `snapshots/[competitor]/[date]/`, with its URL and date read. This makes later comparisons traceable. For a scheduled run, confirm that the next run can read the previous snapshot and that the destination supports creating files; otherwise download it from the task conversation and provide it to the next run. On the first run, label the result BASELINE rather than claiming a change.
 :::
 
 ## Part 2 — The battlecard (6 min)
 
-:::lab Step 2 — Synthesis, from the research only
+:::lab Step 2 — Synthesis, from evidence on both products
 ```prompt
 BACKGROUND. Reps have 90 seconds to read this before a call. They need things they can say out loud without being contradicted.
 
@@ -69,9 +69,9 @@ RESULT. `output/battlecard-[competitor].md`, ONE page maximum:
 
 Also produce `output/battlecard-[competitor]-claims.csv` with columns claim, section, source, date_read, check_after.
 
-INPUTS. Only `output/[competitor]-research.md`. Nothing else — do not add anything from general knowledge.
+INPUTS. Only `output/[competitor]-research.md` and the approved own-product documentation or capability matrix I supply, with version and date. If I have not supplied our product evidence, ask for it; do not invent our capabilities from general knowledge.
 
-EDGES. Every claim in sections 2–5 must trace to a sourced item in the research file. If the research does not support a point, write "[NO EVIDENCE]" rather than filling it. Never state their price unless the research has a URL for it. Section 3 must be genuinely honest — if you cannot name three real places they beat us, name what you can and say so.
+EDGES. Every comparison in sections 2–5 must cite evidence for both products, with comparable tier, version and use case. If the evidence does not support a point, write "[NO EVIDENCE]" rather than filling it. An undocumented feature is unknown, not proof that it is absent. Never state their price unless the research has a URL for it. Name only the advantages the evidence supports, even if there are fewer than three.
 
 FLAG: any claim resting on a source over three months old; anything you had to mark [NO EVIDENCE].
 ```
@@ -87,7 +87,7 @@ If "where they win" is three soft non-answers, the battlecard is marketing rathe
 
 Push back:
 
-> "Section 3 is soft. Using only the research file — their documentation, their review-site praise, and the places our own materials go quiet — name three things they genuinely do better than us. If the evidence only supports two, give me two and say so."
+> "Check section 3 against the competitor research and our approved product evidence. Identify supported advantages for comparable tiers and use cases. Treat gaps in documentation as unknowns. If the evidence supports only two advantages, give me two and say so."
 :::
 
 ## Part 3 — The adversarial pass (6 min)
@@ -104,18 +104,18 @@ You are now [COMPETITOR]'s competitive lead, and you have obtained this battleca
 4. Where their honest "where they win" section understates you
 5. The claim that would most damage their credibility if a prospect fact-checked it live on the call
 
-Use only the research file and the sources cited in the battlecard. Be specific and quote directly.
+Use only the research file, our supplied product documentation and sources cited in the battlecard. Be specific and quote directly. If a section has no supported finding, record "none found"; do not invent an attack to fill it. This is a simulated critique, not evidence of what the competitor actually thinks.
 ```
 
-- [ ] It found at least one real problem
-- [ ] I fixed the battlecard
+- [ ] I checked the critique against the cited sources
+- [ ] I fixed confirmed problems, or recorded that none were found
 :::
 
 :::lab Step 4 — Final safety check
 ```prompt
-Final pass. Go through the battlecard and, for every claim, tell me: (a) can a rep verify this in under a minute if challenged, (b) is the source under three months old, (c) is this a factual statement or an opinion, and (d) would our legal team be comfortable with a rep saying this to a customer.
+Final pass. For every claim, record: (a) a direct source a rep can check, (b) the source date and whether freshness is adequate for this type of claim, (c) fact, inference or opinion, and (d) any potential legal or policy concern that needs human review. Do not present your judgement as approval from our legal team.
 
-Move anything that fails (a), (b) or (d) into the DO NOT SAY section. Then tell me what proportion of the battlecard survived, and mark the whole document with today's date and a review-by date three months out.
+Move unsupported, stale or misleading claims into DO NOT SAY, with the reason. Hold claims needing legal review there until the authorised reviewer approves them. Report how many claims were retained or held, and mark the document with today's date and a review-by date no more than three months out; use a shorter interval for volatile prices or availability.
 ```
 
 - [ ] The battlecard has a date and a review-by date
@@ -123,10 +123,8 @@ Move anything that fails (a), (b) or (d) into the DO NOT SAY section. Then tell 
 - [ ] I know what proportion survived
 :::
 
-:::tip The survival rate is your quality signal
-A healthy first-pass battlecard loses a meaningful share of its claims to this filter. That is exactly what you want to discover before a rep is on a call, not after.
-
-If nothing failed the filter, the filter was not applied honestly. Re-run it and be harsher.
+:::tip Check the review evidence
+A clean review is possible. Inspect the citations and a few consequential claims yourself; the proportion rejected does not measure review quality. Do not ask the model to invent problems merely to lower the survival rate.
 :::
 
 ## Part 4 — Keep it alive
@@ -172,12 +170,12 @@ Q: What does OBSERVED / INFERRED labelling in the research file achieve?
 - It is required by review sites
 > The two get merged silently otherwise, and inference is what gets contradicted on calls.
 
-Q: Your safety filter rejected nothing at all. What is the most likely explanation?
-- The battlecard is excellent
-+ The filter was not applied honestly — a healthy first pass loses a meaningful share of its claims
-- The research was too narrow
-- The competitor has no public information
-> Re-run it and be harsher. Discovering this before a rep is on a call is the entire value.
+Q: Your review rejected no claims. What should you do next?
+- Declare the battlecard perfect
++ Inspect the sources and consequential claims yourself; a clean result alone neither proves nor disproves review quality
+- Require the model to invent three problems
+- Delete half the claims to make the review look rigorous
+> Judge the review by its evidence, not by how many claims it rejects.
 ```
 
 :::try Next

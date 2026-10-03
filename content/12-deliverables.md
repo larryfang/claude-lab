@@ -23,7 +23,7 @@ Ask for **data plus narrative** almost every time.
 - The **CSV or spreadsheet** is the audit trail — where every number came from, what got flagged, which rows were excluded.
 - The **document or deck** is the argument — what it means and what to do.
 
-Ask for only the narrative and you cannot check it. Ask for only the data and you have not finished the job. Every lab in this course asks for both, deliberately.
+For analysis-heavy work, keep the underlying data or calculation alongside the narrative so a reviewer can trace the conclusions. A short answer with direct source links can be sufficient for a simple question; choose the evidence format the job needs.
 :::
 
 ## Specifying a spreadsheet that is actually useful
@@ -89,10 +89,10 @@ Two things to notice. **"Same structure in every file"** makes fourteen document
 ## Formats and the tools around them
 
 - Spreadsheets and decks come out as genuine Office files — they open in Excel, Sheets, PowerPoint, Keynote.
-- If the deliverable is going into Confluence, Notion or a wiki, ask for **Markdown**. It pastes cleanly; a `.docx` does not.
+- For a wiki, **Markdown** is a portable source format. Check the target editor's paste or import behavior, or publish through its supported connector; preview headings, links and tables before sharing.
 - If it feeds a system, ask for **CSV** and specify the exact column headers that system expects.
 - If a person will edit it collaboratively, ask for a format your team actually uses. There is no prize for a beautiful file nobody can open.
-- If you live in a workbook all day, there is also the **Claude for Excel add-in**: it works on the open workbook directly, reads the live formulas, and edits without breaking cell dependencies. For heavy spreadsheet work — finance and RevOps especially — editing the real file often beats generating a new one. (Some company Microsoft 365 tenants block self-install. If yours does, ask IT to deploy it. Until then, export the workbook into your Cowork folder and ask for a new file — Module 3 covers the add-ins.)
+- If you live in a workbook all day, **Claude for Excel** can inspect and edit the open workbook. Review formula changes, dependencies and recalculation. Company settings may require IT deployment; a practice export is another way to learn the workflow.
 
 ## When the deliverable should be alive
 
@@ -136,7 +136,7 @@ Q: What makes a fan-out of fourteen briefs comparable?
 A: The **same section order and heading structure** in every file, plus a final review pass across all of them.
 
 Q: The deliverable is going into Confluence or a wiki. Which format?
-A: **Markdown.** It pastes cleanly; a `.docx` does not.
+A: **Markdown** is a portable starting point. Check the editor's paste/import support or use its connector, then preview the result.
 
 Q: When do you want a file, and when an artifact?
 A: A **file** when someone needs to keep, attach or audit it; an **artifact** when someone needs to explore it.
@@ -166,10 +166,10 @@ Q: You need fourteen account briefs that a manager will compare side by side. Wh
 
 Q: The deliverable is going into your team's Confluence space. Which format should you ask for?
 - .docx, so the formatting is preserved
-+ Markdown — it pastes into a wiki cleanly
++ Markdown as a portable source, followed by checking the wiki's supported paste/import path
 - .pptx
 - .xlsx
-> Match the format to where it lands. A beautiful file nobody can paste is not a deliverable.
+> Preview headings, links and tables in the target editor; support varies. Use its connector or supported import path when plain pasting does not preserve the result.
 ```
 
 :::try Next

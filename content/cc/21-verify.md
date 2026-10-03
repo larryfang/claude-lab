@@ -75,7 +75,7 @@ The longer Claude runs unattended, the harder you want the stop gated:
 |---|---|
 | **Per-prompt** | "run the check and iterate in this same message" |
 | **Across a session** | set a **`/goal`** — Claude keeps working toward the condition across turns until it's met ([commands](https://code.claude.com/docs/en/commands)) |
-| **Deterministic** | a **Stop hook** runs your check as a script and blocks the turn from ending until it passes |
+| **Scripted check** | a **Stop hook** runs your check and explicitly blocks with exit code 2 or a supported JSON decision when work remains |
 | **Second opinion** | a **verification subagent** or `/code-review` re-checks the diff in a fresh context |
 | **Heavyweight** | `claude ultrareview` — a cloud-hosted **multi-agent** review of the whole branch or PR, from your shell or CI |
 
@@ -123,7 +123,7 @@ Q: How do you keep Claude working toward a condition across turns?
 A: Set a `/goal`. Claude keeps working toward the condition across turns until it's met.
 
 Q: Which gate blocks the turn from ending until your check passes?
-A: A **Stop hook**. It runs your check as a script, so the stop is deterministic.
+A: A **Stop hook** with an explicit blocking decision. A failing test returning exit code 1 alone does not block completion. Test its failure path and avoid a continuation loop.
 
 Q: Claude says "Done, it works!" What do you insist on?
 A: Evidence: the test output, the command it ran and what it returned, or the screenshot. If you can't verify it, don't ship it.

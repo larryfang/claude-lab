@@ -30,7 +30,7 @@ One architectural fact worth knowing before your security team asks: with a cust
 
 Three rules that clear up most of the confusion:
 
-1. **It sees what your account sees.** A connector authenticates as *you*. If you cannot open that Salesforce record, neither can Claude. Connectors do not escalate privileges — which also means they inherit every over-broad permission you already have.
+1. **Check the authenticated identity and scope.** A standard user-authenticated connector should respect your source-system permissions, but its OAuth scopes and available tools can make access narrower than the website. A custom server may use a service account or its own access rules. Verify what that connection can actually reach; do not assume it sees everything you see, or that every custom connector acts as you.
 
 2. **It sees on request, not continuously.** Connectors are not a background sync. Claude queries when a task needs it. But what it does retrieve is stored with that chat or task on Anthropic's servers until you delete it ([Google Workspace connectors](https://support.claude.com/en/articles/10166901-use-google-workspace-connectors)) — so treat retrieved records like data you pasted in.
 
@@ -132,7 +132,7 @@ Q: What is MCP, in one line?
 A: **Model Context Protocol** — an open standard for connecting AI assistants to tools and data. The standard socket, like USB-C.
 
 Q: What can a connector see?
-A: Exactly what **your account** can see. It authenticates as you and does not escalate privileges — so it also inherits your over-broad access.
+A: What its authenticated identity, source permissions, OAuth scopes and tools allow. A standard user connector respects source permissions but may expose less than the website; check custom and service-account connections explicitly.
 
 Q: Is a connector a background sync of your CRM?
 A: No. Claude queries on request, when a task needs it. But what it retrieves is stored with that chat or task until you delete it — treat it like data you pasted in.
@@ -150,10 +150,10 @@ A: **Read-only** by default — write tools set to **Blocked** in the connector'
 ```quiz
 Q: A colleague says "Claude can see everything in our Salesforce." Is that right?
 - Yes, connectors have full access
-+ No — a connector authenticates as you, so it sees exactly what your account can see, no more
++ Check the connector's authenticated identity, source permissions, scopes and tools; do not assume complete Salesforce access
 - Only if you are an admin
 - No, connectors cannot read CRM data
-> Connectors inherit your permissions. Which is also why your own over-broad access matters.
+> Standard user connectors should respect source permissions, but their tools may expose a subset. Custom connections need their own identity and access check.
 
 Q: What is prompt injection, in this context?
 - A way to speed up prompts

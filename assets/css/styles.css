@@ -198,6 +198,12 @@ a { color: var(--link); text-underline-offset: 2px; }
 .nav-group.collapsed .nav-group-chev { transform: rotate(-90deg); }
 .nav-group-meter { font-size: .68rem; color: var(--muted); font-weight: 600; background: var(--surface-2); padding: 1px 7px; border-radius: 99px; }
 
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); clip-path: inset(50%);
+  white-space: nowrap; border: 0;
+}
+
 .nav-lessons { list-style: none; margin: 2px 0 8px; padding: 0; overflow: hidden; }
 .nav-group.collapsed .nav-lessons { display: none; }
 

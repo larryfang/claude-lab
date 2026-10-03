@@ -58,7 +58,7 @@ If you just finished running the job in a Cowork session, there is a shortcut pr
 :::
 
 :::tip Or record it: show, don't describe
-For workflows easier to *do* than to explain, Cowork on **Claude for Mac** has **Record a skill**: the **+** menu (or Customize → Skills → Add → "Record your screen") records your screen, clicks and voice narration for up to ~10 minutes while you do the job once — then Claude reviews the recording and proposes the skill, which you save or dismiss. Availability caveat, straight from the official guide: *"available on Pro, Max, and Team plans, in Cowork in Claude for Mac. It isn't available in chat, on Windows, or on Free and Enterprise plans"* ([how to create custom skills](https://support.claude.com/en/articles/12512198-how-to-create-custom-skills)). The cold test below applies to a recorded skill exactly as much as a written one.
+For workflows easier to *do* than to explain, Cowork on **Claude for Mac** has **Record a skill**: the **+** menu (or Customize → Skills → Add → "Record your screen") captures your screen, clicks and voice narration for up to about 10 minutes, then proposes a skill for review. It is available on Pro, Max and Team, with the legacy Cowork experience on Mac; the official guide excludes chat, Windows, Free and Enterprise. Close sensitive files and conversations before recording; do not expose passwords or secrets. Review the proposed instructions before saving ([skill-creation guide](https://support.claude.com/en/articles/12512198-how-to-create-custom-skills)). Apply the same cold test to a recorded skill.
 :::
 
 :::lab Step 3 — Install it
@@ -72,7 +72,7 @@ For workflows easier to *do* than to explain, Cowork on **Claude for Mac** has *
 :::details If the upload flow looks different
 Labels shift as the product evolves — look for a Skills section under Customize with an upload or create action.
 
-If you genuinely cannot find it, you can still use the file: paste the contents of `SKILL.md` at the top of a brief. Less elegant, identical output, and it proves the content works before you worry about installation.
+If you cannot find it, paste the contents of `SKILL.md` at the top of a brief to practise the instructions. Check the result against the same acceptance criteria; this does not test installation or automatic invocation, and repeated runs can differ.
 :::
 
 ## Part 3 — The cold test (6 min)
@@ -86,7 +86,7 @@ Run a deal review on my pipeline.
 
 (Substitute the natural phrasing for your Skill: "Do a launch kit for the notifications feature." "Synthesise the transcripts in `product/`.")
 
-- [ ] The Skill **fired** — it produced the artefacts without being told the format
+- [ ] The activity or thinking view confirms that the Skill loaded; matching output format alone does not prove invocation
 - [ ] The output used **my definitions**, not generic ones
 - [ ] Every artefact appeared, correctly named
 - [ ] The rules were applied — check one specifically
@@ -178,7 +178,7 @@ Which colleague will run your Skill first, without you in the room, and what do 
 ```quiz
 Q: What is the "cold test" and why does it matter?
 - Running the Skill on old data
-+ Asking in natural language without pasting the brief — it is the only way to find out whether the description actually fires
++ Asking naturally without pasting the brief, then confirming the Skill loaded and checking its output
 - Testing it on a colleague's machine
 - Running it without connectors
 > If it only works when you paste the brief, you have not built a Skill.

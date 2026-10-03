@@ -1,6 +1,6 @@
 # Command & Shortcut Cheat-Sheet
 
-Everything you'll reach for, on one page. Bookmark it. Every command below is verified against **Claude Code v2.1.282** (2026-09-24); the authoritative, always-current list is [code.claude.com/docs](https://code.claude.com/docs) and `/help` in-session.
+Everything you'll reach for, on one page. Bookmark it. Reviewed against **Claude Code v2.1.288** and the maintained command reference on **2026-10-03**. Availability can vary by interface, account and settings; check [the current commands](https://code.claude.com/docs/en/commands), `claude --help` and `/help` in-session.
 
 ## Launch & flags (your shell)
 
@@ -21,7 +21,7 @@ Everything you'll reach for, on one page. Bookmark it. Every command below is ve
 | `claude --cloud "task"` | Hand the task to a cloud session on claude.ai/code |
 | `claude --teleport` | Pull a cloud session down to your local terminal |
 | `claude --fallback-model sonnet -p "…"` | Auto-fallback when the primary model is overloaded |
-| `claude --safe-mode` | Start with ALL customizations off — debug a broken config |
+| `claude --safe-mode` | Disable customizations to debug a broken config; managed policy and built-in tools still apply |
 | `claude --dangerously-skip-permissions` | Bypass routine permission checks; some exceptions remain — **only** in isolated environments |
 | `claude -p "root cause?" < error.log` | Feed a file in (redirect avoids quoting a pipe) |
 

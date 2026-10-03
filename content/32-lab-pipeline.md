@@ -37,7 +37,7 @@ INPUTS. Only the opportunity data. Nothing else.
 
 EDGES. Do not drop any row — flag it instead. Never estimate a missing value. Never guess at a stage; if a value is unmappable, mark it "unknown" and list it. Write only to `output/`.
 
-FLAG: anything that looks like a data-entry error rather than a missing value, and anything where the same account appears twice.
+FLAG: anything that looks like a data-entry error rather than a missing value, and repeated opportunity IDs. Multiple opportunities at one account can be legitimate; do not merge or drop them just because the account name repeats. State the reporting date, timezone and currency; flag mixed currencies unless an approved conversion table is supplied.
 
 Show me your plan first.
 ```
@@ -62,7 +62,7 @@ RESULT. `output/forecast-model.xlsx`, with three tabs:
 Tab "Data" — the cleaned rows. Freeze the header. Format amounts as currency, no decimals.
 
 Tab "Model":
-- Stage weightings in labelled, editable cells at the top: Discovery 20%, Qualification 30%, Proposal 50%, Negotiation 75%, Verbal 90%
+- Illustrative stage weightings in labelled, editable cells at the top: Discovery 20%, Qualification 30%, Proposal 50%, Negotiation 75%, Verbal 90%. Label these practice assumptions; replace them with our approved weights before a real forecast
 - A weighted forecast that reads from Data using LIVE FORMULAS referencing those weighting cells — so I can change a weighting and watch the total move
 - Totals by stage, by month of close date, and by owner
 - Two scenario rows: "only deals with activity in the last 14 days" and "only deals with a recorded next step"
@@ -71,7 +71,7 @@ Tab "Exclusions" — every row not included in the main total, the opp_id, and w
 
 INPUTS. Only `output/pipeline-clean.csv`.
 
-EDGES. No hard-coded totals anywhere a formula could be used. Do not include rows flagged as unmappable in the main forecast — put them in Exclusions and show their total separately. Never invent a weighting for a stage I did not list; flag it instead.
+EDGES. No hard-coded totals anywhere a formula could be used. Exclude rows with an unmappable stage, missing or invalid amount, or unresolved currency from the forecast; list them by opp_id and reason in Exclusions. Never turn a missing amount into zero. Show the known excluded value and the number of excluded rows whose value is unknown. Label totals PARTIAL whenever unresolved rows prevent a complete forecast. Never invent a weighting for a stage I did not list; flag it instead.
 
 FLAG: every stage in the data with no weighting, and the total value sitting in Exclusions.
 ```
@@ -82,7 +82,7 @@ FLAG: every stage in the data with no weighting, and the total value sitting in 
 :::
 
 :::warning The two-scenario rows are the honest part
-"Weighted pipeline" is a comforting number. "Weighted pipeline, counting only deals with activity in the last fortnight" is often a much smaller and much truer one. Look at the gap between them. That gap is your real risk, and it is the number worth walking into a review with.
+Compare the full weighted pipeline with the scenario counting only deals with recent activity. The gap identifies deals to investigate; it does not measure their probability of loss. A long procurement cycle or missing activity logs can explain inactivity, so use the evidence and your judgement before calling a deal at risk.
 :::
 
 ## Part 3 — The deal review pack (7 min)
@@ -132,7 +132,7 @@ This happens more often than you would expect, and the reason is usually informa
 You now have a three-step chain — hygiene, model, review — that you will want every week.
 
 - [ ] Save all three briefs together as one sequence
-- [ ] Note the stage weightings your company actually uses, and hard-code them into your saved version
+- [ ] Save your company's approved stage weightings as editable assumptions, with their source and review date
 - [ ] Note your CRM's field names, so the next run does not need to guess
 - [ ] Module 8 turns this into one Skill and one scheduled Friday job
 
@@ -158,10 +158,10 @@ Q: Why run the hygiene pass before any analysis?
 
 Q: What is the value of a "weighted pipeline counting only deals with recent activity" scenario?
 - It is a smaller number, which is more conservative
-+ The gap between it and the headline weighted number is your real risk, and it is the honest figure to bring to a review
++ The gap identifies deals to investigate; activity logs and sales-cycle context are needed before calling them at risk
 - It is required by most CRMs
 - It excludes closed deals
-> Two numbers side by side tell the truth that either alone conceals.
+> A scenario shows sensitivity to an assumption. It does not prove that excluded deals will be lost.
 
 Q: The brief said "every risk assessment must cite the specific data that supports it". What does that prevent?
 - Long documents

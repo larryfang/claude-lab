@@ -20,6 +20,10 @@ Claude has three ways onto the web, and most people reach for the most powerful 
 
 Cowork sessions have their own web search and web fetch, and on desktop a built-in browser, so a Cowork research brief needs no extension ([Cowork guide](https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork)). The built-in browser is rolling out from September 2026. If you already use Claude in Chrome, Cowork uses Chrome instead; you choose in the Claude Desktop app under **Settings > Cowork**, **Preferred browser** ([built-in browser guide](https://support.claude.com/en/articles/16607400-use-the-built-in-browser-in-claude-cowork)).
 
+:::note Research in unified Claude
+If your message box has no separate Chat and Cowork choices, type **`/deep-research`** or choose **+ → Research**. Web search runs when useful; there is no separate web-search toggle in that interface ([current interface guide](https://support.claude.com/en/articles/16761823)). In the older interface, use its Research control. Check connected-tool access before either kind of run.
+:::
+
 :::tip Default to rung 2
 Research gives you the thing this course keeps demanding — **citations** — by default, and it does not fill in web forms. But it can call your connectors' tools without asking, so set their write tools to **Blocked** before you run it ([custom connectors guide](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp)). Most competitive briefs, prospect research, and market scans in the lane labs are rung-2 jobs. Chrome earns its risk only when the page needs *your* session.
 :::

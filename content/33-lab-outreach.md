@@ -36,15 +36,13 @@ FLAG separately: any account where the only hook I could find is over six months
 ```
 
 - [ ] Every email has a sourced, specific hook
-- [ ] Some accounts came back as "NO HOOK FOUND" — good, that is honesty
+- [ ] Accounts without a supported hook were skipped; I checked the sources for the proposed hooks
 - [ ] The emails are short enough that I would read them
 - [ ] Nothing invented a mutual connection or a customer name
 :::
 
-:::tip The "NO HOOK FOUND" count is your quality metric
-If Cowork found a genuine hook for all fifteen accounts, be suspicious — go and verify three of them. Real research on a cold list turns up nothing useful for a meaningful share of accounts.
-
-That is not a failure of the tool. It is information: those accounts are not ready for a personalised approach, and pretending otherwise is what makes outreach feel like spam to the person receiving it.
+:::tip Verify the hooks, not a quota
+Check the proposed hooks against their sources before sending. A list can have a valid hook for every account or for very few; neither count proves research quality. Accept NO HOOK FOUND when evidence is missing, and do not require the model to invent either a hook or a failure.
 :::
 
 :::lab Step 2 — The critique pass
@@ -155,10 +153,10 @@ Which answer your team gives on security questionnaires is most likely to be sta
 ```quiz
 Q: Cowork found a specific hook for all fifteen accounts on a cold list. What should you do?
 - Send them all
-+ Be suspicious and verify three — genuine research on a cold list turns up nothing useful for a meaningful share of accounts
++ Verify the hooks against their sources before sending; a zero NO HOOK FOUND count alone proves nothing
 - Ask for more accounts
 - Nothing; that is a good result
-> A "NO HOOK FOUND" count of zero usually means the gaps were filled with plausible generic commentary.
+> Judge each hook by its evidence, not by requiring a minimum number of skipped accounts.
 
 Q: What is the reusable asset in RFP work?
 - The finished response document

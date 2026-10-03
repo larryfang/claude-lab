@@ -6,7 +6,7 @@ Claude Code can edit files and run commands — that's the power, and the respon
 
 Claude Code gates anything that could modify your system — file writes, Bash commands, MCP tool calls. The classic behavior is **ask before acting**: safe, but tedious, because after the tenth approval you're not reviewing, you're just clicking.
 
-**Auto mode is the built-in starting mode for supported Pro, Max, and Team terminal and VS Code sessions**, subject to settings and availability. Enterprise, API-key, and non-interactive runs have different defaults. Check the mode indicator and [current starting-mode table](https://code.claude.com/docs/en/permission-modes) rather than assuming the default.
+**With v2.1.283 or later, Auto is the built-in starting mode for interactive terminal and VS Code sessions**, subject to model support, settings and organisation policy. On earlier versions, that default was limited to supported Pro, Max and Team sessions. Non-interactive runs have separate defaults; set their mode explicitly. Check the mode indicator and [current starting-mode table](https://code.claude.com/docs/en/permission-modes) before acting.
 
 Auto uses a classifier to review actions, but it does not guarantee safety. Explicit ask rules and some other actions still require your input ([permission rules](https://code.claude.com/docs/en/permissions)). Cycle modes with **Shift+Tab**.
 

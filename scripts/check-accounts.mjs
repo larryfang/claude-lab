@@ -55,7 +55,7 @@ async function stored(page){return page.evaluate(()=>JSON.parse(localStorage.get
 async function until(fn,label){for(let i=0;i<40;i++){if(await fn())return;await new Promise(r=>setTimeout(r,200));}throw Error(label);}
 try{
  const a=await createLearner(1),b=await createLearner(2);const anon=client();
- const initial={courses:{cowork:{completed:{welcome:true}}},last:{c:'cowork',l:'welcome'}};
+ const initial={courses:{cowork:{completed:{welcome:true}}},last:{c:'cowork',l:'welcome',p:'essentials',s:'welcome,what-is-cowork'}};
  let saved=await save(a.client,initial,0);
  assert.equal(saved.revision,1);assert.deepEqual((await state(a.client)).state,initial);ok('authenticated state and revision round-trip');
  const hidden=await b.client.from('learner_state').select('*').eq('user_id',a.id);assert.equal(hidden.error,null);assert.deepEqual(hidden.data,[]);

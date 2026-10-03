@@ -8,15 +8,15 @@ Cowork ships fast, so labels and layout move. This lesson teaches you what to **
 
 ## 1 — The workspace folder
 
-The folder (or folders) you grant. Cowork reads and writes here. This is its whole world.
+The folder (or folders) you grant. Cowork can read and write there; connected apps and browser permissions can provide other inputs too. A narrow folder grant limits local-file access, not every capability in the task.
 
-**What to look for:** a folder picker, a workspace name, or a path shown near the top.
+**What to look for:** a folder picker, workspace name or path. In unified Claude Desktop, check **Trusted folders** and **Storage folder** in Settings for access and saved outputs ([current interface](https://support.claude.com/en/articles/16761823)).
 
 **The thing people get wrong:** granting too much. A folder is not a suggestion — it is a permission boundary. Grant `Q3-launch/`, not `Documents/`.
 
 ## 2 — The task box
 
-Where you describe the outcome. Not a chat line — a brief. It can be long. Longer is usually better.
+Where you describe the outcome. In unified Claude this is the same message box used for quick questions. Include the inputs, result and limits the task needs; length alone does not make a better brief.
 
 **The thing people get wrong:** treating it like a chat box and typing eight words. Module 2's whole subject.
 
@@ -42,7 +42,7 @@ For bigger jobs Cowork splits work across parallel workers — one researching e
 
 ## 6 — Scheduled tasks
 
-Save a job, have it run on a cadence — every Monday 8am, every weekday at 6pm. A one-off chat message cannot do this. Scheduled tasks run remotely, so they run on time even when your computer is asleep or the app is closed — unless the task uses a folder or app on your computer. Then it runs locally, and needs the computer awake and Desktop open. (On Enterprise plans, tasks run remotely only after an Owner turns on **Run Cowork in the cloud**; until then, they run on your computer.)
+Set up recurring work — every Monday at 8am, every weekday at 6pm. Cloud schedules can run with your computer off; access to local folders or apps still needs Desktop open. **From 6 October 2026, Anthropic says new Pro and Max tasks, including schedules using local files, move to the cloud.** Existing local tasks stay local. Check the task's actual execution setting and your organization's controls ([schedule guide](https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork)).
 
 **Where it matters to you:** a scheduled job runs with **no one reading the plan**. Only schedule jobs that are read-only or write to a scratch folder, and that you have run by hand successfully at least three times. Module 8.
 
@@ -81,7 +81,7 @@ Everything in this course lives somewhere on that list:
 - **Skills** teach it your formats and rules
 - **Projects** give recurring work persistent memory
 - **Subagents** are Cowork parallelising a big job
-- **Schedules** remove you from the loop entirely
+- **Schedules** automate the run; you still review its outputs and failures
 - **The plan and the stop button** are how you stay in control while all of that happens
 
 ## Lock it in

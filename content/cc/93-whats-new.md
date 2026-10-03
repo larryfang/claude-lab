@@ -1,11 +1,18 @@
 # What's New in Claude Code
 
-Claude Code ships fast — this page pins the course to a date so you always know what's current. **Verified against v2.1.282, 2026-09-24.** The two sources that keep you up to date afterwards: the official [weekly digests](https://code.claude.com/docs/en/whats-new) and the [changelog](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md).
+Claude Code ships fast — this page pins the course to a date so you know what was checked. **Reviewed against v2.1.288, 2026-10-03**, using the installed CLI help and the official changelog. The sources to check afterwards are the official [weekly digests](https://code.claude.com/docs/en/whats-new) and [changelog](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md).
+
+## Since the previous course review
+
+- **Check your starting permission mode again.** From v2.1.283, interactive terminal and VS Code sessions default to Auto across supported sessions; settings, model support and organisation policy can still change this. Non-interactive defaults differ, so automation should choose its mode explicitly ([mode reference](https://code.claude.com/docs/en/permission-modes)).
+- **Session recovery received fixes.** v2.1.288 fixes several resume, compaction and timeout problems. An upgrade can help with a broken session; still inspect the restored context before continuing work.
+- **MCP can ask to re-authenticate for additional scopes.** Review the added access before agreeing. A previously connected server is not blanket permission for broader access.
+- **`claude project purge` became `claude purge`.** The older spelling still works with a notice. This deletes stored data; read the command's help before using it.
 
 ## The headline shifts (Mar–Sep 2026)
 
 ### Permissions grew a brain
-**Auto mode is the usual starting mode on supported Pro/Max/Team terminal and VS Code sessions**, subject to settings and availability. Its classifier reviews actions; explicit ask rules still prompt, and a classifier decision is not a safety guarantee. Check the [current mode rules](https://code.claude.com/docs/en/permission-modes), including the different defaults for non-interactive and Enterprise/API sessions. Audit custom classifier rules with `claude auto-mode critique`. Separately, [sandboxing](https://code.claude.com/docs/en/sandboxing) provides filesystem and network boundaries, with credential masking available through configuration.
+**Auto is the built-in starting mode for interactive terminal and VS Code sessions from v2.1.283**, subject to settings and availability. Its classifier reviews actions; explicit ask rules still prompt, and a classifier decision is not a safety guarantee. Check the [current mode rules](https://code.claude.com/docs/en/permission-modes), especially the separate non-interactive defaults. Audit custom classifier rules with `claude auto-mode critique`. Separately, [sandboxing](https://code.claude.com/docs/en/sandboxing) provides filesystem and network boundaries, with credential masking available through configuration.
 
 ### One session became a fleet
 - **Background agents** — `claude --bg "task"`, with **`claude agents`** as the control tower for every running/blocked/done background session.
@@ -41,14 +48,14 @@ Beyond `CLAUDE.md`: **auto memory** (Claude keeps its own per-project notes in `
 - "Think hard" is no longer a keyword — set reasoning depth with the **`/effort`** dial; only `ultrathink` still works, for one turn.
 - The classic engineering-blog "Claude Code Best Practices" post now redirects to the maintained docs page: [code.claude.com/docs/en/best-practices](https://code.claude.com/docs/en/best-practices).
 
-## The ecosystem worth knowing (stars as of 2026-08-25)
+## The ecosystem worth knowing
 
-**Official (anthropics on GitHub):** [skills](https://github.com/anthropics/skills) (171k ★ — the Agent Skills standard + Anthropic's production skills), [claude-plugins-official](https://github.com/anthropics/claude-plugins-official) (34k ★ — the curated plugin directory), [claude-code-action](https://github.com/anthropics/claude-code-action) (8.7k ★ — CI/`@claude`), and the [Agent SDK](https://code.claude.com/docs/en/agent-sdk/overview) (TypeScript + Python).
+**Official (anthropics on GitHub):** [skills](https://github.com/anthropics/skills) (Anthropic's skill examples), [claude-plugins-official](https://github.com/anthropics/claude-plugins-official) (the curated plugin directory), [claude-code-action](https://github.com/anthropics/claude-code-action) (CI / `@claude`), and the [Agent SDK](https://code.claude.com/docs/en/agent-sdk/overview) (TypeScript + Python).
 
-**Community standouts:** [superpowers](https://github.com/obra/superpowers) (277k ★ — an enforced brainstorm→plan→TDD methodology as skills), [claude-mem](https://github.com/thedotmack/claude-mem) (92k ★ — cross-session memory via hooks), [ccusage](https://github.com/ccusage/ccusage) (18k ★ — cost reporting from local transcripts), [claude-squad](https://github.com/smtg-ai/claude-squad) (8k ★ — a TUI managing agents in worktrees), [claude-hud](https://github.com/jarrodwatts/claude-hud) (28k ★ — a statusline HUD), and the navigation hubs [awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code) and [awesome-claude-skills](https://github.com/ComposioHQ/awesome-claude-skills).
+**Community examples to evaluate:** [superpowers](https://github.com/obra/superpowers) (a workflow skill collection), [claude-mem](https://github.com/thedotmack/claude-mem) (memory tooling), [ccusage](https://github.com/ccusage/ccusage) (usage reporting), [claude-squad](https://github.com/smtg-ai/claude-squad) (agent/worktree management), [claude-hud](https://github.com/jarrodwatts/claude-hud) (a statusline display), and the navigation hubs [awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code) and [awesome-claude-skills](https://github.com/ComposioHQ/awesome-claude-skills). These are examples, not an audited installation list.
 
 :::warning Ecosystem hygiene
-Popularity moves fast and names churn (claude-flow became *ruflo*; get-shit-done was archived). Before installing anything: check the repo is the real one (top ecosystem repos warn about malicious mirrors), check it's maintained, and remember plugins run with **your** permissions — read its listing or repo before install, then run `claude plugin details <name>` to see what it loads.
+Maintenance and ownership can change. Before installing, check the repository's current maintainers, activity, permissions and dependencies. Read its listing or source, then use `claude plugin details <name>` to inspect what an installed plugin loads. Popularity alone does not establish suitability.
 :::
 
 :::tip How to stay current without homework

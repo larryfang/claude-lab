@@ -9,15 +9,15 @@ Let's make Claude Code *yours*. You'll add three customizations — a **command*
 > create a custom command /standup that summarizes what changed on this branch vs main, grouped by area, as bullet points
 ✎ created .claude/commands/standup.md
 Now `/standup` will: diff against main, group changes by area, and output bullets.
-> create a code-reviewer subagent (read-only-ish: Read, Grep, Bash) that flags only correctness and security issues with file:line
-✎ created .claude/agents/code-reviewer.md  (tools: Read, Grep, Bash; model: sonnet)
+> create a code-reviewer subagent with Read, Grep, Glob. Give it the branch diff from the parent; flag only correctness and security issues with file:line
+✎ created .claude/agents/code-reviewer.md  (tools: Read, Grep, Glob; model: sonnet)
 Use it with: "use the code-reviewer subagent".
 > write a hook that runs prettier on files after I edit them
 ✎ updated .claude/settings.json → PostToolUse(Edit|Write): jq reads the edited path from stdin → prettier --write
-Run /hooks to verify. It'll format every file I edit from now on.
+Run /hooks to check registration, then test an Edit or Write and confirm the formatter succeeds.
 > /hooks
 Hooks (read-only menu) — PostToolUse: 1 hook
-  Edit|Write → [command] jq -r '.tool_input.file_path // empty' | xargs -r npx prettier --write
+  Edit|Write → [command] file=$(jq -r '.tool_input.file_path // empty') || exit 1; if [ -n "$file" ]; then npx --no-install prettier --write -- "$file"; fi
   Source: Project Settings (.claude/settings.json) · Esc to close
 > now try /standup
 Running /standup…
@@ -53,7 +53,7 @@ Summarize what changed on this branch vs `main`:
 **2) A reviewer subagent.** Ask Claude:
 
 ```prompt
-Create a subagent at .claude/agents/code-reviewer.md named code-reviewer with tools Read, Grep, Bash and model sonnet. Its job: review a diff and flag only correctness and security issues with file:line and a specific fix — no style nitpicks.
+Create a subagent at .claude/agents/code-reviewer.md named code-reviewer with tools Read, Grep, Glob and model sonnet. Give it the branch diff from the parent. Its job: review that diff and the affected files, then flag only correctness and security issues with file:line and a specific fix — no style nitpicks.
 ```
 …or paste:
 ```markdown
@@ -61,9 +61,10 @@ Create a subagent at .claude/agents/code-reviewer.md named code-reviewer with to
 ---
 name: code-reviewer
 description: Reviews a diff for bugs and security issues. Use after implementing a change.
-tools: Read, Grep, Bash
+tools: Read, Grep, Glob
 model: sonnet
 ---
+Review the supplied diff and affected files. Ask the parent for a diff if missing.
 Flag only correctness and security issues. Give file:line and a specific fix.
 Skip style nitpicks. If clean, say so.
 ```
@@ -76,6 +77,7 @@ Skip style nitpicks. If clean, say so.
 Write a PostToolUse hook in .claude/settings.json that runs my formatter (prettier, or my project's format command) on files after every Edit or Write.
 ```
 Then run `/hooks` yourself to confirm it's registered.
+This starter needs `jq`, Node/npm and a project-local Prettier installation. Reuse the tested JSON in the Hooks lesson or Templates reference. Test a supported file whose name contains spaces, and check that a failed formatter is reported.
 - [ ] `/hooks` lists the hook, and editing a file now auto-formats it
 
 **4) See them combine:**
@@ -87,7 +89,7 @@ Make a small change to any file, then run /standup, then use the code-reviewer s
 :::
 
 :::tip Commit your toolkit
-`.claude/commands`, `.claude/agents`, and `.claude/settings.json` are **team artifacts** — commit them so everyone gets the same commands, reviewers, and guarantees. That's how a team standardizes its workflow.
+`.claude/commands`, `.claude/agents`, and `.claude/settings.json` are **team artifacts** — commit them so everyone gets the same commands, reviewers and checks. Document dependencies and test them on your team's supported systems.
 :::
 
 ## Reflect
@@ -97,7 +99,7 @@ Which multi-step prompt do you retype most often in your own repo, and what woul
 ```
 
 ```reflect
-Which "remember to…" habit in your project should be a guaranteed hook instead, and would you commit it so your whole team gets it?
+Which "remember to…" habit should become an automatic hook, and how would you verify its trigger and failure path before sharing it with your team?
 ```
 
 ```quiz
@@ -113,7 +115,7 @@ Q: After this lab, how does your team get the same setup?
 - Each person rebuilds it from memory
 - Screenshot and share
 - It only works on your machine
-> Those are file-based, committable artifacts. Sharing them standardizes commands, reviewers, and hook guarantees across the team.
+> Those are file-based, committable artifacts. Sharing them standardizes commands, reviewers and automatic checks; each teammate still needs the documented dependencies.
 ```
 
 :::try Module complete!

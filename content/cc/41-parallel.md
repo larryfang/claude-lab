@@ -60,16 +60,19 @@ Same idea works for tests: one Claude writes the tests, another writes code to p
 
 ## Fan-out across many files
 
-For big migrations or audits, loop `claude -p` over a list, pre-approving only the tools each run needs:
+For big migrations or audits, run a separate headless session per file, pre-approving only the tools each run needs. This example is sequential so you can inspect the results; parallel runs need separate ownership or worktrees.
 
 ```bash
 # 1) have Claude list the files needing work → files.txt
-# 2) fan out
-for file in $(cat files.txt); do
+# 2) process one filename per line, preserving spaces
+while IFS= read -r file || [ -n "$file" ]; do
+  [ -z "$file" ] && continue
   claude -p "Migrate $file from React class component to hooks. Return OK or FAIL." \
-    --allowedTools "Edit,Bash(git commit *)"
-done
+    --permission-mode dontAsk --tools "Read,Edit" --allowedTools "Read,Edit"
+done < files.txt
 ```
+
+Run the relevant checks and review the resulting diff before committing. A model's `OK` is a report to verify, not proof that the migration works.
 
 :::tip Test on 2–3 first
 Refine your prompt on the **first few files**, see what goes wrong, *then* run the whole set. A prompt that's 90% right across 500 files creates 50 messes. Validate small, then scale.

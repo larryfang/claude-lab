@@ -99,7 +99,7 @@ test("Claude Code lessons link terms from their own glossary", async ({ page }) 
   const term = page.locator("article.lesson .term", { hasText: "PostToolUse" }).first();
   await expect(term).toBeVisible();
   await term.click();
-  await expect(page.locator("#termPop .term-def")).toContainText("after a tool runs");
+  await expect(page.locator("#termPop .term-def")).toContainText("after a tool succeeds");
   await expect(page.locator("#termPop a")).toHaveAttribute("href", "#/claude-code/cc-glossary");
   await page.goto("/#/claude-code/cc-what");
   await expect(page.locator("article.lesson .term", { hasText: /context window/i }).first()).toBeVisible();

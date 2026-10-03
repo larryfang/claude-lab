@@ -2,6 +2,15 @@ import test from 'node:test';import assert from 'node:assert/strict';import fs f
 const ctx={window:{}};vm.runInNewContext(fs.readFileSync(new URL('../assets/js/cloud-state.js',import.meta.url),'utf8'),ctx);const core=ctx.window.CLOUD_STATE;
 const plain=v=>JSON.parse(JSON.stringify(v));
 test('cloud snapshot omits notebook, typed briefs, and device preferences',()=>{assert.deepEqual(plain(core.snapshot({courses:{},notes:{secret:'private'},brief:'private',theme:'dark',focus:true})),{courses:{}});});
+test('a planned session survives snapshot and device merge with validated metadata',()=>{
+ const state={courses:{cowork:{completed:{welcome:true}}},last:{c:'cowork',l:'welcome',p:'essentials',s:'welcome,what-is-cowork',t:1}};
+ assert.equal(core.validState(state),true);
+ assert.deepEqual(plain(core.snapshot(state)),state);
+ const merged=plain(core.apply({courses:{cowork:{completed:{verify:true}}}},core.diff({},state)));
+ assert.deepEqual(merged.last,state.last);
+ assert.deepEqual(merged.courses.cowork.completed,{verify:true,welcome:true});
+ assert.equal(core.validState({...state,last:{...state.last,s:{lesson:'welcome'}}}),false);
+});
 test('concurrent device changes preserve separate completed lessons',()=>{const base={courses:{cowork:{completed:{welcome:true}}}};const local={courses:{cowork:{completed:{welcome:true,steering:true}}}};const remote={courses:{cowork:{completed:{welcome:true,verify:true}}}};assert.deepEqual(plain(core.apply(remote,core.diff(base,local))).courses.cowork.completed,{welcome:true,verify:true,steering:true});});
 test('first sync from two devices preserves newly created courses and lessons',()=>{const local={courses:{cowork:{completed:{welcome:true}}}};const remote={courses:{cowork:{completed:{verify:true}},code:{completed:{welcome:true}}}};assert.deepEqual(plain(core.apply(remote,core.diff({},local))),{courses:{cowork:{completed:{verify:true,welcome:true}},code:{completed:{welcome:true}}}});});
 test('explicit undo and reset survive merging with remote progress',()=>{const base={courses:{cowork:{completed:{welcome:true,steering:true}}}};const local={courses:{cowork:{completed:{welcome:false}}}};const result=plain(core.apply(base,core.diff(base,local)));assert.deepEqual(result,local);});

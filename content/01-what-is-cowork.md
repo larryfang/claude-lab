@@ -6,24 +6,28 @@ There is exactly one idea to absorb in this lesson. Everything else in the cours
 Anthropic is combining chat and Cowork into one Claude, starting with Pro and Max ([announcement](https://claude.com/blog/cowork-is-now-claude), [Help Center](https://support.claude.com/en/articles/16761823)). If your message box shows **Chat** and **Cowork**, choose **Cowork**. If you are on Pro or Max and there is no such choice, you already have the new Claude: every conversation can take a Cowork task. The shift below — from prompt to outcome — is the same in both.
 :::
 
-:::concept The shift: from prompt to outcome
-- **Chat** is organised around the **prompt**. You ask, it answers, you copy, you paste, you ask again. *You* are the project manager.
-- **Cowork** is organised around the **outcome**. You describe the finished thing you want. Claude plans the steps, reads the files, does the work, and hands you a deliverable.
+:::note Execution update — checked 3 October 2026
+Anthropic says **new Pro and Max tasks move to the cloud on 6 October**, including scheduled tasks. Existing local tasks stay local. Connected folders remain on your computer, but files Claude opens are processed on Anthropic's servers; local access requires Desktop open. If the work must execute locally, use Claude Code. Check your organization's policy before using real work data ([surface and transition guide](https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile)).
+:::
 
-Same model. Completely different unit of work.
+:::concept The shift: from prompt to outcome
+- A **turn-by-turn approach** has you ask, copy, paste and coordinate each step yourself.
+- An **outcome-based approach** describes the finished thing you want. Claude plans the steps, reads the inputs, does the work and hands you a deliverable to review.
+
+These are two ways to work. In the unified Claude experience, both happen in the same conversation; you do not need to choose a separate product or mode.
 :::
 
 ## What that looks like in practice
 
 Here is the same job, both ways.
 
-**Chat version** — you are the glue:
+**Turn-by-turn version** — you are the glue:
 
 > "Summarise this transcript." → paste → read → "now this one" → paste → read → … × 8 → "find the common themes in these summaries" → paste all eight → "now format that as a report" → copy into Docs → fix the headings.
 
-Roughly 40 minutes of clicking, and you did the boring parts.
+You coordinate the intermediate steps. The time depends on the material and the review needed.
 
-**Cowork version** — one brief:
+**Outcome-based version** — one brief:
 
 ```prompt
 The folder `discovery-calls/` has eight customer interview transcripts.
@@ -37,24 +41,24 @@ Produce `insights-report.docx` containing:
 Show me your plan before you start.
 ```
 
-You read the plan, approve, walk away, come back to a finished document.
+You review the plan, let Claude work, then check the document against the inputs and your quality bar.
 
-## What makes Cowork different from chat
+## What an outcome-based task can do
 
 - **It works on your real files.** Cowork reads from and writes to folders you choose. No upload/download dance.
 - **It produces real deliverables.** Not text in a chat window: `.xlsx` with working formulas, `.pptx` decks, formatted `.docx`, organised folders, CSVs.
 - **It divides and conquers.** Big jobs get split across **subagents** working in parallel, so twelve accounts do not take twelve times as long.
-- **It runs on a schedule.** Save a job, have it run every Monday at 8am. A one-off chat message cannot do this.
+- **It runs on a schedule.** Set up a recurring task, such as a draft every Monday at 8am, and review its outputs.
 - **It remembers.** **Projects** give recurring work a persistent workspace with its own files, instructions and memory.
 - **It can use the web.** In its built-in browser in Claude Desktop, or in your own Chrome with **Claude in Chrome**, it opens sites, reads pages, and fills forms.
 
-## The four Claude surfaces, and when to use which
+## Where to work
 
 | Surface | Reach for it when | Example |
 |---|---|---|
-| **Claude.ai / chat** | You need an answer or a paragraph, right now | "Tighten this subject line" |
-| **Claude Desktop chat** | Same, plus desktop extensions that reach files on your computer | "What did this account say on the last call?" |
-| **Cowork** | You want a **finished multi-step job** with real output files | "Build me a deal review pack for all 14 open opps" |
+| **Claude on web or mobile** | Quick answers or cloud tasks using available inputs and connectors | "Build a draft deal review pack from these files" |
+| **Claude Desktop** | A task needs folders or apps on your computer | "Turn these local interview notes into a report" |
+| **Legacy Cowork choice** | Your message box still offers separate Chat and Cowork options; choose Cowork for agentic work | "Build a multi-file review pack" |
 | **Claude Code** | The job is a **codebase** | "Add rate limiting to this service" |
 
 :::tip The Cowork test — five ingredients
@@ -99,8 +103,8 @@ Cowork needs a **paid plan** (Pro, Max, Team or Enterprise). It runs on desktop,
 Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
 
 ```flashcards
-Q: What is chat organised around, and what is Cowork organised around?
-A: Chat is organised around the **prompt**; Cowork around the **outcome**. Same model, completely different unit of work.
+Q: What is the difference between turn-by-turn and outcome-based work?
+A: Turn-by-turn work asks for each step; outcome-based work briefs the finished deliverable. In unified Claude, both happen in the same conversation.
 
 Q: What are the five ingredients of the Cowork test?
 A: **Multiple inputs**, a **file deliverable**, it **recurs**, a **clear quality bar**, and **boring** middle steps. You do not need all five — a good candidate hits a few.
@@ -119,12 +123,12 @@ A: You choose the folders, you see the plan (and can interrupt), code and shell 
 ```
 
 ```quiz
-Q: The core difference between Chat and Cowork is best described as…
+Q: What shift does this course teach, including in unified Claude?
 - Cowork runs a bigger model
-+ Chat is organised around prompts (turn by turn, you coordinate); Cowork is organised around outcomes (describe the result, it does the whole job)
++ Move from coordinating every prompt to briefing a complete outcome and reviewing the deliverable
 - Cowork only works for engineers
 - Chat cannot read files at all
-> Same brain. Cowork takes on whole jobs autonomously and produces finished deliverables.
+> The useful distinction is the way you brief the work. Unified Claude supports quick questions and longer tasks in the same conversation.
 
 Q: Which of these is the best fit for Cowork rather than chat?
 - "Suggest three names for this feature"
@@ -149,5 +153,5 @@ Q: You run the same brief twice and get two slightly different reports. This mea
 ```
 
 :::try Next
-Now we get you set up — with a sandbox you cannot damage anything from.
+Now set up a narrow practice folder with disposable copies, so your first runs have a limited blast radius.
 :::

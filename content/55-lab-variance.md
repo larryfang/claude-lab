@@ -37,8 +37,8 @@ RESULT. Produce two files in `output/`:
 
 1. `variance-pack.xlsx` with three tabs:
    - Data — the source rows, cleaned: consistent gl_names, amounts as plain numbers, blank actuals left empty and marked "not recorded" in a status column, plus columns variance_usd and variance_pct AS LIVE FORMULAS referencing the budget and actual cells (blank where the actual is blank)
-   - Summary — totals by category and cost centre, again as formulas reading from the Data tab, never pasted values
-   - Waterfall — the bridge from budgeted profit to actual profit (revenue minus cogs minus opex): the five largest favourable and five largest unfavourable movements, with an "all other" line that makes the bridge tie exactly
+   - Summary — like-for-like totals by category and cost centre, using only rows with a recorded actual for BOTH budget and actual totals. List excluded rows and their budget separately. Formulas read from Data, never pasted values
+   - Waterfall — the bridge from comparable budgeted profit to comparable actual profit (revenue minus cogs minus opex): the five largest favourable and five largest unfavourable movements, with an "all other" line that makes the bridge tie exactly. Label it PARTIAL when actuals are missing; do not present a complete actual profit from incomplete data
 
 2. `variance-commentary.md` — maximum two pages:
    - A status line: rows in, rows used, rows excluded and why, and OK or PROBLEM
@@ -48,14 +48,14 @@ RESULT. Produce two files in `output/`:
    - A FLAGS section: every row you excluded, every blank you found, every place the detail file and the summary file disagree
    - "What I cannot tell you from this data" — stated plainly
 
-EDGES. Sign convention: variance_usd = actual minus budget, so a positive variance is favourable on revenue and unfavourable on cogs and opex. Use only the files in `finance/`. Never estimate a missing value — write "not recorded". Use exact dollar amounts in the commentary — do not round. Label every driver call as evidence-based or hypothesis. State row counts in and out for every total. Read-only on the source files; write only to `output/`.
+EDGES. Sign convention: variance_usd = actual minus budget, so a positive variance is favourable on revenue and unfavourable on cogs and opex. Confirm the input signs, currency and period first. Use only the files in `finance/`. Never estimate a missing value or treat it as zero — write "not recorded". When budget is zero, leave variance_pct blank and flag "no percentage baseline". Use exact dollar amounts in the commentary — do not round. Label every driver call as evidence-based or hypothesis. State row counts in and out for every total. Read-only on the source files; write only to `output/`.
 
 Show me your plan before you start.
 ```
 
 - [ ] Both files appeared
 - [ ] The Summary tab contains formulas, not pasted values — click a cell and check
-- [ ] The waterfall ties exactly to budgeted and actual profit
+- [ ] The waterfall ties to the same comparable rows on both sides, and incomplete actuals are labelled PARTIAL
 - [ ] The commentary flags the blank actuals and the misspelled GL name
 :::
 
@@ -88,7 +88,7 @@ Read the commentary once more, looking only for softened language: a miss descri
 
 - [ ] Save the working brief — it is your close-week template now. One finance leader who published his full close-day prompt trail got the package from **4 hours to under 1 hour**, and put the division of labour exactly right: *"Cowork did most of the building. I did the thinking about what to do with what it built."* ([F9 Finance](https://www.f9finance.com/claude-cowork-month-end-close/))
 - [ ] Note the corrections you made; they become the rules section of your Skill in Module 8
-- [ ] If you have the Finance plugin, run `/variance-analysis` on the same data and compare — now you know what it is doing under the hood, and where your version is stricter
+- [ ] If you have the Finance plugin, select its variance-analysis command from `/` (for example `/finance:variance-analysis`) on the same data and compare — including its handling of blank actuals
 
 ## Reflect
 

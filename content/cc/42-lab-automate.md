@@ -58,8 +58,9 @@ claude -p "List this repo's npm scripts and what each does" --output-format json
 :::lab Now a parallel worktree
 ```bash
 # from your repo root — create an isolated branch + folder
-git worktree add ../$(basename "$PWD")-experiment -b experiment/claude-lab
-cd ../$(basename "$PWD")-experiment
+lab_worktree="../$(basename "$PWD")-experiment"
+git worktree add "$lab_worktree" -b experiment/claude-lab
+cd "$lab_worktree"
 claude
 ```
 
@@ -68,16 +69,18 @@ claude
 - [ ] I started Claude there and asked it to make a small change
 - [ ] I confirmed my **original** working copy is untouched
 
-Clean up when done:
+Review and commit any useful experiment changes before cleaning up. Keep using the same terminal so `lab_worktree` remains defined:
 
 ```bash
+git status --short
+git diff
+# Commit the changes you want to keep, staging only your experiment files.
 cd -   # back to the main repo root
-# --force is needed because Claude left uncommitted changes in the worktree;
-# it discards them, and -D deletes the experiment branch.
-git worktree remove --force ../$(basename "$PWD")-experiment
-git branch -D experiment/claude-lab
+git worktree remove "$lab_worktree"
+# The experiment branch remains available for review or merging.
 ```
-- [ ] I removed the experiment worktree
+If removal refuses because the worktree is dirty, return to it and preserve the changes first. After merging the experiment, delete its branch with `git branch -d experiment/claude-lab`. Until then, keep the branch so the committed result remains easy to find.
+- [ ] I preserved useful changes and removed the clean experiment worktree
 :::
 
 :::warning Scope unattended runs

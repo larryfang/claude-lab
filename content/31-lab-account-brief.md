@@ -66,15 +66,15 @@ Pick the two most consequential facts in the brief and check them yourself — t
 
 ## Part 3 — The fan-out (8 min)
 
-Now the part that saves the afternoon. One brief per account, all at once.
+Now the part that saves the afternoon. One brief per open opportunity, with shared account research reused where appropriate.
 
 :::lab Step 2 — Brief every open deal
 ```prompt
 BACKGROUND. Same role and product as before. I have a deal review on Monday and I want a brief for every open opportunity in my pipeline.
 
-RESULT. For each open opportunity, produce a separate file `output/briefs/<account-slug>-brief.md` using the exact same eight-section structure and heading text as the brief we just built. Identical structure in every file — I need to read these side by side.
+RESULT. For each open opportunity, produce a separate file `output/briefs/<account-slug>-<opp-id>-brief.md` using the exact same eight-section structure and heading text as the brief we just built. Include the opportunity ID in the title and filename so two deals at the same account cannot overwrite each other. Identical structure in every file — I need to read these side by side.
 
-Then produce `output/briefs/_index.md`: a table of all accounts with columns account, stage, amount, close date, days since last contact, state of play in one line, and the single most important open question. Sort by close date.
+Then produce `output/briefs/_index.md`: one row per opportunity with columns opp_id, account, brief filename, stage, amount, close date, days since last contact, state of play in one line, and the single most important open question. Sort by close date. If the source has no stable opportunity ID, ask me to supply one before writing the files.
 
 INPUTS. The CRM (or `opportunities.csv`), my email history, notes in `sales/` (or your `accounts/` folder), and each company's public website.
 
@@ -85,7 +85,7 @@ FLAG in the index: any account where I have had no contact in over 30 days; any 
 After writing every brief, review them all together and make the depth, tone and structure consistent — then tell me which three accounts have the weakest evidence base.
 ```
 
-- [ ] One brief per account appeared, all with the same structure
+- [ ] One brief per open opportunity appeared, with a unique filename and the same structure
 - [ ] The index table is accurate against my real pipeline
 - [ ] The final consistency pass happened
 - [ ] The flags told me something I did not know
@@ -96,7 +96,7 @@ Two instructions in there do a lot of work.
 
 **"Identical structure in every file"** makes fifteen documents comparable. Without it you get fifteen individually reasonable, mutually incomparable essays.
 
-**"After writing every brief, review them all together"** fixes the Drift failure mode. Parallel subagents wrote these; they did not share notes. The consolidation pass is what makes the set coherent.
+**"After writing every brief, review them all together"** helps catch the Drift failure mode. Separately drafted briefs can differ in depth and judgement. A consolidation pass checks the set for consistency, whether the drafts were produced sequentially or by subagents.
 :::
 
 ## Make it permanent
@@ -142,7 +142,7 @@ Q: The brief states a prospect's title. What should you do before the call?
 
 Q: What does the instruction "after writing every brief, review them all together" fix?
 - Formatting inconsistencies only
-+ The Drift failure mode — parallel subagents wrote each brief without sharing context, so depth and judgement vary
++ The Drift failure mode — separately drafted briefs can vary in depth and judgement
 - Connector timeouts
 - File naming
 > Ask for a consolidation pass whenever cross-consistency matters.

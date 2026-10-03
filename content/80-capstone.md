@@ -23,7 +23,7 @@ Not a one-off deliverable. A thing that keeps producing.
 :::details 📣 GTM — the weekly market and funnel machine
 **Produces:** a competitive-change digest with citations, a funnel model, a campaign readout, and a flag list of messaging claims that have gone stale.
 
-**Sources:** campaign data, competitor pages (Chrome), CRM.
+**Sources:** campaign data, competitor pages (Research / web search; Chrome when interaction is needed), CRM.
 
 **Cadence:** Monday 8am, into a draft folder.
 :::
@@ -49,7 +49,7 @@ Not a one-off deliverable. A thing that keeps producing.
 :::lab Build the Project
 - [ ] Create a Cowork **Project** for this work with **Start from scratch**, so it is saved to your Claude account (a Project made with **Use an existing folder** stays on this computer, which breaks the cloud schedule in Stage 7)
 - [ ] Write its instructions: who you are, what you sell or build, your definitions (weightings, thresholds, taxonomies, currency), your **unreliable fields list**, standing rules, and your tone preferences
-- [ ] For the hand-built stages, create a local workspace folder with subfolders `sources/`, `reference/`, `output/weekly/`, `snapshots/`, and grant it to each task — do not attach it to the Project, because a Project tied to a local folder works on desktop only. The Stage 7 schedule cannot read this folder, so plan for its inputs to come from connectors and its reports and snapshots to go to a `Cowork-Reports` folder in Google Drive, OneDrive or SharePoint
+- [ ] For supervised practice, create a workspace with `sources/`, `reference/`, `output/weekly/` and `snapshots/`. Grant only the required files or folder. Check the task's execution setting and plan Stage 7's input access and report storage explicitly; a local folder does not imply local execution
 - [ ] Connect the systems you need and run a **read-only smoke test** on each — a query whose answer you already know
 - [ ] Record everything in `ACCESS-LOG.md`
 :::
@@ -87,7 +87,7 @@ Produce a spreadsheet in `output/weekly/` with:
 
 - [ ] A **Data** tab: the cleaned records, header frozen
 - [ ] A **Model** tab: your calculations as **live formulas**, with assumptions in labelled editable cells
-- [ ] A **Sample size column** next to every ranking or comparison
+- [ ] Outcome counts, cohort definitions and observation periods next to rankings; source row count alone is not statistical sample size
 - [ ] An **Excluded** tab: every record not in the model, why, and the total value those records represent
 :::
 
@@ -120,7 +120,7 @@ Rules: every claim cites the model; every ranking states its sample size; never 
 :::lab Build stage 5
 One file per item that needs individual attention — per at-risk deal, per competitor change, per stalled epic.
 
-- [ ] Identical structure in every file
+- [ ] Identical structure and unique record IDs in filenames, so items at the same account cannot overwrite each other
 - [ ] An `_index.md` comparison table
 - [ ] A final consolidation pass across the set, listing what was normalised
 - [ ] Tested on **two** items before running on all of them
@@ -139,18 +139,18 @@ One file per item that needs individual attention — per at-risk deal, per comp
 ## Stage 7 — Schedule it (2 min, after two more runs by hand)
 
 :::lab Go unattended
-- [ ] Add the explicit failure path: *"If any source is unreachable or returns zero records, still write the file, put PROBLEM in the status line, state exactly what failed, and write nothing else. Never write a normal-looking report from missing data."*
-- [ ] Add the delta instruction: compare against last week's file and report only what changed
+- [ ] Add the explicit failure path: *"If a source is unreachable, incomplete or unexpectedly empty, still produce a PROBLEM report identifying the failure. A verified query with no matching records is an EMPTY result, not an invented failure. Never produce a normal-looking analysis from missing data."*
+- [ ] Add the delta instruction: compare against last week's accessible file. With no baseline, report FIRST RUN and make no change claims
 - [ ] Add the empty case: *"If nothing needs attention, say so in one line and stop."*
 - [ ] Confirm it is **read-only** on every source system and writes only its own report file
-- [ ] Edit the Skill (or the scheduled prompt) so it reads its inputs from connectors and writes its reports and snapshots to your `Cowork-Reports` folder in Google Drive, OneDrive or SharePoint, not `output/weekly/` — cloud scheduled tasks run against connectors and files in your Claude account, and **cannot reach a local folder**. Cowork does not change a Project's contents, so the Project holds only the instructions and knowledge. In that connector's Tool permissions, unblock only its create-file tool. Create the schedule inside the Project from Stage 1
+- [ ] Test the scheduled task's actual input tools and execution setting (see Module 8's cloud transition guidance). Review downloadable reports in the task conversation. Use a connected `Cowork-Reports` folder only if its connector supports file creation and subsequent reads; enable only the required tool. If previous-run storage is unavailable, keep comparisons manual. Create the schedule inside the Project from Stage 1
 - [ ] Run it **manually** twice more and read each output in full
 - [ ] Then schedule it for Monday 8am
 - [ ] After the second scheduled run, confirm it read the first run's file in `Cowork-Reports`
 :::
 
 :::warning Three runs by hand, then the schedule
-The rule from Module 8 says three runs by hand before you trust a schedule: the cold test in Stage 6 plus the two manual runs above. Even then, read the first three scheduled outputs properly — trace numbers, check counts, read the flags. After three clean scheduled runs it has earned your inattention.
+Practise three runs by hand: the cold test in Stage 6 plus the two manual runs above. Review the first three scheduled outputs fully, then set a review cadence based on the consequences. Three clean runs do not establish that future reports can go unchecked.
 :::
 
 ## Stage 8 — Verify and hand over (final)

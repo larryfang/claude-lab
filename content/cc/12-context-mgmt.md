@@ -23,14 +23,14 @@ When you're **deep in one task** but the window is filling, don't clear (you'd l
 
 ## /rewind — checkpoints, not chaos
 
-Every **user prompt** you send creates a **checkpoint**. Claude snapshots files before each change, so you can roll back ([checkpointing docs](https://code.claude.com/docs/en/checkpointing)).
+A **prompt that starts a new turn** creates a checkpoint. A steering message sent while Claude is still working joins that turn rather than creating another checkpoint. Claude snapshots files before tracked edits, so you can roll back ([checkpointing docs](https://code.claude.com/docs/en/checkpointing)).
 
 - **`Esc` `Esc`** (double-tap, with an empty prompt) or `/rewind` → open the rewind menu
 - Restore **conversation only**, **code only**, **both**, or **summarize from here**
 - Since v2.1.191 the rewind menu can even resume the conversation from **before a `/clear`**, while you're still in the same Claude Code process ([changelog](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md))
 
 :::concept Be bold, then rewind
-Because rewinding is cheap, you can tell Claude to **try a bold edit**. If it goes sideways, rewind and try another angle. Checkpoints persist across sessions. *(Rewind only undoes edits from Claude's file-editing tools — not changes made by Bash commands like `rm`, `mv` or a migration, and usually not subagent edits. Commit first; it's not a replacement for git.)*
+With a clean starting point, you can tell Claude to **try a bold edit**. If it goes sideways, rewind and try another angle. Checkpoints persist across sessions, but retention is limited: the current default keeps the 100 most recent snapshots and cleans up sessions after 30 days. *(Rewind only undoes tracked file edits — not changes made by Bash commands like `rm`, `mv` or a migration, and generally not subagent edits. Commit first; it's not a replacement for git.)*
 
 Want to keep the current state *and* explore an alternative? **`/branch`** forks the conversation to try another direction, and **`/fork`** copies the whole session into a new background session that keeps working while you continue here.
 :::
@@ -54,7 +54,7 @@ The subagent explores in its **own context window** and returns just a **summary
 - **`/btw`** — ask a quick side question that *doesn't* enter the conversation history ([commands](https://code.claude.com/docs/en/commands)).
 
 :::tip Audit the standing overhead: /checkup
-Context isn't only what you add mid-session — it's also what loads *every* session: skills, MCP servers, plugins, CLAUDE.md. **`/checkup`** audits that standing setup — flagging unused pieces and duplicated rules — and offers fixes. Claude Code's creator announced it as a way to clean up unused skills, MCP servers and plugins, and to dedupe `CLAUDE.md` ([@bcherny, 2026-07-08](https://x.com/bcherny/status/2074997570317779038)).
+Context also includes your standing setup. **`/doctor`**, with `/checkup` as an alias, can find unused capabilities, slow hooks and duplicated instructions. It reports findings before asking to change things. On v2.1.283 or later, use **`/doctor prompt-audit`** to review instructions and configuration for outdated or conflicting content ([current commands](https://code.claude.com/docs/en/commands)).
 :::
 
 ## Course-correct early
@@ -118,7 +118,7 @@ Q: What does `/compact` keep while it frees space?
 A: Key code, file states, and decisions. Give it a focus, e.g. `/compact focus on the API changes and the failing test`.
 
 Q: What creates a checkpoint, and how do you open the rewind menu?
-A: Every user prompt you send creates a checkpoint. Double-tap `Esc` on an empty prompt, or run `/rewind`, to open the menu.
+A: A prompt that starts a new turn creates a checkpoint; mid-turn steering does not. Double-tap `Esc` on an empty prompt, or run `/rewind`, to open the menu.
 
 Q: Do checkpoints replace git?
 A: No. They track only edits from Claude's file-editing tools — not Bash changes like `rm` or `mv`.

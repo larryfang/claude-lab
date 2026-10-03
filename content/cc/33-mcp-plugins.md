@@ -84,7 +84,7 @@ You now have six ways to customize. Pick by **what you need**:
 | To **bundle & share** several of the above | **Plugin** |
 
 :::concept The mental shortcut
-**CLAUDE.md** = always-on knowledge · **Skill** = on-demand know-how · **Subagent** = a separate worker · **Hook** = a guarantee · **MCP** = a connection · **Plugin** = a package of all of them.
+**CLAUDE.md** = project guidance · **Skill** = on-demand know-how · **Subagent** = a separate worker · **Hook** = an automatic event handler · **MCP** = a connection · **Plugin** = a package of these capabilities.
 :::
 
 ## Lock it in
@@ -108,7 +108,7 @@ Q: Which settings layer wins over all the others?
 A: **Managed** (`managed-settings.json`) — org policy. Below it, Local beats Project, and Project beats User.
 
 Q: CLAUDE.md, Skill, Subagent, Hook — the one-line shortcut?
-A: **CLAUDE.md** = always-on knowledge · **Skill** = on-demand know-how · **Subagent** = a separate worker · **Hook** = a guarantee.
+A: **CLAUDE.md** = project guidance · **Skill** = on-demand know-how · **Subagent** = a separate worker · **Hook** = an automatic event handler.
 ```
 
 ```quiz

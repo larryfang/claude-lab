@@ -13,7 +13,7 @@ Four reliable causes:
 3. **No shared standards.** Twelve people invent twelve formats, nothing is comparable, and the manager who has to read all twelve asks people to go back to the old template.
 4. **A single visible failure.** One made-up number in a customer email and the tool acquires a reputation that facts will not fix.
 
-Notice that none of these is about the tool.
+These are common rollout problems beyond licensing. Also check product fit, tool reliability and access to the required sources before attributing a failure to the user.
 
 :::concept The adoption ladder
 Anthropic's own deployment guide frames maturity as five levels: **L0** chat Q&A → **L1** a real deliverable from your files → **L2** the job encoded as a Skill → **L3** skills bundled and scheduled → **L4** an admin-provisioned plugin for the whole department. The goal it sets is the right one for your rollout too: *"get every user one level higher than they are now."* And its cold-start rule explains why plugins matter on day one: a new user who types `/morning-briefing` and gets something useful in ninety seconds comes back tomorrow; one who faces a blank prompt closes the app.
@@ -99,7 +99,7 @@ Vanity metrics will get you a budget and lose you the argument later. Measure th
 | **Time on the specific play** | Before and after, including verification. Ask three people, do not estimate |
 | **Tasks now done that were not** | The weekly update that now happens. The follow-up that now gets sent. This is usually the biggest number |
 | **Quality, judged by the recipient** | Ask the manager who reads the reports, not the person who writes them |
-| **Errors caught in verification** | Count them. A rising count means people are checking; zero means they are not |
+| **Errors caught in verification** | Track severity, errors per reviewed deliverable and review coverage. A raw count alone cannot distinguish more checking from poorer output |
 | **Skill usage** | Who actually runs them. Unused Skills are a signal about the Skill, not the person |
 
 Two more field-tested rules from Anthropic's deployment guide: pilot with **two or three champion teams rather than one** ("a single team gives you one data point"), and define success in measurable terms before you start — *"'Hours saved per week' is measurable. 'Transformation' is not."* The signal a pilot is working is not just the hours: it is champions starting to write their own skills.
@@ -160,7 +160,7 @@ Flip each card, recall the answer *before* you look, and grade yourself honestly
 
 ```flashcards
 Q: What are the four reliable causes of a failed rollout?
-A: Access without briefing skill, starting with the hardest thing, no shared standards, and a single visible failure. None of them is about the tool.
+A: Access without briefing skill, starting with the hardest thing, no shared standards, and a visible failure. Also investigate tool reliability, product fit and source access.
 
 Q: What goal does the adoption ladder set?
 A: "Get every user one level higher than they are now." The levels run from **L0** chat Q&A to **L4** an admin-provisioned plugin.
@@ -172,7 +172,7 @@ Q: Why must a colleague's first run be unsupervised?
 A: Sitting next to them, you fill every gap without noticing. Send it, walk away, and read what they produce.
 
 Q: What does a rising count of errors caught mean?
-A: People are actually checking. A count of zero means nobody is looking, not that nothing is wrong.
+A: It could reflect more review, harder tasks or poorer output. Compare review coverage, severity and errors per deliverable; zero alone proves neither quality nor lack of checking.
 
 Q: What goes on your team's never-do list?
 A: One page, agreed and visible. For example: nothing goes to a customer without a named human reviewer, and no scheduled task writes to a source system.
@@ -200,12 +200,12 @@ Q: Which metric best convinces a sceptic?
 - Adoption percentage
 > Hours-saved figures always sound inflated. A newly-existing weekly artefact does not.
 
-Q: A rising count of errors caught in verification means…
-- The tool is getting worse
-+ People are actually checking — a count of zero is the worrying number
-- Briefs need rewriting
-- Connectors are failing
-> Zero errors caught means nobody is looking, not that nothing is wrong.
+Q: How should you interpret a rising count of errors caught in verification?
++ Compare coverage, severity and errors per reviewed deliverable before judging the cause
+- It always means the tool is getting worse
+- It always means people were not checking before
+- It proves connectors are failing
+> A raw count can rise because more work was checked, the work was harder or the output was worse. Keep the denominator and severity visible.
 ```
 
 :::try Module complete

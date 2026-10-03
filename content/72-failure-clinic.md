@@ -22,10 +22,10 @@ For every failure, ask: **which line in the brief, or which check, would have ca
 ## Case 1 — The tidy win rate
 
 ```scenario
-S: A campaign readout says "Webinar leads convert at 18%". The source export has 140 webinar leads and 21 conversions — 15%. Nothing in the readout mentions the difference.
+S: A campaign readout says "Webinar leads convert at 18%". The source export has 140 webinar leads and 21 conversions — 15%. The workbook formula divides 21 by 117 instead of 140, and there is no exclusion note or agreed filter.
 Q: What is your diagnosis, and the fix?
 + A Silent Exclusion: rows were dropped from the calculation. Count rows in against rows out, and add "flag every row you exclude, and why" to the brief.
-> 21 of 140 is 15%; 21 of about 117 is 18%. Roughly 23 rows vanished — probably blanks or duplicates. The rate is not invented; the denominator is. Only a row count shows it.
+> The formula identifies the changed denominator: 21/140 is 15%, while 21/117 rounds to 18%. Reconcile the 23 excluded lead IDs and their reasons; do not guess whether they were blanks or duplicates.
 ~ A Confident Gap: the model invented the 18%. Add "never estimate a missing value".
 > Worth checking, but the pattern (a real numerator, a smaller denominator) points to rows removed, not a number made up. The estimate rule alone would not have surfaced the exclusion.
 - Rounding. 15% and 18% are close enough for an internal readout.
@@ -74,10 +74,10 @@ Q: What is the lesson?
 ## Case 5 — Last year's numbers, this year's pack
 
 ```scenario
-S: A pipeline summary shows 61 open deals. Your CRM shows 42. The plan you approved skimmed "read the pipeline files".
+S: A pipeline summary shows 61 open deals. Your CRM shows 42. The plan you approved skimmed "read the pipeline files", and the activity feed shows that it read this quarter's export and an older export in `archive/`.
 Q: Where would you look first, and what prevents it?
 + The plan: "the pipeline files" probably included last quarter's export. It is a Wrong Source — name the exact file in the brief and read the plan's sources before approving.
-> 61 − 42 = 19 extra rows: deals open last quarter that have since closed, which is what merging last quarter's export would add. The four-point plan review puts "wrong source" first because it invalidates the whole run.
+> The feed shows a source you did not intend. Trace the extra records to the exports and check the filters; the difference of 19 alone does not identify their origin. Name the exact permitted file before rerunning.
 ~ Ask Cowork to remove duplicates and re-run.
 > It might, but deals from last quarter are not duplicates — they are the wrong data. De-duplication hides the cause.
 - Trust Cowork's number; the CRM may be out of date.

@@ -2,7 +2,7 @@
 
 Finance is the lane where Cowork's output is easiest to check and most dangerous to get wrong. Everything reconciles to something — which means every deliverable in this lane can be verified, and must be.
 
-It is also the lane Anthropic has invested in most heavily: an official **Finance plugin** (variance analysis, reconciliation, journal entries, income statements, SOX testing), a set of **finance agent templates** on paid plans — including a month-end closer — and the **Claude for Excel add-in**, which reads and writes live formulas and preserves cell dependencies. You will meet all three in this lane — though note the add-in needs a paid plan, and an IT deployment where your company blocks the Office Store, so every lab here is built on the path that works for everyone: exported files in your Cowork folder.
+Anthropic provides a **Finance plugin** (variance analysis, reconciliation, journal entries, income statements and SOX testing), **finance agent templates** including a month-end closer, and **Claude for Excel** for working directly with formulas. Availability and deployment depend on your plan and company settings. Every lab here also offers a practice-file workflow, so you can learn without connecting a ledger.
 
 :::concept Where the time actually goes
 The close, the variance commentary, the reconciliations, the chase emails, the board pack — finance runs on recurring, multi-source, deadline-driven document production. That is precisely the shape of work Cowork is built for. The judgement calls — what the numbers *mean*, what to accrue, what to tell the board — stay yours.
@@ -58,9 +58,8 @@ The close, the variance commentary, the reconciliations, the chase emails, the b
 
 **Why it compounds:** the close happens every month forever. Anthropic ships a **Month-end closer** agent template you can start from, and Module 8 turns your version into a Skill on a schedule. The proofreading pass is the first Skill worth building in this lane — build it before you automate anything else.
 
-:::concept In the field: 150 skills, written by accountants
-Anthropic's own finance team runs roughly **150 shared skills from a version-controlled GitHub repo** — written by accountants and FP&A analysts, not IT. Their design rules are worth copying verbatim: every skill must **flag exceptions explicitly**; any skill producing journal entries needs a **checking tab confirming debits equal credits**; and human review is mandatory before anything touches the ledger. Their own honesty about limits: full auditability is *"still a work in progress."*
-([webinar](https://www.anthropic.com/webinars/how-finance-teams-use-claude-cowork) · [CFO Connect recap](https://www.cfoconnect.eu/resources/finance-insights/anthropic-finance-team-claude-skills/))
+:::concept The review standard for this lane
+Flag exceptions explicitly. Draft journal entries with a checking tab that confirms debits equal credits. Keep a qualified human review before anything reaches a ledger, filing or financial report. Anthropic's [Finance plugin documentation](https://github.com/anthropics/knowledge-work-plugins/blob/main/finance/README.md) requires qualified review; a generated checking tab is evidence to inspect, not sign-off.
 :::
 
 ## The official shortcuts
@@ -68,9 +67,9 @@ Anthropic's own finance team runs roughly **150 shared skills from a version-con
 :::tip Plugin first, custom second
 Before writing anything from scratch, look at what ships ready-made (availability varies by plan; look under **Customize → Plugins**. The finance agent templates are plugins too, but they appear only after you add the **Financial Services** marketplace in **Browse plugins** — from Anthropic's sources, or from GitHub at `anthropics/financial-services`; the exact labels may vary):
 
-- **Finance plugin** — `/variance-analysis`, `/reconciliation`, `/journal-entry`, `/income-statement`, `/sox-testing`. Anthropic's own caveat applies: outputs require review by qualified financial professionals before use in reporting or filings.
+- **Finance plugin** — variance analysis, reconciliation, journal entries, income statements and SOX testing. Choose the installed command from `/`; in Claude Code plugin commands are namespaced, such as `/finance:variance-analysis` and `/finance:reconciliation`. Check your installed menu rather than assuming an unqualified command name. Outputs require review by qualified financial professionals before use in reporting or filings.
 - **Finance agent templates** — ten of them on paid plans, including a Month-end closer, a general-ledger reconciler and a statement auditor.
-- **Claude for Excel** — the add-in reads live formulas, edits without breaking dependencies, and debugs `#REF!`/`#VALUE!` errors. For spreadsheet-heavy work it is often the better surface than a chat window. On a paid plan you can install it yourself from Microsoft AppSource ("Get it now"); if your company blocks the Office Store, it becomes a request to IT (name the close-week job and the hours). Until then, exports into Cowork do every job in this lane.
+- **Claude for Excel** — the add-in can inspect formulas, follow dependencies and help debug `#REF!`/`#VALUE!` errors. Check changed cells and recalculate the workbook. Installation and access depend on your plan and company settings; when the Office Store is blocked, ask IT. Practice exports cover the exercises in this lane.
 
 The labs in this lane teach you the underlying briefs, so you understand what the shortcuts do — and can fix them when they miss.
 :::

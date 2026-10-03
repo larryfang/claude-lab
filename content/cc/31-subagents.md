@@ -23,10 +23,12 @@ A subagent is a Markdown file in `.claude/agents/` (project) or `~/.claude/agent
 ---
 name: code-reviewer
 description: Reviews a diff for bugs, security, and convention violations. Use after implementing a change.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob
 model: sonnet
 ---
-You are a senior reviewer. Flag actual bugs, security issues, and convention
+Review the supplied diff and read the affected files. If the diff was not
+supplied, ask the parent session to provide it. You are a senior reviewer.
+Flag actual bugs, security issues, and convention
 violations — not style nitpicks. For each finding, give the file:line and a
 specific suggested fix. Report only issues that affect correctness or the stated
 requirements. If the diff is clean, say so.
@@ -34,7 +36,7 @@ requirements. If the diff is clean, say so.
 
 Key frontmatter ([sub-agents reference](https://code.claude.com/docs/en/sub-agents)):
 - **`name`** / **`description`** — the description is how Claude decides when to delegate.
-- **`tools`** — restrict what it can do (a reviewer needs Read/Grep/Bash, not Write).
+- **`tools`** — restrict what it can do. This reviewer gets Read/Grep/Glob and receives the diff from the parent. Bash can modify files even without Edit or Write, so adding it is not a read-only restriction.
 - **`model`** — e.g. `haiku` for fast read-only research, `opus` for hard reasoning.
 - **`memory`** — give the subagent its **own persistent memory** across sessions (subagents don't share the main session's auto memory): its `MEMORY.md` loads at start, and the subagent writes to its memory folder as it works ([@lydiahallie, 2026-07-20](https://x.com/lydiahallie/status/2079255826355892464)). It also turns on Read, Write and Edit, so a read-only reviewer gains write tools.
 
@@ -84,7 +86,7 @@ Custom and general-purpose subagents load the same `CLAUDE.md` hierarchy as the 
 ```claude-sim
 # You just implemented a change and want a fresh-eyes review.
 > use the code-reviewer subagent on my current diff
-Delegating to code-reviewer (separate context, tools: Read/Grep/Bash)…
+Delegating to code-reviewer (separate context, tools: Read/Grep/Glob; supplied diff)…
 code-reviewer report:
   • src/auth/oauth.ts:41 — state param isn't validated on callback (CSRF risk). Fix: compare against the stored state before exchanging the code.
   • src/auth/oauth.ts:58 — error path leaks the raw provider response in the 500 body. Fix: log it, return a generic message.
@@ -100,8 +102,8 @@ Choose what you would do, read the consequence, then try the other options.
 ```scenario
 S: You want a reusable reviewer for your payment code, and you are writing its file in `.claude/agents/`.
 Q: Which definition do you write?
-+ A `payment-flow-reviewer` with `tools: Read, Grep, Glob, Bash` and a description that says when to use it.
-> Specificity buys better tool selection and tighter context. A reviewer needs Read/Grep/Bash, not Write, and the description is how Claude decides when to delegate.
++ A `payment-flow-reviewer` with `tools: Read, Grep, Glob`, a supplied diff and a description that says when to use it.
+> The reviewer can inspect files without a shell that could rewrite them. The description tells Claude when to delegate; the parent supplies the diff.
 ~ A general `qa` subagent with the same read-only tools, used for every review.
 > It still keeps the review out of your main context, but a vague agent loses to a feature-specific one on tool selection and focus.
 - An agent named `Plan` with every tool enabled, so it can also fix what it finds.
@@ -165,5 +167,5 @@ Q: Which subagent design is better?
 ```
 
 :::try Next
-Commands and subagents are *advisory* — Claude chooses when to use them. **Hooks** are different: they run automatically, every time, guaranteed.
+Commands and subagents provide instructions and delegation. **Hooks** attach handlers to matching lifecycle events. Next, learn to test their triggers and failure behavior so an automatic check does what you intend.
 :::

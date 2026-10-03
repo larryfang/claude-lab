@@ -1,6 +1,6 @@
 # Headless Mode & CI
 
-Everything so far assumed one human, one Claude, one conversation. But Claude Code also runs **without a session** — as a command you can pipe, script, and drop into CI. That's where it stops being a tool you use and becomes infrastructure.
+Everything so far assumed one human watching an interactive conversation. Claude Code also runs **without an interactive interface** — as a command you can pipe, script, and use in CI. These runs can still save a conversation; add `--no-session-persistence` when you do not want a resumable record.
 
 ## `claude -p` — non-interactive mode
 
@@ -22,8 +22,10 @@ This is the building block for **pre-commit hooks, CI pipelines, and any automat
 Three flags worth knowing for serious pipelines (all in `claude --help`):
 
 ```bash
-# force the output to match a schema — no more parsing prose
-claude -p "Extract the endpoints as {path, method, auth}" --json-schema '{"type":"object", "...": "..."}'
+# Return endpoint paths in a structured result
+claude -p "List the API endpoint paths in this project" \
+  --output-format json \
+  --json-schema '{"type":"object","properties":{"endpoints":{"type":"array","items":{"type":"string"}}},"required":["endpoints"]}'
 
 # hard cost ceiling and a fallback when the primary model is overloaded
 claude -p "…" --max-budget-usd 2 --fallback-model sonnet
@@ -88,26 +90,41 @@ Now commenting *"@claude please add tests for the auth module and open a PR"* on
 
 ## Beyond the CLI: the Agent SDK
 
-`claude -p` is the door; the **Claude Agent SDK** is the whole building. It exposes the same engine that powers Claude Code — the agent loop, tools, permissions, hooks, MCP, subagents — as a [TypeScript / Python library](https://code.claude.com/docs/en/agent-sdk/overview) (`@anthropic-ai/claude-agent-sdk`), so a workflow you prototyped as a prompt can graduate into a proper service with programmatic control over every turn. If you're building a product on agents rather than scripting your own repo, start there. For lean CI containers, `claude --bare` skips hooks, plugins, and memory discovery for a minimal, reproducible run.
+The **Claude Agent SDK** exposes the engine behind Claude Code — the agent loop, tools, permissions, hooks, MCP and subagents — as a [TypeScript / Python library](https://code.claude.com/docs/en/agent-sdk/overview) (`@anthropic-ai/claude-agent-sdk`). A workflow prototyped with `claude -p` can grow into a service with programmatic control over each turn.
+
+For lean CI containers, `claude --bare` skips hooks, plugin sync and memory discovery. It also skips subscription OAuth and keychain authentication: configure an API key, an explicit API-key helper or a supported provider's credentials. It is not a drop-in replacement for a subscription-authenticated interactive session.
 
 ## A pre-commit gate example
 
 Use headless Claude as a lightweight reviewer before code lands:
 
 ```bash
-# .git/hooks/pre-commit (simplified)
-git diff --cached | claude -p "Review this staged diff. If you find a likely bug or a leaked secret, print BLOCK and why. Otherwise print OK." | grep -q BLOCK && {
-  echo "Claude flagged an issue — commit blocked."; exit 1;
-}
+#!/usr/bin/env bash
+# .git/hooks/pre-commit — fail closed when review fails or is ambiguous
+set -euo pipefail
+if ! review=$(git diff --cached | claude --bare -p \
+  "Review this staged diff. For a likely bug or leaked secret, print BLOCK and why. Otherwise print exactly OK." \
+  --permission-mode dontAsk --tools ""); then
+  echo "Review failed. Inspect the staged diff and retry." >&2
+  exit 1
+fi
+if [[ "$review" != "OK" ]]; then
+  printf '%s\n' "$review" >&2
+  echo "Review did not return OK. Commit blocked." >&2
+  exit 1
+fi
+exit 0
 ```
+
+Before installing it, configure the authentication required by `--bare` and test OK, BLOCK, empty and failed-reviewer responses. This example supplies only the staged diff and disables built-in tools. An AI review can still miss a defect; keep your normal tests and human review.
 
 ## Lock it in
 
 Flip each card, recall the answer *before* you look, and grade yourself honestly. Every card joins your review deck and comes back just before you would forget it.
 
 ```flashcards
-Q: How do you run Claude once from a script, with no session?
-A: `claude -p "your prompt"`. It runs the prompt once, prints the result, and exits.
+Q: How do you run Claude once from a script, without an interactive interface?
+A: `claude -p "your prompt"`. It prints the result and exits. Add `--no-session-persistence` if the conversation should not be saved for resuming.
 
 Q: How do you get output another tool can parse?
 A: Add `--output-format json` (or `stream-json` for real-time processing). `--json-schema` forces the output to match a schema.

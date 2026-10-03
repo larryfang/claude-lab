@@ -27,7 +27,7 @@ changed, edit the source schema and run `pnpm codegen`. Want me to do that inste
 ```
 
 :::tip What just happened
-You watched the full lifecycle: **generate → prune hard → add sharp rules → verify the behavior changed.** That last step — Claude *refusing* to touch `src/generated` — is how you know a rule landed. If behavior doesn't change, the rule is buried or ambiguous. `CLAUDE.md` is guidance, not enforcement: for a hard guarantee, also add a deny rule `Edit(src/generated/**)` in `.claude/settings.json`.
+You watched **generate → prune → add clear rules → test the behavior**. A refusal to edit is evidence from this run, not permanent enforcement. `CLAUDE.md` is guidance. A deny rule such as `Edit(/src/generated/**)` in project settings covers recognized edits and writes, but an arbitrary script can access files indirectly. Use the [permission and sandbox controls](https://code.claude.com/docs/en/permissions#how-permissions-interact-with-sandboxing) for stronger boundaries.
 :::
 
 ## Part 1b — Lint a bloated CLAUDE.md
@@ -100,7 +100,7 @@ Add these rules: (1) the exact test command and that you prefer single-file test
 Without making changes yet, tell me: based on CLAUDE.md, what will you do differently in this project compared to a generic one? Name the specific rules you'll follow.
 ```
 
-- [ ] Claude echoed back my real rules (proof they're loaded and clear)
+- [ ] I checked loaded files with `/context`, compared Claude's answer with my rules, and tried one safe behavior check
 
 **Commit it so your team benefits:**
 
@@ -112,7 +112,7 @@ Commit CLAUDE.md with a clear message.
 :::
 
 :::warning Keep tending it
-`CLAUDE.md` is living. When Claude does something annoying, add a rule. When a rule stops being needed, delete it. When Claude ignores a rule, the file's probably too long — prune. Review it like code.
+`CLAUDE.md` is living. Add useful project guidance, remove stale rules, and diagnose missed instructions by checking loaded files, conflicts and wording. Review changes like code and try a safe behavior check again.
 :::
 
 ## Reflect

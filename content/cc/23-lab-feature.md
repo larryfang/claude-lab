@@ -104,11 +104,11 @@ Q: In the lab, what caught the whitespace-only edge case?
 > A reviewer in a fresh context (or /code-review) evaluates the result on its own terms and surfaces gaps the implementer missed.
 
 Q: Why write the tests BEFORE the implementation?
-+ They give Claude an unambiguous target and a self-check — red proves the test works, green proves the code does
++ They expose the bug before the change and check the covered cases after it
 - Tests are optional decoration
 - To make the session longer
 - Because plan mode requires it
-> Test-first turns "looks done" into "provably done." Claude reads the pass/fail each loop and self-corrects.
+> Confirm that red failed for the expected reason and green passed without weakening the tests. Review the diff and requirements too: passing cases do not prove that every edge case is covered.
 ```
 
 :::try Module complete!

@@ -57,7 +57,7 @@ Section 4 — **complaints with no issue** — is the one that finds the real ga
 **Why it works:** public changelogs and release notes are structured and boring, which makes them ideal for a schedule.
 
 ```prompt
-Every Monday: read the public changelogs and release notes for [COMPETITORS] and compare against the snapshots in the `Cowork-Reports/snapshots/` folder of my connected Google Drive (or OneDrive or SharePoint). Write `competitor-changelog-YYYY-MM-DD.md` to `Cowork-Reports/` covering only what is new, with a quote and URL for each item, and for each: which of our roadmap items it relates to, and whether it closes or widens a gap. Save fresh snapshots to `Cowork-Reports/snapshots/`. If nothing shipped, say so in one line. Never infer a release you cannot show with quoted text.
+Every Monday: read public changelogs and release notes for [COMPETITORS] and compare with the previous snapshots in [VERIFIED SNAPSHOT SOURCE]. Produce `competitor-changelog-YYYY-MM-DD.md` with new items, a dated source for each, and any supported relation to our supplied roadmap. With no accessible baseline, label the run BASELINE and make no change claims. Produce fresh snapshots as downloadable files in the task conversation; save them to a connected report folder only when its create-file tool and subsequent read access have been tested. Flag inability to persist the next baseline. Never infer a release that the source does not establish.
 ```
 
 ## Play 6 — Release notes and the feedback loop
@@ -69,7 +69,7 @@ Every Monday: read the public changelogs and release notes for [COMPETITORS] and
 ```prompt
 For everything that moved to Done in [PROJECT] in the last two weeks, produce three files: `output/release-notes-customer.md` — customer-facing notes, benefit-first, no internal jargon, no issue keys; `output/release-notes-internal.md` — the full list with keys and technical detail; and `output/loop-closing.csv` — one row per customer who requested any of these items: customer, contact, the request, the date they asked, the issue that resolved it, and a two-sentence personalised note they could be sent.
 
-Use only the tracker data and our linked feedback records. Never claim we shipped something that is not marked Done. Flag any Done item you could not describe as a customer benefit — those are usually internal work that should not appear in customer notes.
+Use only the tracker, verified release evidence and linked feedback records. Done status supports internal completion, not customer availability. Separate completed work from released work; customer notes and chase drafts may describe a feature as available only when the release records confirm who can use it and when. Flag internal-only work and unsupported benefits, and draft only — do not send.
 ```
 
 ## The judgement calls Cowork must never make

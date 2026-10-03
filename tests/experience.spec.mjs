@@ -96,19 +96,19 @@ test("session planner persists preferences and resumes inside the selected route
   await expect(page.locator("#learningGoal")).toBeFocused();
   await page.locator("#learningGoal").selectOption("finance");
   await page.locator("#learningTime").selectOption("30");
-  await expect(page.locator("#sessionRecommendation .btn-primary")).toHaveAttribute("href", "#/cowork/welcome?path=finance");
-  await expect(page.locator("#sessionRecommendation")).toContainText("The route continues beyond this session");
+  await expect(page.locator("#sessionRecommendation .btn-primary")).toHaveAttribute("href", "#/cowork/welcome?path=finance&session=welcome%2Cwhat-is-cowork%2Clab-setup");
+  await expect(page.locator("#sessionRecommendation")).toContainText("Finish this session");
   await page.reload();
   await expect(page.locator("#learningGoal")).toHaveValue("finance");
   await expect(page.locator("#learningTime")).toHaveValue("30");
   await page.locator("#sessionRecommendation .btn-primary").click();
   await page.locator("#completeBtn").click();
-  await expect(page).toHaveURL(/cowork\/what-is-cowork\?path=finance$/);
+  await expect(page).toHaveURL(/cowork\/what-is-cowork\?path=finance&session=/);
   await page.goto("/#/");
-  await expect(page.locator(".resume-card")).toHaveAttribute("href", "#/cowork/what-is-cowork?path=finance");
-  await expect(page.locator("#sessionRecommendation .btn-primary")).toHaveAttribute("href", "#/cowork/what-is-cowork?path=finance");
+  await expect(page.locator(".resume-card")).toHaveAttribute("href", "#/cowork/what-is-cowork?path=finance&session=welcome%2Cwhat-is-cowork%2Clab-setup");
+  await expect(page.locator("#sessionRecommendation .btn-primary")).toHaveAttribute("href", "#/cowork/what-is-cowork?path=finance&session=what-is-cowork%2Clab-setup");
   await page.locator("#learningGoal").selectOption("code");
-  await expect(page.locator("#sessionRecommendation .btn-primary")).toHaveAttribute("href", "#/claude-code/cc-what?path=foundations");
+  await expect(page.locator("#sessionRecommendation .btn-primary")).toHaveAttribute("href", "#/claude-code/cc-what?path=foundations&session=cc-what%2Ccc-tour%2Ccc-first");
 });
 
 test("planner explains an over-budget lesson and offers review for a finished route", async ({ page }) => {
@@ -122,7 +122,7 @@ test("planner explains an over-budget lesson and offers review for a finished ro
   });
   await page.reload();
   await expect(page.locator("#sessionRecommendation")).toContainText("longer than your time slot");
-  await expect(page.locator("#sessionRecommendation .btn-primary")).toHaveAttribute("href", "#/cowork/lab-variance?path=finance");
+  await expect(page.locator("#sessionRecommendation .btn-primary")).toHaveAttribute("href", "#/cowork/lab-variance?path=finance&session=lab-variance");
   await page.evaluate(() => {
     const store = JSON.parse(localStorage.getItem("claudelab.v2"));
     store.courses.cowork.completed["lab-variance"] = true;

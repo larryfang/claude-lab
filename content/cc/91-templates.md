@@ -31,22 +31,30 @@ Copy-paste starting points for your `.claude/` setup. Adapt to your stack, commi
 ## A custom command — `.claude/commands/pr.md`
 
 ```markdown
+---
+disable-model-invocation: true
+---
 Review the current git diff, then:
 1. Summarize what changed and why.
 2. Run the tests and report results.
-3. Write a conventional-commit message.
-4. Open a PR with `gh pr create`, using the summary as the body.
+3. Use a feature branch, stage only the reviewed changes and commit with a conventional message.
+4. Push that branch to the agreed remote and open a draft PR with `gh pr create --draft`. Include the summary, actual test results and anything unverified.
 ```
+
+This command publishes work. Use an owned repository or agreed fork with `gh` authenticated; stop at the local commit when practising without publishing.
 
 ## A command with arguments — `.claude/commands/fix-issue.md`
 
 ```markdown
+---
+disable-model-invocation: true
+---
 Analyze and fix GitHub issue: $ARGUMENTS
 
 1. `gh issue view $ARGUMENTS` to read it.
 2. Locate relevant files; implement the fix.
 3. Write and run tests to verify.
-4. Commit with a descriptive message and open a PR.
+4. On a feature branch, stage only this fix, commit, push to the agreed remote and open a draft PR. Report the checks actually run.
 ```
 
 ## A subagent — `.claude/agents/code-reviewer.md`
@@ -55,10 +63,11 @@ Analyze and fix GitHub issue: $ARGUMENTS
 ---
 name: code-reviewer
 description: Reviews a diff for bugs, security, and convention violations. Use after a change.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob
 model: sonnet
 ---
 You are a senior reviewer. Flag only correctness and security issues (not style).
+Review the supplied diff and affected files. Ask the parent for a diff if missing.
 For each finding give file:line and a specific fix. If the diff is clean, say so.
 Follow the project rules in CLAUDE.md. Rules critical to this review: <restate them here, e.g. "never approve an edit to an existing file in db/migrations/">.
 ```
@@ -77,6 +86,8 @@ description: REST conventions for our services. Use when adding or changing endp
 ```
 
 ## settings.json — permissions + a format hook
+
+The format hook needs `jq`, Node/npm and a project-local Prettier installation. Test a supported file with spaces in its name, then verify that a formatter failure is reported. Permission rules constrain the named tools; use sandboxing for broader filesystem and network boundaries.
 
 ```json
 {
@@ -100,7 +111,7 @@ description: REST conventions for our services. Use when adding or changing endp
       {
         "matcher": "Edit|Write",
         "hooks": [
-          { "type": "command", "command": "jq -r '.tool_input.file_path // empty' | xargs -r npx prettier --write" }
+          { "type": "command", "command": "file=$(jq -r '.tool_input.file_path // empty') || exit 1; if [ -n \"$file\" ]; then npx --no-install prettier --write -- \"$file\"; fi" }
         ]
       }
     ]
@@ -114,7 +125,7 @@ description: REST conventions for our services. Use when adding or changing endp
 # GitHub — the official remote server, authenticated with a fine-grained personal
 # access token (or use the gh CLI directly — often simpler)
 claude mcp add --transport http github https://api.githubcopilot.com/mcp/ \
-  --header "Authorization: Bearer YOUR_GITHUB_PAT"
+  --header 'Authorization: Bearer ${GITHUB_TOKEN}'
 
 # Sentry — remote HTTP server (example straight from `claude mcp add --help`)
 claude mcp add --transport http sentry https://mcp.sentry.dev/mcp
@@ -124,6 +135,8 @@ claude mcp add my-server -e API_KEY=xxx -- npx -y my-mcp-server
 
 # then manage with /mcp inside a session, or `claude mcp list`
 ```
+
+Provide `GITHUB_TOKEN` through your approved credential manager or environment. The single quotes save a variable reference rather than a token in the command and configuration. Keep credentials out of committed files; see [MCP variable expansion](https://code.claude.com/docs/en/mcp#environment-variable-expansion-in-mcp-json).
 
 ## A path-scoped rule — `.claude/rules/migrations.md`
 

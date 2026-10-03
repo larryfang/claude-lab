@@ -11,8 +11,10 @@ Best with your Jira or Linear connector live (Module 3). Without it, export your
 In the `product/` subfolder, create realistic but entirely FICTIONAL practice tracker data so I can learn on it. Invent all people, customers and issue keys — do not use any real company. Use dates within the last 60 days.
 
 Create:
-- `tracker-export.csv` with 40 rows and columns: issue_key, type (epic / story / bug), epic_key, summary, status (To Do / In Progress / Done), assignee, created_date, updated_date, due_date, resolution_date
+- `tracker-export.csv` with 40 rows and columns: issue_key, type (epic / story / bug), epic_key, summary, status (To Do / In Progress / Done), assignee, created_date, updated_date, due_date, resolution_date, release_status (not released / released / internal only), release_date
   Make it deliberately messy: two Done issues with a blank resolution_date, four In Progress issues not updated for more than 10 days, three issues with no assignee, three issues past their due_date and not Done, and one epic marked Done whose child issues are not all Done.
+- `status-history.csv` with columns issue_key, from_status, to_status, changed_at. Include at least 12 transitions in the last 14 days. Every transition must refer to an issue in tracker-export.csv, follow its creation date, and agree with its current status after the last transition. updated_date alone is not transition history.
+- Mark some Done issues as not released or internal only. For released issues, give a release_date on or after resolution_date and within the reporting period. Only a released issue represents customer availability.
 - `feedback-links.csv` with 12 rows: issue_key, customer, contact, request_quote, date_asked — linking some Done issues to the customer who asked for them. Leave two rows with a blank request_quote.
 
 Leave everything loose in `product/`. Do not organise it.
@@ -29,15 +31,15 @@ BACKGROUND. I am a PM about to write a stakeholder update from our tracker. Trac
 
 RESULT. `output/tracker-reality.md`:
 1. Scope: which project, which issue types, which date range you queried, and how many issues matched
-2. What moved in the last 14 days: issue key, summary, from status, to status, date
+2. What moved in the last 14 days: issue key, summary, from status, to status, date, using status history. If history is unavailable, say "transitions not derivable from this snapshot"; an updated date does not tell you what changed
 3. Every issue marked Done that has no resolution date, or whose resolution looks inconsistent
 4. Every issue In Progress with no update for more than 10 days — the stalled work
-5. Every issue with no assignee, or assigned to someone who has not touched it
+5. Every issue with no assignee. Assess assignee activity only if author-attributed worklogs or history are available; otherwise state that this cannot be checked
 6. Every issue whose due date has passed and is not Done
 7. Every epic where the child issues do not add up to the epic's stated status
 8. A trust assessment: how accurately does this tracker reflect reality, and what would I need to check with a human?
 
-INPUTS. Only the tracker. Read-only — do not modify, transition, comment on, or create any issue.
+INPUTS. Only the tracker and its available status history (for practice, tracker-export.csv and status-history.csv). State the reporting date and timezone. Read-only — do not modify, transition, comment on, or create any issue.
 
 EDGES. Never infer that work is done because it looks done. Never estimate a completion percentage that is not derivable from the data — say "not derivable". State the exact query you ran.
 
@@ -71,12 +73,12 @@ RESULT. Three files in `output/updates/`:
 
 `exec-update.md` — under 200 words:
 - One-line status with an honest RAG rating and the reason for it
-- Shipped this period: three bullets maximum, in outcome terms not issue terms
+- Completed this period: three bullets maximum, in outcome terms. Distinguish internally completed work from released work
 - At risk: what, why, and the impact if it slips. Use the stalled-work findings
 - What I need from you: specific asks, or "nothing this week" if that is true
 
 `team-update.md` — under 400 words:
-- What shipped, with the people who did it named
+- What completed and what released, with contributors named where the records support attribution
 - What is stuck and what would unstick it
 - What is next and who is on what
 - One thing worth celebrating, specifically not generically
@@ -87,11 +89,11 @@ RESULT. Three files in `output/updates/`:
 - What is coming next, with no dates unless the tracker actually supports a date
 - No issue keys, no internal team names, no jargon
 
-Also produce `output/updates/update-evidence.csv` with columns item, audience (exec / team / customer), status, issue_key, date_or_no_date.
+Also produce `output/updates/update-evidence.csv` with columns item, audience (exec / team / customer), status, issue_key, completion_date, release_date, availability_evidence_or_unknown.
 
 INPUTS. Only the tracker data and `output/tracker-reality.md`.
 
-EDGES. Never claim something shipped unless it is marked Done with a resolution date. Never state a date the tracker does not support — write "no date yet". Never describe stalled work as on track. The RAG rating must be justified by the data, not by optimism. If an item cannot be described as a customer benefit, leave it out of the customer update entirely.
+EDGES. Done with a resolution date supports "completed", not "shipped". Claim customer availability only when release or deployment evidence confirms who can use it and when (practice: release_status = released with a release_date). If that evidence is absent, label availability unverified and omit release claims from the customer update. Never state a date the records do not support — write "no date yet". Never describe stalled work as on track. Justify the RAG rating with evidence. Omit internal-only work and items with no supported customer benefit from the customer update.
 
 FLAG at the end of each file: anything you were unsure whether to include, and anything I should verify with the team before sending.
 ```
@@ -114,11 +116,11 @@ The play almost nobody runs, and the one customers remember.
 
 :::lab Step 3 — Tell the people who asked
 ```prompt
-For every issue marked Done in the last 30 days, produce `output/loop-closing.csv` with one row per customer who originally requested that item: customer, contact name, what they asked for, the date they asked, the issue that resolved it, days elapsed, and a two-sentence personalised note they could be sent — referencing their original words.
+For every issue confirmed released to the relevant customers in the last 30 days, produce `output/loop-closing.csv` with one row per customer who originally requested that item: customer, contact name, what they asked for, the date they asked, the issue that resolved it, release_date, days elapsed from request to release, and a two-sentence personalised note they could be sent — referencing their original words.
 
-Use only the tracker and our linked feedback or support records. Never claim a customer requested something unless there is a record of it. Never claim we shipped something not marked Done. Leave the note empty and flag the row if you cannot find the customer's original wording.
+Use only the tracker, verified release evidence and linked feedback or support records. Never claim a customer requested something without a record. Never use Done status alone as proof of release. Leave the note empty and flag the row if you cannot find the customer's original wording. Draft only; do not send any message.
 
-Then tell me: how many resolved items had a linked customer request, and how many did not. That ratio tells me how well we are capturing why we build things.
+Then tell me how many released items had a linked customer request and how many did not. Separate internal maintenance, compliance and strategy-led work, which may have a different documented rationale.
 ```
 
 - [ ] The CSV was produced with real, traceable requests
@@ -126,13 +128,13 @@ Then tell me: how many resolved items had a linked customer request, and how man
 :::
 
 :::concept That ratio is a diagnostic
-If most of what you shipped has no linked customer request, one of two things is true: you are building without recorded evidence, or you are not capturing the link between evidence and work. Both are worth knowing, and neither is visible from any dashboard.
+Missing request links are a reason to inspect your records. Work may be driven by customer requests, maintenance, compliance or strategy. Check whether each item has an appropriate rationale before concluding that the team is building without evidence.
 :::
 
 ## Part 4 — Verify, then send
 
 :::lab Before anything leaves
-- [ ] Every "shipped" item — confirm each is genuinely Done in the tracker
+- [ ] Every "shipped" item — verify release evidence and customer availability, not just Done status
 - [ ] The RAG rating — do you personally agree with it? If not, change it and know why
 - [ ] The at-risk list — is anything missing that you know about and the tracker does not?
 - [ ] The customer update — read it as a customer. Is any of it meaningless to them?
@@ -153,7 +155,7 @@ This is the strongest candidate for a schedule in the whole course: read-only, s
 - [ ] Save the two briefs as a sequence
 - [ ] Note your actual project keys, statuses and RAG definitions
 - [ ] Note who each update goes to
-- [ ] Module 8 schedules it for Monday 8am, writing a draft into a connected Drive, OneDrive or SharePoint folder for you to review
+- [ ] Module 8 schedules a Monday 8am draft for review. Use the task conversation for downloadable files, or a destination whose connector has a verified file-creation tool
 
 ## Reflect
 
@@ -184,10 +186,10 @@ Q: What is the test of a genuine three-audience fan-out?
 
 Q: Most of what you shipped has no linked customer request. What does that tell you?
 - Nothing useful
-+ Either you are building without recorded evidence, or you are not capturing the evidence-to-work link — both worth knowing and invisible on a dashboard
++ Check the rationale and record links; maintenance, compliance and strategy-led work may have a different evidence source
 - The tracker is broken
 - Customers are not engaged
-> The ratio is a diagnostic on your own process.
+> The ratio prompts a records review; it does not prove that all work must originate in a customer request.
 
 Q: What must you add to a tracker-derived update yourself?
 - Formatting and headings

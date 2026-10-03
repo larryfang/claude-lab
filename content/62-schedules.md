@@ -35,21 +35,23 @@ The difference from an interactive brief: it has to handle the boring cases, bec
 ```prompt
 Every Monday at 8am.
 
-Produce a file `pipeline-hygiene-YYYY-MM-DD.md` in the `Cowork-Reports` folder of my connected Google Drive (or OneDrive or SharePoint), from the CRM, listing only what needs attention: deals with no logged activity in 21 days, deals with a close date in the past, deals with no next step, and deals where the amount or stage changed since last week's file in that folder.
+Produce a downloadable file `pipeline-hygiene-YYYY-MM-DD.md` in this task's conversation, from the CRM, listing only what needs attention: deals with no logged activity in 21 days, deals with a close date in the past, deals with no next step, and deals whose amount or stage changed from the prior report. Save to a connected Cowork-Reports folder only if its file-creation tool has been verified; otherwise keep the file here and state that persistence needs a human.
 
-Compare against last week's file. Report only the DELTA — what is newly a problem, and what has been fixed since last week. If the folder has no previous file, say "first run, no comparison available".
+Compare against last week's accessible report. Report the DELTA — what is newly a problem and what has been fixed. If no previous report is accessible, say "no comparison baseline available" and make no change claims; do not imply this is necessarily the first run.
 
 Start the file with a status line: the date, the number of records queried, the number returned, and OK or PROBLEM.
 
-If you cannot reach the CRM, if it returns zero records, or if anything else prevents a normal run: still write the file, put PROBLEM in the status line, state exactly what failed, and write nothing else. Never write a normal-looking report from missing data.
+If the CRM is unreachable, incomplete or unexpectedly empty, produce a PROBLEM report identifying the failure, with no normal-looking analysis. A verified query with no matching records is EMPTY; distinguish it from missing source data.
 
 If nothing needs attention, write "Nothing needs attention this week" and the status line. Do not pad the file.
 
 Read-only. Never modify the CRM. Write only the report file, nothing else.
 ```
 
-:::warning Cloud runs cannot see your local folders
-By default, scheduled tasks run in the cloud — they work with your **connectors and the files saved in your Claude account**, and they *cannot* read or write a folder on your computer, like `output/weekly/`. A task that needs local files or apps runs only on your computer, so the computer must be awake and the desktop app open. (On Enterprise plans the cloud is off until an Owner turns on **Run Cowork in the cloud**; until then, sessions, Projects and scheduled tasks run on your computer, so it must be awake with Desktop open.) So: create the schedule **inside a Project** made with **Start from scratch**, which is saved to your Claude account (a Project made from a folder on your computer stays on that computer). The Project holds the instructions and knowledge only — Cowork does not change a Project's contents. The report goes to a cloud folder the job reaches through its connector — a `Cowork-Reports` folder in Google Drive, OneDrive or SharePoint — as the brief above does. In that connector's **Tool permissions**, unblock only its create-file tool (the exact name may vary). After the second run, confirm it read the first run's file.
+:::warning Check where the task runs and saves its result
+Cloud schedules can work with connected tools and account files while your computer is off. Access to local files or apps still requires Desktop open. **On 6 October 2026, new Pro and Max tasks move to the cloud, including schedules using local files; existing local tasks stay local.** Review the actual execution setting, organization controls and run history rather than assuming a local folder means local execution ([current transition guide](https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile)).
+
+For the brief above, use a Project saved to your account. Project knowledge is context; add files you want to keep there yourself. Keep the downloadable report in the task conversation by default. A connected `Cowork-Reports` folder is an option only if its connector provides a file-creation tool: a connection alone does not grant that capability. Test saving, reading on the next run and the unavailable-source path. If no persistent report is accessible, supply the previous report yourself or label the run as having no comparison baseline.
 :::
 
 Four things there earn their place:
@@ -69,7 +71,7 @@ If you have not read the last three outputs of a scheduled job, delete the job. 
 
 ### Practical notes
 
-- Cloud scheduled tasks run on their cadence even when your computer is asleep or the app is closed; a task that needs local files runs only while your computer is awake and the app is open. Check the run history under **Scheduled** in the sidebar; when a cloud run fails, the usual cause is an expired connector token, not your machine being off.
+- Review upcoming and past runs under **Scheduled**. Cloud tasks can run with your computer off; access to local files still needs Desktop open. If a run fails, inspect its reported error, source access and execution setting before reconnecting anything.
 - Time zones matter. Check what your schedule is set relative to.
 - Start with **one** scheduled job. Get it right, read its output for a month, then add a second.
 
@@ -148,7 +150,7 @@ Q: What goes in a scheduled report's status line?
 A: The date, the number of records queried, the number returned, and OK or PROBLEM. It is your failure detection at a glance.
 
 Q: Where does a scheduled task run, and what changes if it needs local files?
-A: By default it runs in the cloud, with your connectors and the files in your Claude account. Create it inside a **Project** saved to your account, and have it write to a connected Drive, OneDrive or SharePoint folder — Cowork does not change a Project's files. (A task that needs local files runs only on your computer, while it is awake and Claude Desktop is open.)
+A: Check the task's actual execution setting. Cloud runs use connectors and account files; reaching local files requires Desktop open. From 6 October 2026, new Pro and Max tasks, including local-file schedules, move to the cloud. Test where the report is saved and how the next run reads it.
 
 Q: When should you delete a scheduled job?
 A: When you have not read its last three outputs. It is not saving you time; it is generating unread files and false confidence.

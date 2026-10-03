@@ -1,6 +1,6 @@
 # Lab: Setup & Your Safe Sandbox
 
-Twelve minutes to a working, safe Cowork setup. Do not skip the sandbox part — everyone who skips it eventually reorganises a folder they cared about.
+Allow about twelve minutes to set up a narrow practice workspace. It contains real files that Claude can change; disposable copies and backups limit the cost of a mistake.
 
 ## Part 1 — Find Cowork (3 min)
 
@@ -28,7 +28,7 @@ You are going to create a folder that contains nothing you care about, and do al
 :::lab Step 2 — Make a practice workspace
 - [ ] Create a folder on your Desktop called `Cowork-Lab`
 - [ ] Inside it, create five subfolders: `sales`, `gtm`, `product`, `finance`, `output`
-- [ ] Drop in **copies** — never originals — of two or three real work files you would not mind losing and that contain no customer or personal data (an old export, a stale deck, some meeting notes)
+- [ ] Add two or three fictional files, or approved disposable copies with no customer, personal or confidential data
 - [ ] In Cowork, **grant access to `Cowork-Lab`** and nothing above it
 :::
 
@@ -61,7 +61,7 @@ Look at the folders in this workspace and tell me what you can see — folder na
 - [ ] It did **not** change anything
 
 :::tip What you just proved
-Two things. One: the access grant works and it is scoped where you think it is. Two: Cowork does what you asked and no more. Run a read-only probe like this any time you point Cowork at something new and unfamiliar — including a connector.
+You checked what Claude could see in this run and whether it followed your read-only request. That does not prove it can never reach another source or make a future mistake. Repeat the check when access changes, and inspect the actual folder or connector permissions.
 :::
 
 ## Part 4 — Know what you have connected (2 min)
@@ -109,10 +109,10 @@ Q: Why grant Cowork the narrowest possible folder?
 
 Q: What is the point of the read-only probe ("describe what you see, change nothing")?
 - It warms up the model
-+ It proves the access grant is scoped where you think it is, and that Cowork does only what you asked
++ It checks the visible inputs and whether this run followed the read-only request
 - It is required before every task
 - It creates an index file
-> Cheap, fast, and it catches a mis-scoped grant before that grant matters.
+> A useful first check, followed by reviewing the actual access settings. One successful probe is not a permanent safety guarantee.
 
 Q: You are about to run a brief that reorganises a folder of real client documents. What is the minimum you should do?
 - Run it and check afterwards

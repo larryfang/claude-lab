@@ -18,7 +18,7 @@
   if(!optional(s,'cards',function(m){return entries(m,function(c){return object(c)&&text(c.f)&&text(c.b)&&optional(c,'box',function(v){return Number.isInteger(v)&&v>=1&&v<=5;})&&optional(c,'due',text)&&optional(c,'seen',number)&&optional(c,'c',text)&&optional(c,'l',text);});}))return false;
   if(!optional(s,'notes',function(m){return entries(m,function(n){return object(n)&&text(n.a)&&optional(n,'q',text)&&optional(n,'c',text)&&optional(n,'l',text)&&optional(n,'t',number);});}))return false;
   if(!optional(s,'activity',function(m){return entries(m,function(v,k){return number(v)&&/^\d{4}-\d{2}-\d{2}$/.test(k);});})||!optional(s,'daily',function(m){return entries(m,score);}))return false;
-  if(!optional(s,'last',function(v){return object(v)&&text(v.c)&&text(v.l)&&optional(v,'p',text)&&optional(v,'t',number);})||!optional(s,'learning',function(v){return object(v)&&optional(v,'goal',text)&&optional(v,'minutes',number);}))return false;
+  if(!optional(s,'last',function(v){return object(v)&&text(v.c)&&text(v.l)&&optional(v,'p',text)&&optional(v,'s',text)&&optional(v,'t',number);})||!optional(s,'learning',function(v){return object(v)&&optional(v,'goal',text)&&optional(v,'minutes',number);}))return false;
   return optional(s,'name',text)&&optional(s,'focus',function(v){return typeof v==='boolean';})&&optional(s,'theme',function(v){return v===null||v==='light'||v==='dark';});
  }
  function snapshot(s) {

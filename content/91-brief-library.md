@@ -40,7 +40,7 @@ You are the person most motivated to find a problem with this document — a sce
 
 Find: every claim you would challenge and how; every number you would demand the working for; every place the conclusion does not follow from the evidence; the single most awkward question I could be asked about this; and the claim that would do most damage if it turned out to be wrong.
 
-Quote the document directly. Be specific. Do not be constructive.
+Quote the document directly and cite the evidence for each finding. Distinguish confirmed errors from hypotheses. If no supported problem is found, say so; do not invent one to fill a section. This is a simulated critique, not feedback from the actual people.
 ```
 
 ### The three-reviewer attack
@@ -54,7 +54,7 @@ REVIEW 2 — THE SCEPTICAL EXEC: why is this not worth doing? What is the opport
 
 REVIEW 3 — THE CUSTOMER: does this actually solve your problem? What would still be annoying? What was misunderstood about your situation?
 
-End with the single strongest objection across all three.
+End with the strongest supported objection, if any. Label all three as simulated perspectives, distinguish findings from hypotheses, and do not invent objections when the evidence supports none.
 ```
 
 ---
@@ -82,7 +82,7 @@ Show me your plan and the URLs you intend to visit first.
 ```prompt
 Produce `output/pipeline-clean.csv` — every opportunity with stage normalised, amount as a plain number, close date as YYYY-MM-DD, plus days_since_activity, days_to_close, risk_score 1-5, risk_reason, and data_quality_flags.
 
-And `output/hygiene-report.md`: row count in and out; every stage-name variant and its mapping; every missing or malformed value by opp_id; every past close date on an open deal; every deal with no activity in 21 days; every deal with no next step; every duplicated account; a trust score out of 10 with reasoning.
+And `output/hygiene-report.md`: row count in and out; every stage-name variant and its mapping; every missing or malformed value by opp_id; every past close date on an open deal; every deal with no activity in 21 days; every deal with no next step; repeated opportunity IDs; a qualitative data-quality assessment with evidence. Multiple deals at one account can be legitimate; do not merge them just because the account repeats. State the reporting date, timezone and currency.
 
 Do not drop any row — flag it. Never estimate a missing value. Write only to `output/`.
 ```
@@ -176,7 +176,7 @@ Show me your plan and the exact URL list before you start.
 ```prompt
 Reps have 90 seconds before a call. Produce `output/battlecard-[competitor].md`, ONE page: (1) In one line — who they are and when we lose. (2) Where we win — three points, each with proof, source, and the exact words a rep should use. (3) Where they win — three, honestly, each with what a rep should say instead of arguing. (4) Their likely attack — three things they will say about us and the true response. (5) Three fair trap questions. (6) Disqualifiers. (7) DO NOT SAY — unverified, stale, or legally risky claims. (8) Sources, freshness dates, and a check-again date.
 
-Use only `output/[competitor]-research.md`. If the research does not support a point, write "[NO EVIDENCE]". Never state their price without a URL for it. Section 3 must be genuinely honest.
+Use only `output/[competitor]-research.md` and approved documentation I supply for our product, with dates and versions. Ask for our product evidence if missing. Comparisons require evidence for both products at comparable tiers and use cases. An undocumented capability is unknown, not absent. If evidence does not support a point, write "[NO EVIDENCE]"; fewer than three supported points is fine. Never state their price without a URL. Hold potentially legally risky claims for the authorised human reviewer; do not simulate legal approval.
 ```
 
 ### Campaign readout
@@ -186,13 +186,13 @@ BACKGROUND. My CMO has 10 minutes, distrusts marketing numbers, and will ask "ho
 
 RESULT. `output/campaign-readout.md`, two pages: (1) Headline. (2) The numbers, with the prior period only if the data supports a comparison. (3) What worked — two, with the numbers and the sample size. (4) What did not — two, no hedging, no "learnings". (5) Data integrity — what is wrong, how much spend is affected, and what that does to confidence in sections 3 and 4. (6) Three recommendations, each with its number and the money involved. (7) What this data cannot tell you. (8) What I need.
 
-EDGES. Every claim needs a number from the model, and every ranking claim needs its sample size stated. Never call a difference significant if the sample cannot support it. Never present cost-per-opportunity without noting excluded spend. Two pages maximum.
+EDGES. Each ranking needs outcome counts, date coverage and comparable cohort and attribution definitions; source row count alone is not statistical sample size. Aggregate rates use ratios of totals, not averages of row rates. Do not call a difference statistically significant without an appropriate stated analysis or infer causation from observational data alone. Report excluded and unknown spend alongside cost per opportunity, and label affected totals PARTIAL. Two pages maximum.
 ```
 
 ### Voice of customer
 
 ```prompt
-Produce `output/voc.md` from the reviews, tickets and churn notes I have given you: (1) The ten themes with the most evidence, each with a count and three verbatim quotes attributed to source and date. (2) How each has changed over the last four quarters, if the data supports that. (3) The language customers actually use for each theme — their words, as a list, not ours. (4) Where our current positioning claims something customers do not confirm. (5) What churned customers said that current customers do not.
+Produce `output/voc.md` from the reviews, tickets and churn notes I have given you: (1) Up to ten supported themes, each with a distinct-customer count and up to three available verbatim quotes attributed to source and date. Deduplicate repeat records from the same customer and flag unknown identities. (2) How each has changed over the last four quarters, if the data supports that. (3) The language customers actually use for each theme — their words, as a list, not ours. (4) Where our current positioning claims something customers do not confirm. (5) What churned customers said that current customers do not. Say when a comparison is unsupported; do not fill a quota.
 
 Every claim needs a quote and a source. Never aggregate a sentiment score you cannot show the working for. Flag any theme driven by fewer than four distinct customers, and any theme evidenced by only one source type.
 ```
@@ -208,9 +208,9 @@ BACKGROUND. PM on [PRODUCT], deciding [DECISION]. I present to a leadership revi
 
 RESULT. `output/themes.csv` — one row per theme: theme, customer_count, customer_names, source_files, supporting_ticket_ids, arr_affected, first_mentioned_date, confidence, confidence_reason.
 
-And `output/discovery-report.md`: (1) What we heard — one honest paragraph. (2) The five strongest themes ranked by weight of evidence, each with the theme in the customer's language, who raised it, two verbatim quotes attributed to customer and file, what tickets confirm or contradict, and confidence with reasoning. (3) Contradictions — quote both sides, do NOT resolve, add one line on what it suggests about segmentation. (4) The quiet signal — one low-frequency theme that matters, reasoning labelled as inference. (5) What I assumed that is not supported. (6) What we still do not know — three questions and who to ask. (7) How to attack this report — the three strongest objections a sceptical director could raise.
+And `output/discovery-report.md`: (1) What we heard — one honest paragraph. (2) Up to five supported themes ranked by weight of evidence, each with the theme in the customer's language, which distinct customers raised it, available verbatim quotes attributed to customer and file, what tickets confirm or contradict, and confidence with reasoning. Deduplicate repeat interviews and flag unknown identities. (3) Contradictions — quote both sides, do NOT resolve, add one line on what it suggests about segmentation. (4) The quiet signal — a supported low-frequency theme, if any; reasoning labelled as inference. (5) What I assumed that is not supported. (6) What we still do not know — up to three questions and who to ask. (7) How to attack this report — up to three supported objections a sceptical director could raise. Do not invent themes, quotes or objections to fill a quota.
 
-EDGES. Every claim needs a verbatim quote or ticket ID. Never invent or paraphrase a quote — if you cannot quote it exactly, do not claim it. Never estimate ARR or counts. Rank by weight of evidence, not rhetorical force.
+EDGES. Every evidence claim needs a verbatim quote or ticket ID. Label inference and show its supporting evidence. Never invent or paraphrase a quote — if you cannot quote it exactly, do not claim it. Never estimate ARR or counts; write "not recorded". Rank by weight of evidence, not rhetorical force. Use approved customer evidence; podcast advice does not establish demand or ARR for our product.
 
 FLAG: themes driven by one loud customer; themes whose quotes are weaker than the ranking implies; quotes that could support two different themes.
 ```
@@ -232,7 +232,7 @@ FLAG: requirements that come from my assumptions rather than evidence; success m
 ```prompt
 Produce `output/tracker-reality.md`: (1) Scope — project, issue types, date range, issues matched. (2) What moved in 14 days — key, summary, from status, to status, date. (3) Every Done issue with no resolution date or an inconsistent resolution. (4) Every In Progress issue with no update in 10 days. (5) Every issue with no assignee or an inactive one. (6) Every passed due date not Done. (7) Every epic whose children do not match its stated status. (8) A trust assessment and what I should check with a human.
 
-Read-only — do not modify, transition, comment on, or create any issue. Never infer that work is done because it looks done. Never estimate a completion percentage. State the exact query you ran.
+Use status history for transitions; updated_date alone cannot establish what changed. Check assignee activity only where author-attributed worklogs or history are available; otherwise say not derivable. Read-only — do not modify, transition, comment on, or create any issue. Never infer that work is done because it looks done. Never estimate a completion percentage. State the exact query, reporting date and timezone.
 ```
 
 ### Three-audience stakeholder update
@@ -242,7 +242,7 @@ Three audiences. My VP wants: on track, what is at risk, what do you need — 60
 
 RESULT. `output/updates/exec-update.md` (under 200 words: one-line status with an honest RAG rating and its reason; shipped, three bullets in outcome terms; at risk with impact; what I need from you or "nothing this week"). `output/updates/team-update.md` (under 400 words: what shipped with people named; what is stuck and what would unstick it; what is next and who; one specific thing worth celebrating). `output/updates/customer-update.md` (under 300 words: what is new, benefit-first; any action required of them; what is coming, with no dates the tracker does not support).
 
-EDGES. Never claim something shipped unless it is Done with a resolution date. Never state an unsupported date. Never describe stalled work as on track. The RAG rating must be justified by data. Anything that cannot be described as a customer benefit stays out of the customer update.
+EDGES. Done with a resolution date supports internally completed, not shipped. Distinguish completion from release; claim customer availability only with verified release evidence showing who can use it and when. Omit internal-only work and unverified availability claims from customer updates. Never state an unsupported date or describe stalled work as on track. Justify the RAG rating with evidence.
 
 FLAG at the end of each file: what you were unsure about including, and what I should verify with the team.
 ```
@@ -260,7 +260,7 @@ Do not change any priority. Do not create or edit issues. This is analysis, not 
 ```prompt
 For everything moved to Done in [PROJECT] in the last [N] days, produce: `output/release-notes-customer.md` — benefit-first, no internal jargon, no issue keys; `output/release-notes-internal.md` — the full list with keys and technical detail; and `output/loop-closing.csv` — one row per customer who requested any of these: customer, contact, the request, the date they asked, the resolving issue, days elapsed, and a two-sentence personalised note referencing their original words.
 
-Use only the tracker and our linked feedback records. Never claim we shipped something not marked Done. Never claim a customer requested something without a record of it. Leave the note empty and flag the row if you cannot find their original wording.
+Use only the tracker, verified release evidence and linked feedback records. Done is completion, not proof of release. Customer notes and loop-closing drafts include only items confirmed available to the relevant customers; internal notes distinguish completed from released. Never claim a customer requested something without a record. Leave the note empty and flag the row if you cannot find their original wording. Draft only; do not send.
 
 Then tell me how many resolved items had a linked customer request and how many did not.
 ```
@@ -276,7 +276,7 @@ BACKGROUND. Month-end variance pack for leadership, from [BUDGET-VS-ACTUALS FILE
 
 RESULT. `output/variance-pack.xlsx` — Data tab (cleaned source rows, variance_usd and variance_pct as live formulas), Summary tab (totals by category and cost centre, formulas only), Waterfall tab (budget to actual: five largest favourable, five largest unfavourable, an "all other" line so the bridge ties exactly). And `output/variance-commentary.md`, two pages: status line (rows in/used/excluded, OK or PROBLEM); the headline; the five variances that matter, each decomposed into volume, rate, timing or one-off with line-level evidence cited; a FLAGS section; "what I cannot tell you from this data".
 
-EDGES. Never estimate a missing value — write "not recorded". Label every driver call evidence-based or hypothesis. State row counts on every total. No pasted values where a formula could be. Read-only on sources.
+EDGES. Never estimate a missing value — write "not recorded". Exclude incomplete budget/actual pairs from both comparable totals, list their row IDs and excluded budget, and label affected totals PARTIAL. A zero budget has no percentage baseline; write n/a rather than dividing by zero. Label driver calls evidence-based or hypothesis. State row counts, currency and reporting period on every total. No pasted values where a formula could be. Read-only on sources.
 
 Show me your plan first.
 ```
@@ -286,13 +286,13 @@ Show me your plan first.
 ```prompt
 Reconcile [INVOICES], [PAYMENTS] and [BANK STATEMENT]. Produce `output/reconciliation.xlsx`: Matched tab (three-way matches with the fee explaining any gross-to-net gap); Exceptions tab (one row per item that does not tie: type, the row ids from each file, financial impact, what a human should check first); Control tab (totals and counts proving Matched + Exceptions accounts for every row in all three files).
 
-NEVER force a match. Plausible but not certain goes to Exceptions as suspected, with reasoning. Never estimate a missing value. Read-only on sources.
+NEVER force a match. Plausible but uncertain goes to Exceptions as suspected. Separate legitimate unpaid invoices and timing differences from unexplained errors. Group related rows under one case ID so financial impact is not counted multiple times. Never estimate a missing value. Read-only on sources.
 ```
 
 ### Debtors chase drafts
 
 ```prompt
-From [INVOICES FILE], find every open invoice past due and group: 1–30, 31–60, 61–90, 91+ days. Draft one chase email per customer in `output/chase-drafts/` — friendly, firm, escalation, final notice by bucket. Every draft states the exact invoice ids and amounts. Top of each draft: a DO NOT SEND line listing anything to verify first, including any customer appearing in the latest reconciliation exceptions.
+From [INVOICES FILE] and [RECONCILIATION EXCEPTIONS FILE], find open invoices past due as of [DATE, TIMEZONE] and group: 1–30, 31–60, 61–90, 91+ days. Draft one chase email per customer in `output/chase-drafts/` — friendly, firm, escalation, final notice by oldest overdue invoice. Every draft states exact invoice IDs and amounts. Add a DO NOT SEND line listing unresolved reconciliation cases and anything else to verify first.
 
 Do not send anything. Do not connect to email. Drafts on disk only.
 ```
@@ -307,16 +307,16 @@ You are a proofreader with no stake in this being right. Sources: [THE DELIVERAB
 
 ## Scheduled-job wrapper
 
-Add this to any brief you put on a schedule. Remember: cloud scheduled tasks run against your connectors and the files in your Claude account — create the schedule inside a Project saved to your account (made with Start from scratch), which holds the instructions and knowledge only — Cowork does not change a Project's contents. Write the report to a connected Google Drive, OneDrive or SharePoint folder (unblock only that connector's create-file tool), not to a local folder. After the second run, confirm it read the first run's file.
+Add this to any scheduled brief. Use a Project saved to your account for instructions and knowledge, and test the task's actual execution setting and input access (see Schedules). Review downloadable results in the task conversation. A connected report folder is optional and requires a verified file-creation tool plus subsequent read access; a connection alone does not provide those capabilities. After the second run, confirm whether it could read the first report. If persistent storage is unavailable, provide the baseline yourself or keep comparisons manual.
 
 ```prompt
 Every [DAY] at [TIME].
 
-Compare against the previous report file in [CONNECTED REPORT FOLDER] and report only the DELTA — what is newly a problem and what has been fixed. If there is no previous file, say "first run, no comparison available".
+Compare against the previous report in [VERIFIED REPORT SOURCE] and report the DELTA. If it is unavailable, say "no comparison baseline available" and make no change claims. Produce a downloadable report in this conversation if a connected file-creation tool is unavailable.
 
 Start the file with a status line: date, records queried, records returned, and OK or PROBLEM.
 
-If any source is unreachable, returns zero records, or anything else prevents a normal run: still write the file, put PROBLEM in the status line, state exactly what failed, and write nothing else. Never write a normal-looking report from missing data.
+If a source is unreachable, incomplete or unexpectedly empty, produce a PROBLEM report identifying the failure and stop the analysis. A verified query with no matching records is EMPTY, not a failed connection. Never write a normal-looking analysis from missing data.
 
 If nothing needs attention, write "Nothing needs attention this week" plus the status line, and stop. Do not pad the file.
 

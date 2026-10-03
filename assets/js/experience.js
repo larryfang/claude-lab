@@ -118,11 +118,12 @@
       });
       var first = picked[0], allDone = !pending.length;
       document.getElementById('sessionRecommendation').innerHTML = '<span class="micro-label">' + (allDone ? 'REVISIT YOUR ROUTE' : 'YOUR NEXT SESSION') + '</span><h3>' + esc(first.title) + '</h3><p class="session-estimate">' + icon('clock') + ' About ' + mins + ' min · ' + picked.length + (picked.length === 1 ? ' lesson' : ' lessons') + '</p>' +
-        '<p class="session-first">' + (picked.length > 1 ? 'Then: ' + picked.slice(1).map(function (l) { return esc(l.title); }).join(' → ') : esc(first.summary)) + (mins > limit ? ' This lesson is longer than your time slot; pause whenever you need.' : '') + '</p><a class="btn btn-primary" href="' + api.pathLessonHref(c.id, first.id, p.id) + '">' + (allDone ? 'Review' : 'Start this session') + ' ' + icon('arrow') + '</a><a class="session-route" href="#/' + c.id + '/path/' + p.id + '">Full route · ' + api.fastPathMinutes(c, p) + ' min ' + icon('arrow') + '</a><p class="session-note">Route outcome: ' + esc(g.outcome) + ' The route continues beyond this session.</p>';
+        '<p class="session-first">' + (picked.length > 1 ? 'Then: ' + picked.slice(1).map(function (l) { return esc(l.title); }).join(' → ') : esc(first.summary)) + (mins > limit ? ' This lesson is longer than your time slot; pause whenever you need.' : '') + '</p><a class="btn btn-primary" href="' + api.pathLessonHref(c.id, first.id, p.id, allDone ? null : picked.map(function (l) { return l.id; }).join(',')) + '">' + (allDone ? 'Review' : 'Start this session') + ' ' + icon('arrow') + '</a><a class="session-route" href="#/' + c.id + '/path/' + p.id + '">Full route · ' + api.fastPathMinutes(c, p) + ' min ' + icon('arrow') + '</a><p class="session-note">Route outcome: ' + esc(g.outcome) + (allDone ? ' Review at your pace, or choose another route.' : ' Finish this session, then decide when to continue the route.') + '</p>';
     }
     goal.addEventListener('change', update); time.addEventListener('change', update); update();
     var jump = document.querySelector('[data-open-planner]');
     if (jump) jump.addEventListener('click', function () { goal.focus({ preventScroll: true }); document.querySelector('.session-planner').scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' }); });
+    if (jump && new URLSearchParams(location.hash.split('?')[1] || '').get('plan') === '1') jump.click();
   }
 
   function studioPage(api) {

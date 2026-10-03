@@ -11,22 +11,26 @@ The three sources here are your invoices, the payment processor's report and the
 In the `finance/` subfolder, create realistic but entirely FICTIONAL practice data for a reconciliation exercise. Invent all names.
 
 Create:
-- `invoices.csv` — 30 rows: invoice_id, customer, issue_date, due_date, amount_usd, status (open/paid)
+- `invoices.csv` — 30 rows: invoice_id, customer, issue_date, due_date, amount_usd, status (open/paid). Exactly 25 paid invoices and 5 genuinely open invoices; include overdue open invoices in each ageing bucket
 - `payments.csv` — 26 rows: payment_id, invoice_id, date, gross_usd, fee_usd, net_usd
 - `bank-statement.csv` — 25 rows: date, reference, amount_usd, description
 
-Seed exactly these problems, and do not tell me where they are:
+Start with one payment for each of the 25 paid invoices. Add one duplicate to reach 26 payments, then seed these problems on distinct records so the cases do not overlap:
 - one invoice paid twice
 - two invoices with a payment but no bank line (missing settlement)
 - one payment where the bank amount differs from net_usd by a small fee discrepancy
 - one bank line with a reference that matches nothing
-- one payment applied to the wrong invoice_id (amount matches a different invoice exactly)
+- one payment applied to the wrong invoice_id (point it at an open invoice; preserve evidence of its intended invoice in the bank description)
 
-Every other row must tie exactly. Leave the files loose in `finance/`.
+All other paid invoice–payment–bank sets must tie exactly. The five open invoices legitimately have no payment; these are expected outstanding items, not extra seeded errors. The bank row count is 26 payments minus 2 missing settlements plus 1 unmatched bank line = 25.
+
+Save an answer key outside `finance/`, at `answer-key/reconciliation.md`: the source IDs for each of the six error cases, expected matches, expected open invoices, and totals/counts from each file. Check that the generated files actually satisfy these constraints before calling the key complete.
 ```
 
-- [ ] Files created — and you genuinely do not know where the problems are, which makes the next part a real test
+- [ ] Files and answer key created; I checked the counts and a sample of the seeded cases
 :::
+
+Start a new task for the reconciliation, using only the three CSVs and the brief below. Keep the answer key out of its inputs and check enabled memory. Generated practice data is not automatically a valid test fixture; use the key and source rows to judge the result.
 
 ## Part 2 — The reconciliation (10 min)
 
@@ -36,7 +40,7 @@ BACKGROUND. I need to reconcile invoices, payments and the bank statement for th
 
 RESULT. Produce `output/reconciliation.xlsx` with three tabs:
 1. Matched — every fully matched invoice–payment–bank set: invoice_id, payment_id, bank reference, amounts at each stage, and the fee explaining any gross-to-net difference
-2. Exceptions — a three-tier report: (a) exact matches confirmed — a count only, their rows stay on Matched, (b) timing differences likely to resolve within days, (c) unexplained variances requiring investigation. Within the investigation tier, one row per item with columns: type (duplicate payment / missing settlement / amount mismatch / unmatched bank line / suspected misapplication), the row ids involved from each file, the financial impact in USD, and what a human should check first
+2. Exceptions — separate expected open invoices, timing differences with evidence, and unexplained items requiring investigation. For each investigation case: type (duplicate payment / missing settlement / amount mismatch / unmatched bank line / suspected misapplication), source row ids, financial impact in USD, and what a human should check first. Link related rows to one case so the same amount is not counted twice
 3. Control — the totals: sum of invoices, payments and bank lines, counts of matched and unmatched from each file, and a single line stating whether Matched + Exceptions accounts for every row in all three files
 
 Also produce `output/reconciliation-summary.md`: five lines maximum — items matched, exceptions found by type, total financial impact of exceptions, and the single most urgent item.
@@ -59,8 +63,8 @@ Show me your plan before you start.
 This is the rare lab where you know the right answer: five seeded problem types, six items in all (the missing settlement is seeded twice). Did it find all six? Did it invent a seventh that is not real? A reconciliation that **misses** an exception is dangerous; one that **invents** exceptions wastes the reviewer's trust. Both failure modes matter, and you have just measured your setup against each.
 :::
 
-:::note Why "three-tier"?
-The tiered wording comes from a write-up of the AR-to-GL reconciliation workflow that Anthropic's finance team automates, which uses exactly this structure: *"Specifying 'three-tier' forces Claude to categorise rather than summarise."* ([CFO Connect](https://www.cfoconnect.eu/resources/finance-insights/finance-workflows-anthropic-automates-claude-prompts/)) An AR-to-GL reconciliation skill shown in the team's webinar surfaced a **$33k discrepancy live**. ([CFO Connect recap](https://www.cfoconnect.eu/resources/finance-insights/anthropic-finance-team-claude-skills/))
+:::note Expected open items are different from unexplained breaks
+An unpaid invoice is not automatically a bad reconciliation. Keep legitimate outstanding items visible, distinguish evidence-backed timing differences from unexplained variances, and link related rows to one case. The six deliberately seeded errors are separate from the five expected open invoices. Judge both against the answer key and source records.
 :::
 
 :::concept Why "never force a match" is the whole lab
@@ -73,7 +77,7 @@ Now the ageing follow-up — the weekly task most reliably skipped.
 
 :::lab Step 3 — Tone-graded drafts, never sent
 ```prompt
-Using `finance/invoices.csv`, find every open invoice past its due date and group by days overdue: 1–30, 31–60, 61–90, 91+.
+Using `finance/invoices.csv` and the Exceptions tab in `output/reconciliation.xlsx`, find every open invoice past its due date and group by days overdue: 1–30, 31–60, 61–90, 91+. State the as-of date and timezone. For a customer in several buckets, use the oldest overdue invoice to choose the tone and list each invoice separately.
 
 For each overdue customer, draft a chase email in `output/chase-drafts/` (one file per customer, named by customer):
 - 1–30 days: friendly reminder, assume oversight

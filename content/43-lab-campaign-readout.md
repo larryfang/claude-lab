@@ -27,7 +27,7 @@ RESULT. Two files in `output/`:
 2. Every channel-name variant found and what you mapped it to
 3. Every row where a rate cannot be computed (zero denominator) and how you marked it
 4. Every row with spend but no clicks, or clicks but no spend — these are usually tracking failures unless the channel is unpaid (email, organic, referral); list them all and say which
-5. Every row with a funnel impossibility: negative values, or more SQLs than MQLs or more opportunities than SQLs that conversion lag from an earlier period cannot explain
+5. Invalid negative counts, plus possible funnel-definition anomalies such as more SQLs than MQLs. Check whether lag, direct entry or different cohorts can explain them; if the export cannot answer that, mark the cause unverified
 6. Every duplicate or near-duplicate row
 7. Date coverage: the actual range, and any gaps
 8. A trust score out of 10 for this dataset, with reasoning
@@ -42,12 +42,12 @@ Show me your plan first.
 ```
 
 - [ ] Row counts match
-- [ ] It found funnel impossibilities or tracking failures
+- [ ] It checked anomalies and distinguished confirmed errors from unresolved definitions
 - [ ] The trust score is justified
 :::
 
 :::tip Section 5 is where the real problems live
-"More SQLs than MQLs" is not a rounding issue. First rule out conversion lag — last month's MQLs becoming this month's SQLs. If lag cannot explain it, your funnel definitions differ between systems, or leads are entering mid-funnel, or someone is double-counting. Finding those rows is often more valuable than the entire performance analysis that follows — and it is the finding your CMO will actually thank you for.
+More SQLs than MQLs can reflect last month's leads converting now, direct entry, different definitions, or double counting. Counts from a monthly snapshot do not establish a single conversion cohort. Flag the row and check the definitions before treating it as an error or calculating a conversion rate.
 :::
 
 ## Part 2 — The funnel model (6 min)
@@ -60,26 +60,29 @@ RESULT. `output/funnel-model.xlsx`, with four tabs:
 
 Tab "Data" — the cleaned rows. Header frozen, currency formatted.
 
-Tab "Funnel" — by channel and by month: spend, impressions, clicks, MQLs, SQLs, opportunities, and every conversion rate between adjacent stages. All as LIVE FORMULAS reading from Data, never pasted values.
+Tab "Funnel" — by channel and by month: spend, impressions, clicks, MQLs, SQLs, opportunities, and rates between adjacent stages where the cohorts and definitions are comparable. Use LIVE FORMULAS reading from Data. Each aggregate rate is SUM(numerator) / SUM(denominator), not the average of row rates; a zero or unknown denominator is "n/a". Label ratios of period counts as such if cohort conversion cannot be established.
 
-Tab "Efficiency" — channels ranked by cost per opportunity, with cost per MQL and cost per SQL alongside. Add a column for the number of underlying rows, so it is obvious which rankings rest on three data points and which rest on three hundred.
+Tab "Efficiency" — channels ranked by cost per opportunity, with cost per MQL and cost per SQL alongside. Show total spend, the actual MQL, SQL and opportunity counts, date coverage, and number of source rows. Row count is a coverage check, not a statistical sample-size measure. Mark comparisons with unequal cohorts, definitions or attribution windows as limited.
 
 Tab "Excluded" — every row not counted in the Funnel tab, with the reason and the total spend those rows represent.
 
 INPUTS. Only `output/campaign-clean.csv`.
 
-EDGES. No hard-coded totals where a formula would do. Rows flagged as funnel impossibilities go in Excluded, not Funnel — and show their spend total separately so I know how much of the budget is unexplained. Never fabricate a value to complete a calculation.
+EDGES. No hard-coded totals where a formula would do. Put confirmed invalid rows and unresolved rows that prevent a comparable calculation in Excluded, with distinct reasons. Do not discard legitimate lag or direct-entry records as errors. Show known excluded spend plus the count with unknown spend, and label affected totals PARTIAL. Never fabricate a missing value or turn it into zero.
 
-FLAG: every channel whose ranking rests on fewer than five rows.
+FLAG: rankings resting on few outcomes, uneven observation periods or unresolved attribution. Report the counts; do not use a five-row threshold as proof of statistical reliability.
 ```
 
 - [ ] The spreadsheet opens and the formulas are live
-- [ ] The Efficiency tab shows the sample size per row
+- [ ] The Efficiency tab shows outcome counts, coverage and comparability limits
+- [ ] I checked that aggregate rates use ratios of totals, not averages of row rates
 - [ ] The Excluded tab shows how much spend is unexplained
 :::
 
-:::warning The sample-size column is not optional
-"Channel X has the best cost per opportunity" is a very different statement when channel X produced two opportunities than when it produced two hundred. Without a sample-size column next to every ranking, you will recommend reallocating a budget on the basis of noise — confidently, in a deck, to your CMO.
+:::warning Check the denominator
+Two opportunities and two hundred support different levels of confidence, regardless of how many CSV rows contain them. A row may represent a day, a campaign or an entire month.
+
+Also check the aggregate formula: 20 SQLs from 100 MQLs plus 8 from 10 gives **28 / 110 = 25.45%**, not the **50%** average of the two row rates. A larger count alone does not establish statistical significance or causal impact.
 :::
 
 ## Part 3 — The readout (7 min)
@@ -101,7 +104,7 @@ RESULT. `output/campaign-readout.md`, two pages maximum:
 
 INPUTS. `campaign-clean.csv`, `funnel-model.xlsx`, `data-integrity.md`.
 
-EDGES. Every claim needs a number from the model, and every ranking claim needs its sample size stated. Never describe a difference as significant if the sample cannot support it — say "the sample is too small to call". Never present a cost-per-opportunity figure without noting the excluded spend. Two pages maximum.
+EDGES. Every claim needs evidence from the model. For each ranking, state the outcome counts and comparability limits. Do not call a difference statistically significant without an appropriate stated analysis; describe observed differences and uncertainty instead. Separate observational associations from causal claims. Never present cost per opportunity without noting excluded or unknown spend. Two pages maximum.
 
 FLAG: any recommendation where you are less than confident, and say why.
 ```
@@ -134,7 +137,7 @@ Find out which of these explains your gap **before** you present. "Marketing say
 
 ## Part 5 — Make it a Monday job
 
-This chain — integrity, model, readout — is a strong scheduled task once the campaign data comes from a connector, because it is read-only. Cloud scheduled tasks cannot read local folders, so the scheduled version writes to a connected Google Drive, OneDrive or SharePoint folder.
+This chain — integrity, model, readout — is a useful scheduled draft once input access has been tested. Check the task's execution setting and the actual tools available. Review the downloadable output in its conversation, or use a folder only when the connector supports creating files there. Local-folder tasks may require Claude Desktop to stay open; see Module 8 for the current cloud transition.
 
 - [ ] Save all three briefs as a sequence
 - [ ] Note your actual channel taxonomy and hard-code it, so it does not get re-derived each run
@@ -168,12 +171,12 @@ Q: A readout that includes "what this data cannot tell you" is…
 - Only appropriate for internal use
 > Stating your limits earns credit for everything else in the document.
 
-Q: You find rows with more SQLs than MQLs, and conversion lag from an earlier month cannot explain them. What does this most likely mean?
+Q: You find more SQLs than MQLs in a monthly export. What should you check?
 - A rounding error
-+ Funnel definitions differ between systems, leads are entering mid-funnel, or something is double-counted — a real problem worth more than the performance analysis
++ Conversion lag, direct entry, cohort definitions and double counting before deciding whether the row is an error
 - The data is fine
 - The campaign over-performed
-> Once lag is ruled out, impossible funnel arithmetic is a definitional problem, and finding it is often the most valuable output of the run.
+> Monthly counts need not represent one conversion cohort. Establish their definitions before interpreting a ratio.
 
 Q: Marketing reports 40 opportunities; the CRM says 27. What is the right move before presenting?
 - Use the CRM number, it is authoritative

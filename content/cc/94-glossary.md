@@ -8,7 +8,7 @@ Every term in this course, in one or two sentences, in the words the lessons use
 
 **Context window** — everything Claude holds for a session: your messages, every file it read, every command's output. It is large, but it fills fast.
 
-**Context rot** — the drop in quality as the context window fills: Claude starts forgetting earlier instructions and making more mistakes. The reason every best practice protects the context.
+**Context rot** — a risk that irrelevant, conflicting or lengthy context makes Claude lose useful details or focus. Inspect the actual failure; a full window is not the only cause of a mistake.
 
 **Plan mode** — research before implementation. Source edits are normally blocked while planning, except in interactive terminal sessions with bypass permissions available. Enter with `Shift+Tab`; edit the plan with `Ctrl+G`. See the [current mode rules](https://code.claude.com/docs/en/permission-modes).
 
@@ -48,7 +48,7 @@ Every term in this course, in one or two sentences, in the words the lessons use
 
 **TDD (test-driven development)** — write a failing test first, then the code that makes it pass. With an agent, the test is the definition of done.
 
-**Stop hook** — a hook that runs your check when Claude tries to finish, and blocks the turn from ending until the check passes.
+**Stop hook** — a handler invoked when Claude tries to finish. It can keep Claude working with exit code 2 or a supported JSON blocking decision. Ordinary test exit code 1 does not block; test the handler and guard against continuation loops.
 
 **Regression test** — a test you keep after fixing a bug. It fails if the bug ever comes back, and documents the bug better than a comment.
 
@@ -64,11 +64,11 @@ Every term in this course, in one or two sentences, in the words the lessons use
 
 **Custom command** — a Markdown file in `.claude/commands/` that becomes a slash command. `$ARGUMENTS` passes in what you type after it.
 
-**Hook** — a script that runs at a lifecycle event, configured in `.claude/settings.json`. An instruction can be forgotten; a hook always happens. Hooks in a skill's frontmatter stay active for the rest of the session; a subagent's run only while it runs.
+**Hook** — a handler attached to a matching lifecycle event, configured in `.claude/settings.json` or supported frontmatter. It invokes automatically, but its configuration, dependencies and failure behavior still need testing. Skill hooks stay active for the rest of the session; a subagent's run only while it runs.
 
 **PreToolUse** — the hook event before a tool runs. It can block the call (with `exit 2`), so it is used to protect files and guard dangerous commands.
 
-**PostToolUse** — the hook event after a tool runs, used to format, lint or run the affected tests after every Edit or Write call.
+**PostToolUse** — the hook event after a tool succeeds, used to format, lint or run affected tests after matching Edit or Write calls. It does not undo a tool action that has already happened.
 
 **MCP (Model Context Protocol)** — the open standard for connecting Claude Code to tools and data. Add a server with `claude mcp add`; project servers live in `.mcp.json`.
 
@@ -78,7 +78,7 @@ Every term in this course, in one or two sentences, in the words the lessons use
 
 **Allowlist** — permission rules, set with `/permissions` or in settings, that let named tools or commands run without asking.
 
-**Safe mode** — `claude --safe-mode` starts with every customisation off, to debug a broken configuration.
+**Safe mode** — `claude --safe-mode` disables customizations to debug a broken configuration. Managed policy, built-in tools, authentication and permission handling still apply.
 
 ## Failure patterns
 

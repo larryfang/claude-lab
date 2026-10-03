@@ -82,7 +82,7 @@ A separate task reduces the influence of the builder's conversation. It can stil
 ## Make it permanent
 
 - [ ] Save the proofreading brief — in Module 8 it becomes your **first finance Skill**, and it should be built before any automation
-- [ ] The whole chain — variance pack, reconciliation, pack, proofread — is your capstone candidate, and Module 8 puts the read-only parts on a schedule (writing to a connected Drive, OneDrive or SharePoint folder, as cloud scheduled tasks cannot reach local folders)
+- [ ] The chain — variance pack, reconciliation, pack, proofread — is your capstone candidate. Before scheduling its draft stages, check the execution setting and storage path in Module 8. Cloud work can continue with your computer off; local-file access still needs Desktop open. Use only connector tools whose read/write capabilities you have tested
 
 ## Reflect
 

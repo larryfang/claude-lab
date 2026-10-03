@@ -26,13 +26,13 @@ The reverse risk is worse: a reorganisation that copies not-downloaded placehold
 Four causes, in likelihood order:
 
 1. **Wrong instance** — production versus sandbox, or the wrong workspace.
-2. **Your own permissions** — a connector sees only what your account sees.
+2. **Permissions and tool coverage** — the connector may expose less than the website, depending on your identity, scopes and available tools. Check which account and tools it actually uses.
 3. **The query** — the filter or date range excludes everything. Ask: *"State the exact query you ran."* Half the time the query is wrong, not the connection.
 4. **Pagination** — it retrieved the first page only. Ask: *"How many records matched in total, and how many did you retrieve?"* For large pulls, a CSV export is often more reliable.
 :::
 
 :::details It says it cannot access a connector mid-run
-Sign-ins expire or get revoked — a password change, an admin policy, or the service's own token lifetime. Disconnect and reconnect under Customize → Connectors. If a scheduled task started producing nothing, this is usually why, which is the argument for the status-line pattern in Module 8.
+Inspect the reported error first. For an authentication-expired or revoked error, reconnect under Customize → Connectors. For a forbidden query, unavailable tool, rate limit or service outage, address that specific cause; reconnecting does not resolve every failure. Include the error in the scheduled report's status line.
 :::
 
 ## Output quality
@@ -92,7 +92,7 @@ To fix the existing one: *"Rebuild the Model tab so every figure is a formula re
 ## Runs and control
 
 :::details It modified files I did not want it to touch
-The Eager Rewrite — the one failure mode that is not recoverable.
+The Eager Rewrite — unintended changes to source files. Recovery depends on backups or version history.
 
 Right now: check whether your file system, backup, or sync service has version history. Many do.
 
@@ -140,13 +140,13 @@ Run the colleague test on the Skill: *"Read this as a new colleague who does not
 :::
 
 :::details My scheduled task produces nothing
-Usually an expired connector token. Reconnect.
+Inspect the run history and reported error first. Check authentication, source permissions, query scope, tool availability and output location. Reconnect only when the error calls for it.
 
-Then fix the design so it cannot fail silently again: add a status line, and *"If any source is unreachable or returns zero records, still write the file, put PROBLEM in the status line, and state exactly what failed. Never write a normal-looking report from missing data."*
+Then add a status line and a failure path: *"If a source is unreachable, incomplete or unexpectedly empty, produce a PROBLEM report identifying the failure. A verified query with no matching records is EMPTY. Never produce a normal-looking analysis from missing data."*
 :::
 
 :::details My scheduled task did not run at the scheduled time
-If it is a cloud task, it is not your machine — cloud scheduled tasks run on their cadence even when your computer is asleep or the app is closed. A task that needs local files or apps runs only on your computer, so it needs the computer awake and the desktop app open. Check the run history under **Scheduled** in the sidebar; the usual causes are an expired connector token, a cloud job that tried to reach a **local folder** (cloud runs can only use connectors and files in your Claude account), or the time zone the schedule is set relative to.
+Check **Scheduled** for the run history, timezone, errors and actual execution setting. Cloud tasks can run with your computer off, but access to local files or apps needs Desktop open. On **6 October 2026**, new Pro and Max tasks move to the cloud, including tasks using local files; existing local tasks stay local. Do not infer execution location from a folder path. Check the [transition guidance](https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile) before adapting a schedule.
 :::
 
 :::details Output from a Project is subtly and consistently wrong
@@ -180,7 +180,7 @@ Security teams say yes to specific proposals with controls far more often than t
 :::details Can I use this with customer PII?
 That is your company's policy question, not a tool question. Get the answer in writing before you connect anything containing it.
 
-Where the policy is restrictive, ask Cowork to anonymise on the way in — it can replace names with stable identifiers and still do the analysis. Note that anonymisation is not perfect for small datasets, where a role plus a company size can identify someone.
+If policy requires anonymisation before upload, do it with an approved process **before** giving the data to Claude; asking the receiving service to anonymise it has already disclosed the original. Use fictional practice data when approval is unavailable. Stable identifiers and small datasets can still permit re-identification, so follow your organisation's standard.
 :::
 
 :::details It disagreed with my judgement. Who is right?

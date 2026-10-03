@@ -28,9 +28,9 @@ Every term used in this lab, in one sentence each.
 
 **Claude in Chrome** — a browser extension that lets Claude read and act on web pages in your own logged-in session. Not sandboxed.
 
-**Workspace folder** — the folder you grant Cowork. It reads and writes there and nowhere else. Your primary safety control.
+**Workspace folder** — a folder you grant Claude access to; connectors, browser access and other file grants can provide additional reach, so review each access path.
 
-**Smoke test** — a read-only query with a known answer, run against a new connector to prove it returns correct data before you build anything on it.
+**Smoke test** — a read-only query with a known answer that checks basic connector access; it does not prove all queries are correct or complete.
 
 **Access log** — your own written record of every connector, its access level, what it can reach, and who reviews output. Two minutes to write; makes security conversations short.
 
@@ -64,7 +64,7 @@ Every term used in this lab, in one sentence each.
 
 **The Drift** — criteria or scoring that shift across a long run or across parallel subagents. Fixed with a consolidation pass.
 
-**The Eager Rewrite** — modifying, renaming or deleting source files you did not intend. The only failure mode that is not recoverable. Prevented by copies, narrow scope, and explicit write boundaries.
+**The Eager Rewrite** — unintended changes to source files. Copies, narrow access and explicit write boundaries reduce the risk; recovery depends on backups or version history.
 
 **Smoothing** — a limitation stated plainly in a source document becoming a positive framing downstream. Nothing false, and a rep can no longer answer the question.
 
@@ -82,9 +82,9 @@ Every term used in this lab, in one sentence each.
 
 **Red-team pass** — asking Cowork to attack its own deliverable as the person most motivated to find a problem with it.
 
-**Sample size column** — the count of underlying records next to every ranking, so you do not reallocate budget on the basis of two data points.
+**Sample size column** — the relevant outcome or observation count next to a comparison, with its unit and period; CSV row count alone does not establish statistical reliability.
 
-**Trust score** — Cowork's own assessment of how much a dataset can be relied on, with reasoning. Asked for in the ground-truth pass.
+**Trust score** — a model's qualitative assessment of data quality, which must be checked against completeness, freshness and reconciliation evidence; not a calibrated probability.
 
 ## Role terms used in this lab
 
@@ -108,12 +108,12 @@ Every term used in this lab, in one sentence each.
 
 ## Claude surfaces
 
-**Claude.ai / chat** — the browser interface. Answers and drafts, turn by turn.
+**Claude.ai / chat** — the browser interface, supporting conversations and tasks; in the unified experience, the same conversation handles quick answers and multi-step work.
 
 **Claude Desktop** — the full local surface: chat, Cowork, connected folders, browser use, computer use and local connectors. Cloud sessions on web or mobile can reach a folder connected on your computer only while Desktop is open there and the session was started on desktop.
 
 **Claude Code** — the terminal-based agent for codebases. A separate course in this lab.
 
-**Claude for Excel** — the add-in that works on an open workbook directly: reads live formulas, edits without breaking dependencies, debugs formula errors. The better surface for heavy spreadsheet work — on company Microsoft 365 tenants an admin often has to allow or deploy it, so its absence is usually a policy request, not a bug.
+**Claude for Excel** — the add-in that reads and edits an open workbook, including formulas; check changes, recalculation and dependencies yourself. Company tenants may require admin approval or deployment.
 
 **Web and mobile Cowork (beta)** — Cowork also runs on claude.ai and the mobile apps. Cloud sessions work directly with account files, Projects and connectors; they can reach connected local folders (only in a session started on desktop), browser use and computer use through an open Desktop app, with some desktop-only limitations. The product ships fast and evolves quickly, so screens and features shift; the concepts in this course do not.

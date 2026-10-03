@@ -2,10 +2,10 @@
 
 Claude Code is a strong debugger for one reason: it can **run the code**. It can reproduce the failure, read the logs, try a change and run the tests again — the whole loop, without you copying anything between windows.
 
-It also has one dangerous habit. Asked to "fix the error", it will happily make the error *go away*: a null check, a `try/except`, a skipped test. The symptom disappears and the bug moves somewhere quieter. This lesson is about getting the first behaviour and never the second.
+Asked only to "fix the error", Claude may suppress the symptom without fixing the cause. A null check or exception handler can be correct when it implements the intended behavior; it is a shortcut when it hides a failure that should remain visible. Skipping a failing test is not a fix.
 
 :::concept The rule that changes everything
-**No fix without a reproduction, and no reproduction without a failing test.** If Claude cannot make the bug happen on demand, it cannot prove it fixed it — and neither can you.
+**Reproduce the failure, then verify the intended behavior after the fix.** For a code bug, prefer a deterministic regression test that fails for the expected reason. When automation is impractical, record a repeatable manual check, logs or an environment-specific reproduction and state the verification limit.
 :::
 
 ## The debugging loop
@@ -44,7 +44,7 @@ The notes file matters more than it looks. It survives a `/clear`, it stops Clau
 Write a test that fails because of this bug and only this bug. Run it and show me it fails for the reason we expect. Do not fix anything yet.
 ```
 
-A test that fails for the *right reason* is the proof that you found the cause. If it fails for a different reason, you have not found it yet.
+A test that fails for the *right reason* shows that the case exposes the bug. You still need evidence connecting it to the cause. If it fails for a different reason, fix the reproduction before using it to judge a change.
 
 ### 5. Fix the cause, not the symptom
 
@@ -54,7 +54,7 @@ Now fix the cause in the code. Do not change the test, do not add a try/except o
 
 ### 6. Verify and 7. Guard
 
-Run the **whole** suite, not just the new test — fixes break neighbours. Then keep the test. It is now a regression guard, and it documents the bug better than any comment.
+Run the regression and the relevant existing checks; broaden to the full suite when the change could affect neighboring behavior or the repository requires it. Keep the regression as a guard, and document any manual or unavailable checks.
 
 ## When the bug is hard to find
 
@@ -63,7 +63,7 @@ Run the **whole** suite, not just the new test — fixes break neighbours. Then 
 | The failure started recently, and you do not know which change caused it | Have Claude run `git bisect` with the failing test as the check, so git finds the first bad commit |
 | The investigation needs to read many files | Hand it to a **subagent**, so only the findings come back into your context |
 | Two fixes have failed | `/clear`, and start a new session with the error, `debug-notes.md` and what you ruled out |
-| It only fails in CI | Get the exact CI command and environment into the prompt; reproduce locally before changing code |
+| It only fails in CI | Capture the exact command and environment; reproduce locally or in an isolated CI run, then validate in the environment that originally failed |
 | It is intermittent | Ask for a loop that runs the test many times, and log the conditions of each failure before theorising |
 
 ```prompt

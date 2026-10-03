@@ -108,6 +108,9 @@ description: >-
 - No adjective without a number. "Strong performance" needs the metric.
 - State the attribution model used, in the document.
 - Read-only on all sources.
+- Compute aggregate rates as ratios of totals, not averages of row rates.
+  State outcome counts, cohort definitions and observation periods; source
+  row count alone is not a statistical sample-size measure.
 
 ## Flag separately
 - Campaigns with spend but no trackable outcome
@@ -145,6 +148,9 @@ description: >-
 
 ## Rules
 - Every status claim cites the tracker item and its last-updated date.
+- Done means internally completed. Claim shipped or customer-available
+  only with verified release evidence and the relevant availability date.
+- Derive status transitions from history, never from updated_date alone.
 - Stalled items are reported as stalled, with days since last update.
 - Any "why this order" statement uses my sequencing principles above —
   never an invented rationale.
@@ -187,6 +193,8 @@ description: >-
 
 ## Rules
 - Never estimate a missing value — write "not recorded".
+- Exclude an incomplete budget/actual pair from both comparable totals.
+  Report the excluded budget and row IDs, and label affected totals PARTIAL.
 - Label every driver call as evidence-based or hypothesis.
 - State row counts in and out for every total.
 - A miss is a miss, not a "timing nuance" — unless the evidence shows timing.
@@ -229,7 +237,7 @@ Q: What does the plugin **Customize** flow do?
 A: Claude opens a session, inspects your connected tools, interviews you, and rewrites the plugin's skills for your stack.
 
 Q: What is the cold test?
-A: Install the Skill, then ask for the job in natural language, with no brief. It proves the Skill fires on its own from its description.
+A: Install the Skill, ask naturally without the brief, and check the activity or thinking view to confirm it loaded. Matching output alone does not prove invocation.
 ```
 
 ```quiz
@@ -240,12 +248,12 @@ Q: Why do the templates ship with [BRACKETS] instead of finished definitions?
 - To avoid copyright issues
 > Stage weightings, thresholds, project keys, sequencing principles: those are yours, and they are the whole point.
 
-Q: When is explicit /skill-name invocation better than letting the skill auto-fire?
-+ When the job has side effects or must run exactly and predictably — like /variance-pack on close day
+Q: When is explicit /skill-name invocation useful?
++ When you want to select a particular installed skill, such as /variance-pack on close day
 - Always; auto-fire is unreliable
 - Never; slash commands are for developers
 - Only on Enterprise plans
-> Auto-fire is the everyday path and the cold test proves it. Explicit invocation is for deliberate, exact runs.
+> Explicit invocation selects the instructions. It does not guarantee correct output or replace permissions and review.
 
 Q: Before adapting a template, what should you check first?
 + Whether the official plugin for your function already covers the job — then customise where it misses your standards
