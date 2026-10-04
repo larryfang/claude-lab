@@ -1,6 +1,6 @@
 # Administrator analytics dashboard — 4 October 2026
 
-The private dashboard at `#/admin` gives the course owner a view of registered learner activity and a separate view of guest browser usage. Access uses the existing confirmed owner allowlist; no additional administrator, credential or service-role key is introduced.
+The private dashboard at `#/admin` gives the course owner a view of registered learner activity and a separate view of guest browser usage. Access is pinned to the single existing confirmed owner account and its linked Google/GitHub identities; no additional administrator, credential or service-role key is introduced.
 
 ## Available views
 
@@ -31,7 +31,7 @@ Filters cover 7, 30 or 90 UTC calendar days and a selected course. Learner searc
 
 ## Access and operational changes
 
-Public reporting functions now use invoker wrappers around guarded private functions. Every privileged query checks a confirmed account against the server-owned allowlist. Ordinary users cannot select private tables, alter the allowlist or authorize themselves with editable metadata. Guest aggregate reports verify the same owner JWT before reading private Blob storage; existing report-token workflows remain supported. Responses use no-store caching and an explicit origin allowlist.
+Public reporting functions use invoker wrappers around guarded private functions. Every privileged query checks the single pinned Auth user, email confirmation and a matching trusted Google/GitHub provider identity. A singleton constraint prevents a second owner. Ordinary users cannot select private tables, change ownership or authorize themselves with matching emails or editable metadata. The historical email allowlist no longer grants access. Guest aggregate reports verify the same owner JWT before reading private Blob storage; legacy report tokens no longer bypass sign-in. Responses use no-store caching and an explicit origin allowlist.
 
 Private dashboard responses remain in memory. A stale response after navigation or sign-out cannot overwrite another page; permission denial removes the old dashboard. Exports escape text and spreadsheet formulas, apply directory filters and state their 10,000-row limit. Notebook and typed practice text are excluded.
 
@@ -42,13 +42,13 @@ The Vercel packaging check detected an excluded public configuration file; the c
 ## Verification
 
 - Full course/content, unit and browser suites, including SQL checks in an isolated temporary PostgreSQL cluster.
-- Database tests for anonymous/non-owner denial, confirmed owner access, metadata forgery, row isolation, dates/course scope, distinct users, weighted quiz totals, imports, selected sessions, search/pagination, activation and twelve cohort boundaries.
+- Database tests for anonymous/non-owner denial, single-owner configuration, independent Google/GitHub access, email/metadata impersonation denial, revocation, migration bootstrap, row isolation, dates/course scope, distinct users, weighted quiz totals, imports, selected sessions, search/pagination, activation and twelve cohort boundaries.
 - Browser tests for real filters/downloads, formula escaping, access revocation, late responses, retry behavior, empty reports, guest service failure, keyboard access, route aliases and both themes at 320px.
 - Live database checks of every report window, owner authorization and denied anonymous execution; migration records retained alongside the SQL source.
 - Collector deployment checks of unauthenticated/invalid-session rejection and the Pages-origin preflight. The deployed collector includes the current catalog of 71 lessons across eight paths.
 - External link validation and clean whitespace checks. GitHub runs the complete verification suite and publishes Pages on the release push; the final handoff records their outcomes and live owner-session checks.
 
-The final local full suite passed 68 unit/database checks and 117 browser checks, with no skipped checks. Coverage includes the startup race, stable selected filters, sign-in tracking and route aliases. Link validation passed for 124 live URLs, with the private report correctly requiring authentication. Production database checks confirmed owner access, denied anonymous execution, compatible legacy reporting, the twelve-cohort limit and zero privileged administrator functions exposed in the public schema. The refreshed security advisor reports zero errors; its remaining password-protection warning concerns the disabled Email provider. Live owner-session checks loaded both sources, verified date/course filtering and downloaded an aggregate report without account identities or credentials.
+The final local full suite passed 74 unit/database checks and 117 browser checks, with no skipped checks. Coverage includes the startup race, stable selected filters, sign-in tracking, route aliases and the single-owner restriction. Link validation passed for 124 live URLs after a transient network failure on one external endpoint. Production database checks confirmed exactly one administrator account, both linked provider identities pinned, owner access for all report windows, rejection of other accounts, denied anonymous execution and no learner read/write access to the private owner configuration. The migration was recorded alongside its SQL source. The refreshed security advisor reports zero errors; its remaining password-protection warning concerns the disabled Email provider. The deployed collector rejects unsigned requests, invalid sessions and retired-token headers/URLs; the live owner session loads both registered and guest metrics with the stricter authorization. Legacy SQL report compatibility and the twelve-cohort limit remain covered.
 
 This document contains no learner names, emails, tokens or production report snapshots.
 

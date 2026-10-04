@@ -2,7 +2,6 @@ import fs from "node:fs";
 import path from "node:path";
 import { loadCatalog, renderReport, summarize } from "../analytics/report.mjs";
 import { readEventStore } from "../analytics/blob-store.mjs";
-import { sameToken } from "../analytics/token.mjs";
 import { verifyOwner } from "../analytics/admin-auth.mjs";
 
 function openCatalog() {
@@ -22,20 +21,19 @@ const catalog = openCatalog();
 
 const allowedOrigins=new Set(['https://larryfang.github.io','https://claude-lab-usage.vercel.app','http://127.0.0.1:4173','http://127.0.0.1:4174','http://localhost:4173','http://localhost:4174']);
 
-export function createReportHandler({read=readEventStore,owner=verifyOwner,token=()=>process.env.ANALYTICS_TOKEN||'',lessons=catalog}={}) {
+export function createReportHandler({read=readEventStore,owner=verifyOwner,lessons=catalog}={}) {
  return async function report(req,res) {
   const headers={'cache-control':'no-store','x-frame-options':'DENY','referrer-policy':'same-origin','x-content-type-options':'nosniff',vary:'Origin'};
   const origin=req.headers.origin;
   if(origin&&!allowedOrigins.has(origin)){res.writeHead(403,headers);return res.end('Origin not allowed');}
   if(origin)headers['access-control-allow-origin']=origin;
   if(req.method==='OPTIONS'){
-   res.writeHead(204,{...headers,'access-control-allow-methods':'GET, HEAD, OPTIONS','access-control-allow-headers':'authorization, x-analytics-token','access-control-max-age':'600'});return res.end();
+   res.writeHead(204,{...headers,'access-control-allow-methods':'GET, HEAD, OPTIONS','access-control-allow-headers':'authorization','access-control-max-age':'600'});return res.end();
   }
   if(req.method!=='GET'&&req.method!=='HEAD'){res.writeHead(405,headers);return res.end('Method not allowed');}
   const url=new URL(req.url||'/', 'https://claude-lab-usage.vercel.app');
-  const given=url.searchParams.get('token')||req.headers['x-analytics-token']||'';
-  let permitted=sameToken(given,token());
-  if(!permitted&&req.headers.authorization){
+  let permitted=false;
+  if(req.headers.authorization){
    try{permitted=await owner(req.headers.authorization);}catch{res.writeHead(503,headers);return res.end('Owner verification is temporarily unavailable');}
   }
   if(!permitted){res.writeHead(401,headers);return res.end('Sign in with the course owner account to view this private report.');}

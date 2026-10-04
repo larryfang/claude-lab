@@ -27,7 +27,6 @@ const privileged=createClient(config.url,service,{auth:{persistSession:false,aut
 const client=()=>createClient(config.url,config.publishableKey,{auth:{persistSession:false,autoRefreshToken:false}});
 const users=[],contexts=[];let browser;
 const emailPrefix='claude-lab-test-'+randomUUID();
-let allowlisted=null;
 let checks=0;
 function ok(label){console.log('PASS '+label);checks++;}
 async function createLearner(n){
@@ -80,21 +79,13 @@ try{
  const daily=await a.client.from('learning_daily').select('*').eq('lesson','welcome');assert.equal(daily.data[0].quiz_attempts,1);
  const badDaily=await a.client.from('learning_daily').update({quiz_correct:100}).eq('user_id',a.id);assert.ok(badDaily.error);
  ok('events use verified identity, deduplicate and aggregate once; totals cannot be forged');
- const denied=await a.client.rpc('learning_admin_report');assert.ok(denied.error,'Editable metadata must not grant admin');
- const anonAdmin=await anon.rpc('learning_admin_report');assert.ok(anonAdmin.error);
- allowlisted=a.email;await sql("insert into private.course_admin_emails(email) values('"+a.email+"')");
- const report=await a.client.rpc('learning_admin_report');assert.equal(report.error,null);assert.ok(report.data.learners.some(u=>u.user_id===a.id));
- ok('owner allowlist authorizes report; guest and editable admin metadata do not');
- // Completed quick-start routes must not be labelled abandoned after inactivity.
- const paths=await a.client.from('path_catalog').select('lessons').eq('course','cowork').eq('path','essentials').single();
- const completed=Object.fromEntries(paths.data.lessons.map(id=>[id,true]));
- saved=await save(a.client,{courses:{cowork:{completed}},last:{c:'cowork',l:'verify',p:'essentials'}},saved.revision);
- await sql("update public.learning_daily set last_seen=now()-interval '8 days' where user_id='"+a.id+"'");
- const completeReport=await a.client.rpc('learning_admin_report');const row=completeReport.data.learners.find(u=>u.user_id===a.id);
- assert.equal(row.learning_status,'completed');assert.equal(row.likely_dropoff,false);
- completed.welcome=false;saved=await save(a.client,{courses:{cowork:{completed}},last:{c:'cowork',l:'welcome',p:'essentials'}},saved.revision);
- const pausedReport=await a.client.rpc('learning_admin_report');assert.equal(pausedReport.data.learners.find(u=>u.user_id===a.id).learning_status,'paused');
- ok('selected-route completion and inactivity classification');
+ for(const fn of ['learning_admin_access','learning_admin_dashboard','learning_admin_report']){
+  const denied=await a.client.rpc(fn);assert.ok(denied.error,'Disposable learners and editable metadata must not grant admin');
+  const anonAdmin=await anon.rpc(fn);assert.ok(anonAdmin.error);
+ }
+ // Owner access and journey classifications use the isolated SQL suite. This
+ // integration checker must never promote a disposable identity to administrator.
+ ok('all owner endpoints deny disposable learners, guests and editable metadata');
  saved=await save(a.client,{courses:{}},saved.revision);
  browser=await chromium.launch();
  const one=await open(a,{courses:{cowork:{completed:{'lab-setup':true}}},notes:{guest:{a:'Guest private note'}}});
@@ -119,11 +110,11 @@ try{
  await lesson(two.page,'welcome');await two.page.locator('#completeBtn').click();await sync(two.page);
  assert.ok(!(await state(a.client)).state.courses.cowork.completed.welcome);
  ok('explicit completion undo syncs');
- await one.page.evaluate(()=>location.hash='#/admin');await one.page.waitForSelector('.admin-stats');if(process.env.COURSE_TEST_SCREENSHOT)await one.page.screenshot({path:process.env.COURSE_TEST_SCREENSHOT,fullPage:true});assert.ok(await one.page.locator('text=Disposable learner 2').isVisible());
+ await one.page.evaluate(()=>location.hash='#/admin');await until(async()=> (await one.page.locator('#content').innerText()).includes('requires the course owner'),'Unauthorized dashboard missing');
  const extra=await privileged.from('learning_events').insert(Array.from({length:1100},()=>({user_id:a.id,id:randomUUID(),session_id:randomUUID(),type:'heartbeat'})));assert.equal(extra.error,null,'Export pagination seed');
  const [download]=await Promise.all([one.page.waitForEvent('download'),one.page.evaluate(()=>location.hash='#/account').then(()=>one.page.locator('#accountExport').click())]);
  const exported=JSON.parse(fs.readFileSync(await download.path(),'utf8'));assert.ok(exported.daily_totals.length);assert.ok(exported.events.length>1000,'Export must paginate beyond the server row cap');assert.equal(exported.progress.notes,undefined);
- ok('owner dashboard and private learning export');
+ ok('owner dashboard denied and private learning export paginates');
  await one.page.locator('#accountSignOut').click();await one.page.waitForSelector('#googleSignIn');
  assert.equal((await stored(one.page)).notes.guest.a,'Guest private note');assert.equal((await stored(one.page)).courses.cowork?.completed?.steering,undefined);
  const other=await open(b);assert.equal((await stored(other.page)).courses.cowork?.completed?.steering,undefined);
@@ -143,7 +134,6 @@ try{
  console.log('Verified '+checks+' live account checks.');
 }finally{
  for(const context of contexts)await context.close();if(browser)await browser.close();
- if(allowlisted)await sql("delete from private.course_admin_emails where email='"+allowlisted+"'");
  for(const id of users){const r=await privileged.auth.admin.deleteUser(id);if(r.error)throw Error('Disposable user cleanup failed');}
  console.log('Disposable users and their learning records removed.');
 }

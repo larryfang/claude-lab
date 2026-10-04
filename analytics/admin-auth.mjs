@@ -1,4 +1,4 @@
-/* Verify an owner JWT with the server-owned Supabase allowlist; no service key. */
+/* Verify a JWT against the single pinned Supabase owner account; no service key. */
 import '../assets/js/cloud-config.js';
 export async function verifyOwner(authorization, request=fetch) {
  if(typeof authorization!=='string'||!/^Bearer [A-Za-z0-9._-]{20,8192}$/.test(authorization))return false;

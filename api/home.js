@@ -13,6 +13,7 @@ const html = `<!DOCTYPE html>
 <body>
 <p>This address collects anonymous usage for Claude Lab and serves the private report.</p>
 <p>The course stays at <a href="https://larryfang.github.io/claude-lab/">larryfang.github.io/claude-lab</a>.</p>
+<p>The course owner can <a href="https://larryfang.github.io/claude-lab/#/admin">sign in to view the private dashboard</a> with Google or GitHub.</p>
 </body>
 </html>
 `;

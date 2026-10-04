@@ -14,7 +14,7 @@ test('administrator SQL metrics, pagination and private access', {skip:!availabl
  const env={...process.env,PGHOST:dir,PGPORT:'55439',PGDATABASE:'postgres',PGUSER:os.userInfo().username};
  const run=(bin,args,input)=>{const r=spawnSync(path.join(bindir,bin),args,{env,input,encoding:'utf8'});if(r.status!==0)throw Error(r.stderr||r.stdout);return r.stdout;};
  const sql=q=>run('psql',['-X','-A','-t','-v','ON_ERROR_STOP=1','-f','-'],q).trim();
- const as=(n,q)=>sql(`begin; set local role authenticated; select set_config('request.jwt.claim.sub','${uid(n)}',true); ${q}; rollback;`).split('\n').filter(x=>x.startsWith('{')||x==='t').at(-1);
+ const as=(n,q,setup='')=>sql(`begin; ${setup} set local role authenticated; select set_config('request.jwt.claim.sub','${uid(n)}',true); ${q}; rollback;`).split('\n').filter(x=>x.startsWith('{')||x==='t').at(-1);
  const dashboard=(extra='')=>JSON.parse(as(1,`select public.learning_admin_dashboard(${extra})`));
  let started=false;
  try{
@@ -22,7 +22,8 @@ test('administrator SQL metrics, pagination and private access', {skip:!availabl
   run('pg_ctl',['-D',path.join(dir,'db'),'-l',path.join(dir,'server.log'),'-o',`-h '' -k ${dir} -p 55439`,'-w','start']);started=true;
   sql(`create role anon; create role authenticated; create schema auth; grant usage on schema auth to anon,authenticated;
    create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
-   create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz,created_at timestamptz default now(),raw_user_meta_data jsonb default '{}',raw_app_meta_data jsonb default '{}');`);
+   create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz,created_at timestamptz default now(),raw_user_meta_data jsonb default '{}',raw_app_meta_data jsonb default '{}');
+   create table auth.identities(user_id uuid not null references auth.users(id) on delete cascade,provider text not null,provider_id text not null,identity_data jsonb default '{}',primary key(provider,provider_id));`);
   const migrations=fs.readdirSync(new URL('../supabase/migrations/',import.meta.url)).filter(f=>f.endsWith('.sql')).sort();
   for(const name of migrations){
    let source=fs.readFileSync(new URL('../supabase/migrations/'+name,import.meta.url),'utf8');
@@ -40,6 +41,11 @@ test('administrator SQL metrics, pagination and private access', {skip:!availabl
    ('${uid(5)}','return@example.invalid',now(),'{"full_name":"Returning"}','{"provider":"google"}'),
    ('${uid(6)}','unconfirmed@example.invalid',null,'{}','{}');
    insert into private.course_admin_emails values ('owner@example.invalid'),('unconfirmed@example.invalid');
+   insert into auth.identities(user_id,provider,provider_id) values
+    ('${uid(1)}','google','fixture-owner-google'),('${uid(1)}','github','fixture-owner-github'),
+    ('${uid(2)}','github','fixture-learner-github'),('${uid(6)}','google','fixture-unconfirmed-google');
+   insert into private.course_admin_owner(user_id,google_provider_id,github_provider_id)
+    values ('${uid(1)}','fixture-owner-google','fixture-owner-github');
    update public.learner_profiles set created_at=((now() at time zone 'UTC')::date-20)::timestamp at time zone 'UTC' where user_id in ('${uid(1)}','${uid(2)}','${uid(5)}');
    insert into public.learner_state(user_id,state) values
     ('${uid(2)}','{"courses":{"cowork":{"completed":{"welcome":true}}},"last":{"c":"cowork","l":"welcome","p":"essentials","s":"welcome"}}'),
@@ -50,7 +56,7 @@ test('administrator SQL metrics, pagination and private access', {skip:!availabl
     ('${uid(5)}',(now() at time zone 'UTC')::date-12,'cowork','welcome',1,1,0,0,30,now()-interval '12 days'),
     ('${uid(5)}',(now() at time zone 'UTC')::date-1,'cowork','welcome',1,1,0,0,30,now()-interval '1 day'),
     ('${uid(5)}',(now() at time zone 'UTC')::date,'code','intro',1,2,1,1,30,now());`);
-  await t.test('only a confirmed server-allowlisted owner can call either report',()=>{
+  await t.test('only the confirmed pinned owner can call every administrator endpoint',()=>{
    assert.equal(as(1,'select public.learning_admin_access()'),'t');
    assert.equal(JSON.parse(as(1,'select public.learning_admin_report()')).summary.learners,6);
    assert.equal(sql("select count(*) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname like 'learning_admin_%' and p.prosecdef"),'0');
@@ -58,6 +64,48 @@ test('administrator SQL metrics, pagination and private access', {skip:!availabl
    assert.throws(()=>sql('set role anon; select public.learning_admin_dashboard();'),/permission denied/);
    assert.throws(()=>as(4,'select * from private.course_admin_emails'),/permission denied/);
    assert.equal(sql(`begin;set local role authenticated;select set_config('request.jwt.claim.sub','${uid(4)}',true);select count(*) from public.learner_state;rollback;`).includes('\n0\n'),true);
+  });
+  await t.test('owner configuration allows one account and is unreadable and immutable to learners',()=>{
+   assert.equal(sql('select count(*) from private.course_admin_owner'),'1');
+   assert.throws(()=>sql(`insert into private.course_admin_owner(user_id,google_provider_id) values ('${uid(4)}','other-provider')`),/duplicate key/);
+   assert.throws(()=>sql(`insert into private.course_admin_owner(singleton,user_id,google_provider_id) values (false,'${uid(4)}','other-provider')`),/check constraint/);
+   for(const n of [1,4])for(const query of [
+    'select * from private.course_admin_owner',
+    `insert into private.course_admin_owner(user_id,google_provider_id) values ('${uid(4)}','other-provider')`,
+    `update private.course_admin_owner set user_id='${uid(4)}'`,
+    'delete from private.course_admin_owner'
+   ])assert.throws(()=>as(n,query),/permission denied/);
+   assert.throws(()=>sql('set role anon; select * from private.course_admin_owner'),/permission denied/);
+  });
+  await t.test('matching email, legacy allowlist and forged provider metadata cannot promote another account',()=>{
+   const setup=`update auth.users set email='owner@example.invalid',raw_app_meta_data='{"provider":"google"}',raw_user_meta_data='{"admin":true,"sub":"fixture-owner-google"}' where id='${uid(4)}';
+    insert into auth.identities(user_id,provider,provider_id,identity_data) values ('${uid(4)}','google','different-google-subject','{"email":"owner@example.invalid","sub":"fixture-owner-google"}');`;
+   for(const fn of ['learning_admin_access()','learning_admin_dashboard()','learning_admin_report()'])assert.throws(()=>as(4,'select public.'+fn,setup),/Administrator access required/);
+  });
+  await t.test('both pinned providers work independently and email changes never reassign ownership',()=>{
+   for(const provider of ['google','github'])assert.equal(as(1,'select public.learning_admin_access()',`delete from auth.identities where user_id='${uid(1)}' and provider='${provider}';`),'t');
+   assert.equal(as(1,'select public.learning_admin_access()',`update auth.users set email='changed-owner@example.invalid' where id='${uid(1)}';`),'t');
+   assert.throws(()=>as(1,'select public.learning_admin_access()',`update auth.users set email_confirmed_at=null where id='${uid(1)}';`),/Administrator access required/);
+  });
+  await t.test('missing or mismatched provider identities and removed ownership fail closed',()=>{
+   for(const setup of [
+    `delete from auth.identities where user_id='${uid(1)}';`,
+    `update auth.identities set provider_id=provider_id||'-changed' where user_id='${uid(1)}';`,
+    `update auth.identities set provider='unapproved' where user_id='${uid(1)}';`,
+    'delete from private.course_admin_owner;'
+   ])for(const fn of ['learning_admin_access()','learning_admin_dashboard()','learning_admin_report()'])assert.throws(()=>as(1,'select public.'+fn,setup),/Administrator access required/);
+   assert.equal(sql(`begin;delete from auth.users where id='${uid(1)}';select jsonb_build_object('owners',(select count(*) from private.course_admin_owner));rollback;`).includes('{"owners": 0}'),true);
+  });
+  await t.test('migration pins the existing linked owner, leaves fresh projects closed and rejects ambiguity',()=>{
+   const source=fs.readFileSync(new URL('../supabase/migrations/20261004035244_sole_course_owner.sql',import.meta.url),'utf8');
+   const migrated=JSON.parse(sql(`begin;drop table private.course_admin_owner;${source}
+    select jsonb_build_object('accounts',(select count(*) from private.course_admin_owner),'google',(select google_provider_id='fixture-owner-google' from private.course_admin_owner),'github',(select github_provider_id='fixture-owner-github' from private.course_admin_owner));rollback;`).split('\n').find(x=>x.startsWith('{')));
+   assert.deepEqual(migrated,{accounts:1,google:true,github:true});
+   assert.equal(sql(`begin;drop table private.course_admin_owner;delete from private.course_admin_emails;${source}
+    select jsonb_build_object('accounts',(select count(*) from private.course_admin_owner));rollback;`).includes('{"accounts": 0}'),true);
+   assert.throws(()=>sql(`begin;drop table private.course_admin_owner;insert into private.course_admin_emails values ('session@example.invalid');${source} rollback;`),/Configure exactly one confirmed course owner/);
+   assert.throws(()=>sql(`begin;drop table private.course_admin_owner;insert into auth.identities(user_id,provider,provider_id) values ('${uid(1)}','google','second-google-subject');${source} rollback;`),/ambiguous provider identities/);
+   assert.equal(as(1,'select public.learning_admin_access()'),'t');
   });
   await t.test('period users are distinct across days and quiz accuracy is weighted',()=>{
    const d=dashboard();assert.equal(d.summary.registered_accounts,6);assert.equal(d.summary.active_learners,3);
