@@ -37,7 +37,7 @@ Private dashboard responses remain in memory. A stale response after navigation 
 
 The production Email provider is disabled to match the requested Google/GitHub-only signup experience. Both OAuth providers remain enabled. The password-based opt-in account checker now rejects a provider-only project before creating disposable identities; its separate privileged workflow was not used for this release.
 
-The Vercel packaging check detected an excluded public configuration file; the collector now includes only that required file from the course assets. The anonymous catalog was regenerated from current course content before final deployment.
+The Vercel packaging check detected an excluded public configuration file; the collector now includes only that required file from the course assets. The anonymous catalog was regenerated from current course content before final deployment. The hosted test run also exposed duplicate dashboard redraws during account startup. A regression reproduced the race, and startup now refreshes the dashboard once after verification instead of scheduling competing polls.
 
 ## Verification
 
@@ -48,7 +48,7 @@ The Vercel packaging check detected an excluded public configuration file; the c
 - Collector deployment checks of unauthenticated/invalid-session rejection and the Pages-origin preflight. The deployed collector includes the current catalog of 71 lessons across eight paths.
 - External link validation and clean whitespace checks. GitHub runs the complete verification suite and publishes Pages on the release push; the final handoff records their outcomes and live owner-session checks.
 
-Local verification passed 67 unit/database checks, 12 dashboard/usage browser checks and 23 dashboard/account browser checks. The preceding full browser run passed 113 checks; the added route and sign-in regressions are included in the current targeted runs. Link validation passed for 124 live URLs, with the private report correctly requiring authentication. Production database checks confirmed owner access, denied anonymous execution, compatible legacy reporting, the twelve-cohort limit and zero privileged administrator functions exposed in the public schema. The refreshed security advisor reports zero errors; its remaining password-protection warning concerns the disabled Email provider.
+The final local full suite passed 68 unit/database checks and 117 browser checks, with no skipped checks. Coverage includes the startup race, stable selected filters, sign-in tracking and route aliases. Link validation passed for 124 live URLs, with the private report correctly requiring authentication. Production database checks confirmed owner access, denied anonymous execution, compatible legacy reporting, the twelve-cohort limit and zero privileged administrator functions exposed in the public schema. The refreshed security advisor reports zero errors; its remaining password-protection warning concerns the disabled Email provider. Live owner-session checks loaded both sources, verified date/course filtering and downloaded an aggregate report without account identities or credentials.
 
 This document contains no learner names, emails, tokens or production report snapshots.
 

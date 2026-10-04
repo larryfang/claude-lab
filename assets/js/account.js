@@ -83,7 +83,7 @@
   api=adapter;guest=copy(api.getState());
   // Existing local progress must survive the first account switch without import.
   write('claudelab.guest',guest);
-  if(!config||!config.url||!config.publishableKey){ready=true;notify(status);if(isAccountRoute())api.refresh();return;}
+  if(!config||!config.url||!config.publishableKey){ready=true;notify(status);if(isAccountRoute()||isAdminRoute())api.refresh();return;}
   client=window.supabase.createClient(config.url,config.publishableKey,{auth:{flowType:'pkce',detectSessionInUrl:false,persistSession:true,autoRefreshToken:true}});
   client.auth.onAuthStateChange(function(event,session){
    if(event==='SIGNED_OUT'){authEpoch++;if(!ready)deferredAuth={session:null,request:authEpoch};acceptUser(null);}
@@ -110,7 +110,7 @@
    var initial=deferredAuth||{session:s.data.session,request:sessionRequest};
    while(initial){deferredAuth=null;await verifySession(initial.session,initial.request);initial=deferredAuth;}
   }catch(e){if(!authFeedback)authFeedback='Sign-in could not finish. Please try again or continue as a guest.';notify('Sign-in could not finish. Open your account to retry.');}
-  ready=true;notify(status);if(isAccountRoute())api.refresh();else refreshPrompts();
+  ready=true;notify(status);if(isAccountRoute()||isAdminRoute())api.refresh();else refreshPrompts();
   window.addEventListener('online',function(){sync();flushEvents();});
   ['pointerdown','keydown','scroll'].forEach(function(k){document.addEventListener(k,function(){lastInput=Date.now();},{passive:true});});
   document.addEventListener('visibilitychange',function(){lastPulse=Date.now();if(document.hidden){sync();flushEvents();}});
@@ -224,7 +224,9 @@
   var request=++adminRequest,turn=generation,uid=user&&user.id;
   var content=document.getElementById('content');content.innerHTML='<section class="account-panel"><h1>Learning dashboard</h1><p role="status">Checking administrator access…</p></section>';
   function current(){return isAdminRoute()&&request===adminRequest&&turn===generation&&!!user&&user.id===uid;}
-  if(!ready){setTimeout(function(){if(isAdminRoute())renderAdmin();},300);return;}
+  // Account startup refreshes this route once verification finishes. Polling here
+  // queued duplicate mounts that could reset a visible dashboard and its filters.
+  if(!ready)return;
   if(!user){content.innerHTML='<section class="account-panel"><h1>Course administration</h1><p>Sign in with the course owner account to view learning analytics.</p><a class="btn btn-primary" href="#/account">Sign in</a></section>';return;}
   await window.ADMIN_DASHBOARD.mount(content,{
    isCurrent:current,

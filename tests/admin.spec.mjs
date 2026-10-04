@@ -35,6 +35,14 @@ test('admin exports include the filtered records and protect spreadsheet formula
  const csv=await fs.readFile(await dl.path(),'utf8');expect(csv).toContain("'=HYPERLINK");expect(csv).toContain('28 of 28 matching learners');expect(csv).toContain('learner27@example.invalid');
  const reporting=page.waitForEvent('download');await page.locator('#adminReport').click();const report=await fs.readFile(await(await reporting).path(),'utf8');expect(report).toContain('# Claude Lab administrator report');expect(report).not.toContain('@example.invalid');
 });
+test('account startup keeps the first dashboard and its selected filters stable',async({page})=>{
+ const requests=[];await setup(page,r=>{const params=r.request().postDataJSON();requests.push(params.p_days);return r.fulfill({json:adminFixture(params)});});
+ await expect(page.locator('.admin-private')).toHaveText('Owner access verified');
+ await page.locator('#adminDays').selectOption('7');await page.getByRole('button',{name:'Apply filters',exact:true}).click();
+ // Allow late startup callbacks to arrive before checking that the scope stayed put.
+ await page.waitForTimeout(400);await expect(page.locator('#adminDays')).toHaveValue('7');
+ expect(requests).toEqual([30,7]);
+});
 test('an update failure keeps the previous period and permits retry',async({page})=>{
  let fail=false;await setup(page,r=>fail?r.fulfill({status:503,json:{code:'temporarily_unavailable'}}):r.fulfill({json:adminFixture(r.request().postDataJSON())}));
  await expect(page.locator('#adminDays')).toHaveValue('30');fail=true;await page.locator('#adminDays').selectOption('7');await page.getByRole('button',{name:'Apply filters'}).click();

@@ -7,7 +7,7 @@ async function harness(options={}){
  const client={auth:{onAuthStateChange:cb=>listener=cb,getSession:async()=>options.getSession?options.getSession(listener):({data:{session:active?{user:active}:null}}),getUser:async()=>options.getUser?options.getUser():({data:{user:active}})},from:()=>{const q={select:()=>q,eq:()=>q,maybeSingle:()=>q,retry:()=>q,abortSignal:()=>options.remote?options.remote():Promise.resolve({data:{state:{courses:{}},revision:0}})};return q;},rpc:async()=>({data:{state:{courses:{}},revision:1}})};
  const context={window:{CLOUD_STATE:null,CLAUDELAB_CLOUD:{url:'https://test.supabase.co',publishableKey:'public'},supabase:{createClient:()=>client},COURSES:[],addEventListener:()=>{}},document:doc,crypto:{randomUUID},localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},sessionStorage:{getItem:()=>null},location:{hash:'#/me',href:'http://127.0.0.1:4173/#/me'},history:{replaceState:()=>{}},navigator:{onLine:true,webdriver:true},AbortSignal,URL,URLSearchParams,setTimeout:(fn,ms)=>{const t={fn,ms};timers.push(t);return t;},clearTimeout:t=>{if(t)t.cancelled=true;},setInterval:()=>{},Date,console};
  vm.createContext(context);vm.runInContext(fs.readFileSync('assets/js/cloud-state.js','utf8'),context);vm.runInContext(fs.readFileSync('assets/js/admin.js','utf8'),context);vm.runInContext(fs.readFileSync('assets/js/account.js','utf8'),context);
- const api={getState:()=>state,applyState:next=>state=plain(next),refresh:()=>{},download:()=>{}};
+ const api={getState:()=>state,applyState:next=>state=plain(next),refresh:()=>options.refresh?.(),download:()=>{}};
  const init=context.window.ACCOUNT.init(api);if(!options.deferInit)await init;
  return {context,storage,timers,elements,init,getState:()=>state,setActive:u=>{active=u;},emit:(ev,s)=>listener(ev,s),runTimers:async()=>{for(const t of timers.splice(0))if(!t.cancelled&&t.ms===0){t.fn();await new Promise(r=>setImmediate(r));}}};
 }
@@ -53,6 +53,18 @@ test('a stale owner report cannot render after signing out',async()=>{
  report.resolve({data:{summary:{learners:1,active_7_days:1,active_seconds_30_days:1,events_30_days:1,learner_limit:1,database_bytes:1},learners:[{display_name:'PRIVATE OWNER RESULT',email:'private@example.org',completed_lessons:0,quiz_attempts:0}],lessons:[]}});
  await pending;
  assert.equal(h.elements.content.innerHTML.includes('PRIVATE OWNER RESULT'),false);
+});
+
+test('account startup mounts the private dashboard once despite intermediate route refreshes',async()=>{
+ const verification=deferred();let h,mounts=0;
+ h=await harness({deferInit:true,getUser:()=>verification.promise,refresh:()=>h.context.window.ACCOUNT.renderAdmin()});
+ h.context.location.hash='#/admin';h.elements.content={innerHTML:'',querySelector:()=>null,querySelectorAll:()=>[]};
+ h.context.window.ADMIN_DASHBOARD.mount=async()=>{mounts++;};
+ await h.context.window.ACCOUNT.renderAdmin();await h.context.window.ACCOUNT.renderAdmin();
+ verification.resolve({data:{user:{id:'learner-a',email:'a@example.org'}}});await h.init;
+ // Run any old startup callbacks after the account is ready, as a slow browser would.
+ for(const timer of h.timers.splice(0))if(!timer.cancelled&&timer.ms===300)await timer.fn();
+ assert.equal(mounts,1,'startup must not reset an already visible private dashboard');
 });
 
 test('guest review cards alone are offered for import',async()=>{
