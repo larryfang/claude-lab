@@ -165,3 +165,34 @@ test('a server fault that rejects every event stops draining the queue after a f
  assert.ok(kept.length>=queued.length-5,'at most five events may be skipped before the drain stops: '+kept.length+' kept');
  assert.ok(h.timers.some(t=>t.ms===30000&&!t.cancelled),'the queue must fall back to the 30 s retry');
 });
+
+test('signing out uploads the learning events still queued on this device instead of discarding them',async()=>{
+ const uid='learner-a';
+ const h=await harness();
+ const c=h.context.window.supabase.createClient();const uploaded=[];
+ c.rpc=(name,args)=>({retry(){return this;},abortSignal(){if(name==='record_learning_events'){uploaded.push(...args.batch.map(e=>e.type));return Promise.resolve({data:args.batch.length});}return Promise.resolve({data:{state:{courses:{}},revision:1}});}});
+ c.auth.signOut=async()=>({});
+ h.emit('SIGNED_OUT',null);await h.runTimers();h.emit('SIGNED_IN',{user:{id:uid}});await h.runTimers();
+ uploaded.length=0;
+ h.storage.set('claudelab.usage.allow','1'); // record() ignores automated browsers unless this flag is set
+ // an event recorded just before signing out: its 2 s upload timer has not fired yet
+ h.context.window.ACCOUNT.record({type:'studio'});
+ assert.deepEqual(uploaded,[]);
+ assert.equal(await h.context.window.ACCOUNT.signOut(),true);
+ assert.deepEqual(uploaded,['studio']);
+ assert.equal(h.context.window.ACCOUNT.isSignedIn(),false);
+});
+
+test('a failed upload during sign-out still signs the learner out and keeps the events for next time',async()=>{
+ const uid='learner-a';
+ const h=await harness();
+ const c=h.context.window.supabase.createClient();
+ c.rpc=(name)=>({retry(){return this;},abortSignal(){return Promise.resolve(name==='record_learning_events'?{error:{code:'XX000',message:'internal error'}}:{data:{state:{courses:{}},revision:1}});}});
+ c.auth.signOut=async()=>({});
+ h.emit('SIGNED_OUT',null);await h.runTimers();h.emit('SIGNED_IN',{user:{id:uid}});await h.runTimers();
+ h.storage.set('claudelab.usage.allow','1');
+ h.context.window.ACCOUNT.record({type:'studio'});
+ assert.equal(await h.context.window.ACCOUNT.signOut(),true);
+ assert.equal(h.context.window.ACCOUNT.isSignedIn(),false);
+ assert.equal(JSON.parse(h.storage.get('claudelab.events.'+uid)).length,1,'the event must wait in storage for the next sign-in');
+});

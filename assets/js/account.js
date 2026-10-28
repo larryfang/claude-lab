@@ -58,9 +58,12 @@
   }
   finally{syncing=false;}
  }
+ // Queued learning events are cleared from memory with the account, so one batch is uploaded first
+ // (best effort: a failed or partial upload leaves the rest in localStorage for the next sign-in).
+ async function signOutNow(){await sync();await flushEvents();var r=await client.auth.signOut({scope:'local'});if(r.error)return false;await acceptUser(null);return true;}
  async function acceptUser(next){
   if(user && next && user.id===next.id)return;
-  var previous=user;generation++;clearTimeout(timer);clearTimeout(eventTimer);
+  var previous=user;generation++;clearTimeout(timer);clearTimeout(eventTimer);isolating=false;skippedInARow=0;
   if(previous)write(cacheKey(previous.id),{state:api.getState(),base:base,revision:revision});
   user=null;events=[];
   if(!next){flag('claudelab.accountOwner',null);base={};revision=0;api.applyState(guestState(),false);notify('Progress saved on this device');return;}
@@ -216,7 +219,7 @@
   document.querySelectorAll('[data-auth-provider]').forEach(function(b){b.onclick=function(){startOAuth(b.dataset.authProvider);};});
   var syncButton=document.getElementById('syncNow');if(syncButton)syncButton.onclick=function(){sync();flushEvents();};
   var signout=document.getElementById('accountSignOut');if(signout)signout.onclick=async function(){
-   signout.disabled=true;await sync();var r=await client.auth.signOut({scope:'local'});if(r.error){notify('Could not sign out. Try again.');signout.disabled=false;return;}await acceptUser(null);renderAccount();
+   signout.disabled=true;if(!await signOutNow()){notify('Could not sign out. Try again.');signout.disabled=false;return;}renderAccount();
   };
   var im=document.getElementById('importGuest');if(im)im.onclick=function(){api.applyState(core.mergeImport(core.snapshot(api.getState()),core.snapshot(guest)),true);guest={courses:{},notes:guest.notes||{},theme:guest.theme,focus:guest.focus};write('claudelab.guest',guest);localSave();renderAccount();};
   var dismiss=document.getElementById('dismissImport');if(dismiss)dismiss.onclick=function(){flag('claudelab.importDismissed.'+user.id,'1');document.querySelector('.account-import').remove();};
@@ -265,5 +268,5 @@
    }
   });
  }
- window.ACCOUNT={init:init,onSave:localSave,sync:sync,recordUsage:usage,record:record,isSignedIn:function(){return !!user;},isReady:function(){return ready;},renderAccount:renderAccount,renderAdmin:renderAdmin,guestPrompt:guestPrompt};
+ window.ACCOUNT={init:init,onSave:localSave,sync:sync,signOut:signOutNow,recordUsage:usage,record:record,isSignedIn:function(){return !!user;},isReady:function(){return ready;},renderAccount:renderAccount,renderAdmin:renderAdmin,guestPrompt:guestPrompt};
 })();
