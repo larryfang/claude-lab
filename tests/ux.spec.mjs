@@ -35,3 +35,48 @@ test.describe("on a touch phone", () => {
     await expect(page.locator(".flash-hint").first()).toContainText("Tap the card");
   });
 });
+
+test("arrow keys do not change lesson while a control that uses them has focus", async ({ page }) => {
+  await page.goto("/#/cowork/verify");
+  await expect(page.locator("article.lesson h1")).toBeVisible();
+  const segment = page.locator(".spot-seg").first();
+  await segment.focus();
+  await expect(segment).toBeFocused();
+  await page.keyboard.press("ArrowRight");
+  await expect(page).toHaveURL(/#\/cowork\/verify$/);
+  await expect(segment).toBeFocused();
+  await page.locator("#main").focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(page).toHaveURL(/#\/cowork\/failure-clinic/);
+});
+
+test("answering a quiz from the keyboard keeps focus inside the question", async ({ page }) => {
+  await page.goto("/#/cowork/what-is-cowork");
+  const quiz = page.locator(".quiz-q").first();
+  await quiz.locator(".quiz-opt").first().focus();
+  await page.keyboard.press("Enter");
+  await expect(quiz).toHaveClass(/answered/);
+  const inside = await page.evaluate(() => document.activeElement !== document.body && !!document.activeElement.closest(".quiz-q"));
+  expect(inside).toBe(true);
+});
+
+test("arrow keys scroll a focused code example only when it overflows", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 800 });
+  await page.goto("/#/claude-code/cc-tour");
+  await expect(page.locator("article.lesson h1")).toBeVisible();
+  const pre = page.locator(".codeblock pre").first();
+  await pre.focus();
+  await expect(pre).toBeFocused();
+  const overflows = await pre.evaluate((el) => el.scrollWidth > el.clientWidth);
+  await page.keyboard.press("ArrowRight");
+  if (overflows) await expect(page).toHaveURL(/#\/claude-code\/cc-tour$/);
+  else await expect(page).toHaveURL(/#\/claude-code\/cc-first/);
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await page.goto("/#/claude-code/cc-tour");
+  const wide = page.locator(".codeblock pre").first();
+  await wide.focus();
+  const stillOverflows = await wide.evaluate((el) => el.scrollWidth > el.clientWidth);
+  await page.keyboard.press("ArrowRight");
+  if (stillOverflows) await expect(page).toHaveURL(/#\/claude-code\/cc-tour$/);
+  else await expect(page).toHaveURL(/#\/claude-code\/cc-first/);
+});

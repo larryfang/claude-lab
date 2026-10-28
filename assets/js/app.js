@@ -988,8 +988,10 @@
     var correct = opt.dataset.correct === "1";
     opt.classList.add(correct ? "correct" : "wrong");
     if (!correct) { var right = q.querySelector('.quiz-opt[data-correct="1"]'); if (right) right.classList.add("correct"); }
-    $all(".quiz-opt", q).forEach(function (b) { b.disabled = true; });
     var ex = q.querySelector(".quiz-explain"); if (ex) ex.classList.add("show");
+    // Disabling the focused option would drop keyboard focus to <body>; move it to the feedback first.
+    var feedback = ex || q; feedback.tabIndex = -1; feedback.focus({ preventScroll: true });
+    $all(".quiz-opt", q).forEach(function (b) { b.disabled = true; });
     if (correct) { q.classList.add("got-it"); toast("✓ Correct!"); }
     touch(); save();
     scoreQuiz(q.closest(".quiz"));
@@ -1173,6 +1175,8 @@
     if (e.key === "/" && !typing) { e.preventDefault(); openSearch(); return; }
     if (typing) return;
     if (e.key === "?") { e.preventDefault(); openShortcuts(); return; }
+    // Arrow keys belong to a focused control that uses them: a find-the-flaw segment, the glossary popover, or a code example that scrolls sideways.
+    if (e.target.closest("#termPop, .spot-seg") || (e.target.matches("pre") && e.target.scrollWidth > e.target.clientWidth)) return;
     var m = location.hash.split("?")[0].match(/#\/([^/]+)\/(.+)$/);
     if (m && byId[m[1]]) {
       var c = byId[m[1]], params = new URLSearchParams(location.hash.split("?")[1] || ""), pathId = params.get("path");

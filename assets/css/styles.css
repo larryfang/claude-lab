@@ -364,6 +364,7 @@ a { color: var(--link); text-underline-offset: 2px; }
 .quiz-opt:disabled { cursor: default; }
 .quiz-explain { margin-top: 12px; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--line); font-size: .9rem; display: none; }
 .quiz-explain.show { display: block; animation: fadeUp .3s ease; }
+.quiz-explain:focus, .quiz-q:focus { outline: none; } /* focus lands here after an answer so keyboard users keep their place; it is not a control */
 .quiz-explain strong { color: var(--tip); }
 
 /* ---------- Home / dashboard ---------- */
