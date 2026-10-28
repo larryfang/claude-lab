@@ -14,10 +14,17 @@
  function cacheKey(id){return 'claudelab.account.'+id;}
  function validProgress(value){return !!value&&typeof value==='object'&&!Array.isArray(value)&&core.validState(Object.assign({courses:{}},value));}
  function guestState(){var state=read('claudelab.guest',{courses:{}});return validProgress(state)?state:{courses:{}};}
- function notify(message){status=message;var el=document.getElementById('accountStatus');if(el)el.textContent=message;var b=document.getElementById('accountBtn');if(b){b.setAttribute('aria-label',user?'Your account — '+message:'Sign in to save progress');b.title=user?message:'Sign in to save progress';b.querySelector('span').textContent=user?'Account':'Sign in';}}
+ // The account button carries the sync state so a signed-in learner sees it on every page:
+ // synced, waiting (a save not yet uploaded), offline, or paused (needs the account page).
+ // The state is set explicitly by the sync paths, never guessed from a status message, and a
+ // recorded fault always shows as paused.
+ var syncIndicator='';
+ function setSync(state){syncIndicator=state;paintButton();}
+ function paintButton(){var b=document.getElementById('accountBtn');if(!b)return;var state=!user?'':syncFault?'paused':syncIndicator;b.setAttribute('aria-label',user?'Your account — '+status:'Sign in to save progress');b.title=user?status:'Sign in to save progress';if(state)b.setAttribute('data-sync',state);else b.removeAttribute('data-sync');b.querySelector('span').textContent=user?(state==='paused'?'Sync paused':'Account'):'Sign in';}
+ function notify(message){status=message;var el=document.getElementById('accountStatus');if(el)el.textContent=message;paintButton();}
  function localSave(){
   if(!api)return;
-  if(user){write(cacheKey(user.id),{state:api.getState(),base:base,revision:revision});notify('Changes waiting to sync');schedule();}
+  if(user){write(cacheKey(user.id),{state:api.getState(),base:base,revision:revision});setSync('waiting');notify('Changes waiting to sync');schedule();}
   else{guest=copy(api.getState());write('claudelab.guest',guest);}
  }
  function schedule(){clearTimeout(timer);if(user)timer=setTimeout(sync,700);}
@@ -25,7 +32,7 @@
  function markReady(){ready=true;try{window.dispatchEvent(new Event('claudelab:accountready'));}catch(e){}}
  async function remoteState(uid){var r=await client.from('learner_state').select('state,revision').eq('user_id',uid||user.id).maybeSingle().retry(false).abortSignal(AbortSignal.timeout(15000));if(r.error)throw r.error;var saved=r.data||{state:{},revision:0};if(!validProgress(saved.state))throw Error('Invalid saved progress');return saved;}
  async function sync(){
-  if(!user)return;if(!navigator.onLine){notify('Saved on this device — sync needs a connection');return;}if(syncing){schedule();return;}syncing=true;var turn=generation,uid=user.id;
+  if(!user)return;if(!navigator.onLine){setSync('offline');notify('Saved on this device — sync needs a connection');return;}if(syncing){schedule();return;}syncing=true;var turn=generation,uid=user.id;
   var current=core.snapshot(api.getState()),changes=core.diff(base,current);
   try{
    var r=await remoteState();
@@ -34,7 +41,7 @@
     base=r.state;revision=r.revision;
     var after=core.diff(current,core.snapshot(api.getState())),pulled=core.apply(base,after);
     if(core.diff(pulled,core.snapshot(api.getState())).length)api.applyState(pulled,true);
-    write(cacheKey(uid),{state:api.getState(),base:base,revision:revision});clearFault();notify('Progress synced');if(after.length)schedule();return;
+    write(cacheKey(uid),{state:api.getState(),base:base,revision:revision});clearFault();setSync('synced');notify('Progress synced');if(after.length)schedule();return;
    }
    for(var attempt=0;attempt<4;attempt++){
     if(turn!==generation)return;
@@ -49,14 +56,14 @@
     // Compare state values, not JSON field order: Postgres can reorder keys.
     // Ordinary background saves must leave the lesson and scroll position intact.
     if(core.diff(next,core.snapshot(api.getState())).length)api.applyState(next,true);
-    write(cacheKey(uid),{state:api.getState(),base:base,revision:revision});clearFault();notify('Progress synced');
+    write(cacheKey(uid),{state:api.getState(),base:base,revision:revision});clearFault();setSync('synced');notify('Progress synced');
     if(later.length)schedule();return;
    }
    throw Error('Another device is updating progress. Try sync again.');
   }catch(e){
    var fault=e&&e.message==='Progress could not be merged'?'unmergeable':e&&e.message==='Invalid saved progress'?'unreadable':null;
    var why=fault==='unmergeable'?'Saved on this device — it could not be merged with the account copy, so sync is paused':fault==='unreadable'?'Saved on this device — the account copy could not be read, so sync is paused':'Saved on this device — sync needs a connection';
-   if(turn===generation){notify(why);if(fault&&fault!==syncFault){syncFault=fault;if(isAccountRoute())renderAccount();}}
+   if(turn===generation){var changed=fault!==syncFault;if(fault){syncFault=fault;}else setSync(navigator.onLine?'waiting':'offline');notify(why);if(fault&&changed&&isAccountRoute())renderAccount();}
   }
   finally{syncing=false;}
  }
@@ -79,7 +86,7 @@
    }
    if(result.error)throw result.error;if(turn!==generation)return false; // the server copy is replaced by then; only this device's bookkeeping is skipped
    base=result.data.state;revision=result.data.revision;write(cacheKey(uid),{state:api.getState(),base:base,revision:revision});
-   syncFault=null;notify('Account copy replaced with this device\'s progress');if(isAccountRoute())renderAccount();
+   syncFault=null;setSync('synced');notify('Account copy replaced with this device\'s progress');if(isAccountRoute())renderAccount();
    if(core.diff(base,core.snapshot(api.getState())).length)schedule(); // edits made during the upload
    return true;
   }catch(e){if(turn===generation)notify('The account copy could not be replaced — '+(e&&e.message?e.message:'try again'));return false;}
@@ -90,7 +97,7 @@
  async function signOutNow(){await sync();await flushEvents();var r=await client.auth.signOut({scope:'local'});if(r.error)return false;await acceptUser(null);return true;}
  async function acceptUser(next){
   if(user && next && user.id===next.id)return;
-  var previous=user;generation++;clearTimeout(timer);clearTimeout(eventTimer);isolating=false;skippedInARow=0;syncFault=null; // a fault belongs to the account it was found on
+  var previous=user;generation++;clearTimeout(timer);clearTimeout(eventTimer);isolating=false;skippedInARow=0;syncFault=null;syncIndicator=''; // a fault and its indicator belong to the account they were found on
   if(previous)write(cacheKey(previous.id),{state:api.getState(),base:base,revision:revision});
   user=null;events=[];
   if(!next){flag('claudelab.accountOwner',null);base={};revision=0;api.applyState(guestState(),false);notify('Progress saved on this device');return;}
@@ -107,13 +114,13 @@
    guest=copy(api.getState());write('claudelab.guest',guest);user=next;
    api.applyState(Object.assign(core.apply(remote.state,pending),{notes:cached&&cached.state.notes||{},name:cached&&cached.state.name||''}),false);
    flag('claudelab.accountOwner',next.id);
-   write(cacheKey(next.id),{state:api.getState(),base:base,revision:revision});notify(pending.length?'Changes waiting to sync':'Progress synced');
+   write(cacheKey(next.id),{state:api.getState(),base:base,revision:revision});setSync(pending.length?'waiting':'synced');notify(pending.length?'Changes waiting to sync':'Progress synced');
    if(pending.length)schedule();record({type:'view'});flushEvents();
   }catch(e){
    if(turn!==generation)return;
    if(!user){guest=copy(api.getState());write('claudelab.guest',guest);}user=next;
    base=cached&&cached.base||{};revision=cached&&cached.revision||0;
-   api.applyState(cached?cached.state:{courses:{}},false);flag('claudelab.accountOwner',next.id);notify('Saved on this device — sync needs a connection');
+   api.applyState(cached?cached.state:{courses:{}},false);flag('claudelab.accountOwner',next.id);setSync(navigator.onLine?'waiting':'offline');notify('Saved on this device — sync needs a connection');
   }
   if(isAccountRoute())renderAccount();
  }

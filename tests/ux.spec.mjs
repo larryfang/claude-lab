@@ -201,3 +201,9 @@ test("a tick saved by position before the content-keyed scheme still shows and m
   await expect(page.locator(".check-item").first().locator("input")).not.toBeChecked();
   expect(Object.keys(await checks())).toEqual([]);
 });
+
+test("a guest's account button carries no sync state", async ({ page }) => {
+  await page.goto("/#/cowork/welcome");
+  await expect(page.locator("#accountBtn")).toHaveAccessibleName("Sign in to save progress");
+  await expect(page.locator("#accountBtn")).not.toHaveAttribute("data-sync", /.+/);
+});

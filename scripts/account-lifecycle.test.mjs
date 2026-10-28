@@ -267,3 +267,30 @@ test('learning events carry the time they happened only once the cloud config sa
  assert.match(batches[1][0].occurred_at,/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
  assert.ok(Math.abs(Date.now()-Date.parse(batches[1][0].occurred_at))<5000);
 });
+
+test('the account button shows the sync state on every page: synced, waiting, offline and paused',async()=>{
+ const uid='learner-a';let reads=0;
+ const h=await harness({remote:()=>Promise.resolve(++reads<=2?{data:{state:{courses:{}},revision:1}}:{data:{state:{courses:{},last:{t:2}},revision:5}})});
+ const span={textContent:''};const attrs={};
+ h.elements.accountBtn={setAttribute(k,v){attrs[k]=v;},removeAttribute(k){delete attrs[k];},title:'',querySelector:()=>span};
+ const c=h.context.window.supabase.createClient();
+ c.rpc=(name,args)=>({retry(){return this;},abortSignal(){return Promise.resolve(name==='record_learning_events'?{data:0}:{data:{state:args.body,revision:(args.expected_revision||0)+1}});}});
+ h.emit('SIGNED_OUT',null);await h.runTimers();
+ assert.equal(attrs['data-sync'],undefined,'a guest has no sync state');assert.equal(span.textContent,'Sign in');
+ h.emit('SIGNED_IN',{user:{id:uid}});await h.runTimers();
+ assert.equal(attrs['data-sync'],'synced');assert.equal(span.textContent,'Account');
+ h.getState().courses.cowork={completed:{welcome:true}};h.context.window.ACCOUNT.onSave();
+ assert.equal(attrs['data-sync'],'waiting');
+ h.context.navigator.onLine=false;await h.context.window.ACCOUNT.sync();
+ assert.equal(attrs['data-sync'],'offline');
+ h.context.navigator.onLine=true;await h.context.window.ACCOUNT.sync();
+ assert.equal(attrs['data-sync'],'paused','an unreadable account copy pauses sync');assert.equal(span.textContent,'Sync paused');
+ assert.match(attrs['aria-label'],/paused/);
+ // a failed replace reports its error but the state stays paused; a successful one is synced
+ c.rpc=(name)=>({retry(){return this;},abortSignal(){return Promise.resolve(name==='record_learning_events'?{data:0}:{error:{code:'XX000',message:'storage failure'}});}});
+ assert.equal(await h.context.window.ACCOUNT.replaceAccountCopy(),false);
+ assert.equal(attrs['data-sync'],'paused');assert.match(attrs['aria-label'],/could not be replaced/);
+ c.rpc=(name,args)=>({retry(){return this;},abortSignal(){return Promise.resolve(name==='record_learning_events'?{data:0}:{data:{state:args.body,revision:9}});}});
+ assert.equal(await h.context.window.ACCOUNT.replaceAccountCopy(),true);
+ assert.equal(attrs['data-sync'],'synced');assert.equal(span.textContent,'Account');
+});
