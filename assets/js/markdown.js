@@ -29,8 +29,8 @@
   function emphasize(text) {
     text = text.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
     text = text.replace(/__([^_]+)__/g, "<strong>$1</strong>");
-    text = text.replace(/(^|[^*\w])\*([^*\n]+)\*/g, "$1<em>$2</em>");
-    text = text.replace(/(^|[^_\w])_([^_\n]+)_/g, "$1<em>$2</em>");
+    text = text.replace(/(^|[^*\w])\*(\S(?:[^*\n]*\S)?)\*/g, "$1<em>$2</em>");
+    text = text.replace(/(^|[^_\w])_(\S(?:[^_\n]*\S)?)_/g, "$1<em>$2</em>");
     text = text.replace(/~~([^~]+)~~/g, "<del>$1</del>");
     return text;
   }
@@ -44,14 +44,16 @@
     // pair underscores inside hrefs or the target="_blank" attribute
     const frozen = [];
     function freeze(html) { frozen.push(html); return "\u0001" + (frozen.length - 1) + "\u0001"; }
+    // the line was escaped above; captured attributes must not be escaped a second time
+    function unescape(s) { return String(s).replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&"); }
     // images
     text = text.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g, function (m, alt, src, title) {
-      return freeze('<img src="' + escAttr(safeUrl(src)) + '" alt="' + escAttr(alt) + '"' + (title ? ' title="' + escAttr(title) + '"' : "") + ' loading="lazy">');
+      return freeze('<img src="' + escAttr(safeUrl(unescape(src))) + '" alt="' + escAttr(unescape(alt)) + '"' + (title ? ' title="' + escAttr(unescape(title)) + '"' : "") + ' loading="lazy">');
     });
     // links
     text = text.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)/g, function (m, t, href, title) {
       const ext = /^https?:/i.test(href);
-      return freeze('<a href="' + escAttr(safeUrl(href)) + '"' + (title ? ' title="' + escAttr(title) + '"' : "") + (ext ? ' target="_blank" rel="noopener"' : "") + ">" + emphasize(t) + "</a>");
+      return freeze('<a href="' + escAttr(safeUrl(unescape(href))) + '"' + (title ? ' title="' + escAttr(unescape(title)) + '"' : "") + (ext ? ' target="_blank" rel="noopener"' : "") + ">" + emphasize(t) + "</a>");
     });
     text = emphasize(text);
     // restore frozen HTML before code spans: link text may contain a \u0000 code placeholder
@@ -60,6 +62,9 @@
     return text;
   }
 
+  function isTableStart(lines, i) {
+    return lines[i].includes("|") && i + 1 < lines.length && /-/.test(lines[i + 1]) && /^\s*\|?[\s:|-]+\|?\s*$/.test(lines[i + 1]);
+  }
   function isBlockStart(l) {
     return /^```/.test(l) || /^:::/.test(l) || /^#{1,6}\s/.test(l) || /^>\s?/.test(l) ||
       /^\s*([-*+]|\d+\.)\s+/.test(l) || /^(\s*[-*_]){3,}\s*$/.test(l);
@@ -110,7 +115,7 @@
       return h + "</ul>";
     }
     const tag = items[0].ordered ? "ol" : "ul";
-    let h = "<" + tag + ">";
+    let h = "<" + tag + (items[0].ordered && items[0].start > 1 ? ' start="' + items[0].start + '"' : "") + ">";
     items.forEach(function (it) {
       h += "<li>" + parseInline(it.text.replace(/\n/g, " "));
       if (it.children.length) h += renderItems(it.children, ctx);
@@ -123,7 +128,7 @@
     const items = [];
     buf.forEach(function (ln) {
       const m = ln.match(/^(\s*)([-*+]|\d+\.)\s+([\s\S]*)$/);
-      if (m) items.push({ indent: m[1].length, ordered: /\d+\./.test(m[2]), text: m[3], children: [] });
+      if (m) items.push({ indent: m[1].length, ordered: /\d+\./.test(m[2]), start: parseInt(m[2], 10), text: m[3], children: [] });
       else if (items.length) items[items.length - 1].text += "\n" + ln.trim();
     });
     const root = [];
@@ -410,7 +415,7 @@
         continue;
       }
 
-      if (line.includes("|") && i + 1 < lines.length && /-/.test(lines[i + 1]) && /^\s*\|?[\s:|-]+\|?\s*$/.test(lines[i + 1])) {
+      if (isTableStart(lines, i)) {
         const buf = [line];
         i++;
         buf.push(lines[i]); i++;
@@ -421,13 +426,22 @@
 
       if (/^\s*([-*+]|\d+\.)\s+/.test(line)) {
         const buf = [];
-        while (i < lines.length && !/^\s*$/.test(lines[i]) && (/^\s*([-*+]|\d+\.)\s+/.test(lines[i]) || /^\s+\S/.test(lines[i]))) { buf.push(lines[i]); i++; }
+        const ordered = /^\s*\d+\./.test(line);
+        while (i < lines.length) {
+          if (/^\s*$/.test(lines[i])) {
+            // a single blank line between two items of the same kind is a loose list, not a new one
+            const next = lines[i + 1];
+            if (next !== undefined && /^\s*([-*+]|\d+\.)\s+/.test(next) && /^\s*\d+\./.test(next) === ordered) { i++; continue; }
+            break;
+          }
+          if (/^\s*([-*+]|\d+\.)\s+/.test(lines[i]) || /^\s+\S/.test(lines[i])) { buf.push(lines[i]); i++; } else break;
+        }
         out.push(renderList(buf, ctx));
         continue;
       }
 
       const buf = [];
-      while (i < lines.length && !/^\s*$/.test(lines[i]) && !isBlockStart(lines[i])) { buf.push(lines[i]); i++; }
+      while (i < lines.length && !/^\s*$/.test(lines[i]) && !isBlockStart(lines[i]) && !isTableStart(lines, i)) { buf.push(lines[i]); i++; }
       if (!buf.length) { buf.push(lines[i]); i++; } // a block-start line no handler consumed: emit as text rather than loop forever
       out.push("<p>" + parseInline(buf.join("\n").trim()).replace(/\n/g, " ") + "</p>");
     }
