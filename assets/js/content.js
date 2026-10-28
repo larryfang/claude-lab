@@ -310,8 +310,8 @@ var CC_COURSE = {
     "cc-mcp-plugins": { verifiedDate: "2026-10-03", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/mcp" },
     "cc-headless": { verifiedDate: "2026-10-03", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/github-actions" },
     "cc-parallel": { verifiedDate: "2026-10-03", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs/en/cross-session-messaging" },
-    "cc-cheatsheet": { verifiedDate: "2026-10-03", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs" },
-    "cc-whats-new": { verifiedDate: "2026-10-03", sourceLabel: "Claude Code changelog", sourceUrl: "https://code.claude.com/docs/en/whats-new" }
+    "cc-cheatsheet": { verifiedDate: "2026-10-29", sourceLabel: "Claude Code docs", sourceUrl: "https://code.claude.com/docs" },
+    "cc-whats-new": { verifiedDate: "2026-10-29", sourceLabel: "Claude Code changelog", sourceUrl: "https://code.claude.com/docs/en/whats-new" }
   },
   modules: [
     {

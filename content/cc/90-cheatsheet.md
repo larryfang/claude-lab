@@ -1,6 +1,6 @@
 # Command & Shortcut Cheat-Sheet
 
-Everything you'll reach for, on one page. Bookmark it. Reviewed against **Claude Code v2.1.288** and the maintained command reference on **2026-10-03**. Availability can vary by interface, account and settings; check [the current commands](https://code.claude.com/docs/en/commands), `claude --help` and `/help` in-session.
+Everything you'll reach for, on one page. Bookmark it. Reviewed against **Claude Code v2.1.312** and the maintained command reference on **2026-10-29**. Availability can vary by interface, account and settings; check [the current commands](https://code.claude.com/docs/en/commands), `claude --help` and `/help` in-session.
 
 ## Launch & flags (your shell)
 
@@ -32,10 +32,13 @@ Everything you'll reach for, on one page. Bookmark it. Reviewed against **Claude
 | `claude doctor` | Health-check your installation |
 | `claude update` | Update to the latest version |
 | `claude agents` | One screen for every background session: running, blocked, done (`--json` to script it) |
+| `claude attach <id or name>` | Open a background session in this terminal; part of the name works (v2.1.290+) |
+| `claude logs <id or name>` | Print a background session's recent output without attaching |
+| `claude stop <id>` · `claude rm <id>` · `claude respawn <id>` | Stop a session (its conversation is kept), delete it, or restart it on the current version |
 | `claude auto-mode config` | Inspect the auto-mode classifier rules (`critique` reviews your custom rules) |
 | `claude mcp add / list / login` | Manage MCP servers from the shell |
-| `claude plugin install <name>@<marketplace>` | Install a plugin non-interactively |
-| `claude ultrareview` | Cloud-hosted multi-agent review of the current branch or a PR |
+| `claude plugin install <name>@<marketplace>` | Install a plugin non-interactively; add `--marketplace <source>` to register the marketplace in the same step (v2.1.292+) |
+| `claude ultrareview` | Cloud-hosted multi-agent review of the current branch or a PR; needs workspace trust, so scripts pass `--trust-workspace` (v2.1.309+) |
 | `claude import` | Migrate config from another AI coding agent |
 
 ## In-session keys
