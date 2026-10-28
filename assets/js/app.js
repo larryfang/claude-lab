@@ -1062,7 +1062,8 @@
     indexIncomplete = false;
     indexing = Promise.all(allSearchItems().map(function (x) {
       return fetchBody(x.lesson.file).then(function (md) {
-        var parts = md.split(/^## /m), out = [];
+        // A "## " line inside a fenced example (a sample SKILL.md, say) is code, not a section with an anchor.
+        var parts = md.replace(/^```[ \t]*[\w-]*[ \t]*\r?\n(?:[\s\S]*?\n)?```[ \t]*(?=\r?\n|$)/gm, function (block) { return block.replace(/^## /gm, "   "); }).split(/^## /m), out = [];
         parts.forEach(function (chunk, k) {
           var nl = chunk.indexOf("\n"), head = k === 0 ? "" : chunk.slice(0, nl).trim(), body = k === 0 ? chunk.replace(/^#\s+.*$/m, "") : chunk.slice(nl + 1);
           out.push({ item: x, heading: head, slug: head ? MD.slug(head) : "", text: plain(body) });
@@ -1072,12 +1073,21 @@
     })).then(function (lists) { textIndex = [].concat.apply([], lists); indexing = null; return textIndex; });
     return indexing;
   }
+  // Choosing the result for the page already open fires no hashchange, so the page must be routed by hand.
+  function sameRoute(href) { try { return decodeURIComponent(href) === decodeURIComponent(location.hash); } catch (e) { return href === location.hash; } }
   function snippet(text, words) {
     var low = text.toLowerCase(), at = low.indexOf(words[0]), start = Math.max(0, at - 50);
     var cut = (start ? "…" : "") + text.slice(start, start + 150) + (start + 150 < text.length ? "…" : "");
-    var html = esc(cut);
-    words.forEach(function (w) { if (w.length > 1) html = html.replace(new RegExp("\\b(" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "ig"), "<mark>$1</mark>"); });
-    return html;
+    // Find the matches on the plain text first; a regex over escaped HTML would also match inside earlier <mark> tags.
+    var cutLow = cut.toLowerCase(), marks = [];
+    words.forEach(function (w) {
+      w = w.toLowerCase(); if (w.length < 2) return;
+      for (var from = 0, idx; (idx = cutLow.indexOf(w, from)) !== -1; from = idx + w.length) if (idx === 0 || !/\w/.test(cutLow[idx - 1])) marks.push([idx, idx + w.length]);
+    });
+    marks.sort(function (a, b) { return a[0] - b[0]; });
+    var html = "", pos = 0;
+    marks.forEach(function (m) { if (m[0] < pos) return; html += esc(cut.slice(pos, m[0])) + "<mark>" + esc(cut.slice(m[0], m[1])) + "</mark>"; pos = m[1]; });
+    return html + esc(cut.slice(pos));
   }
   function runSearch(q) {
     q = q.trim().toLowerCase();
@@ -1117,7 +1127,7 @@
       if (previousIndex >= 0) searchSel = previousIndex;
     }
     setSel(searchSel);
-    $all("#searchResults a").forEach(function (a) { a.addEventListener("click", closeSearch); a.addEventListener("mousemove", function () { setSel(parseInt(a.dataset.i, 10)); }); });
+    $all("#searchResults a").forEach(function (a) { a.addEventListener("click", function (e) { if (sameRoute(a.getAttribute("href")) && !(e.ctrlKey || e.metaKey || e.shiftKey || e.button)) { e.preventDefault(); closeSearch(); route(); updateReadProgress(); } else closeSearch(); }); a.addEventListener("mousemove", function () { setSel(parseInt(a.dataset.i, 10)); }); });
   }
   function setSel(i) { searchSel = i; $all("#searchResults a").forEach(function (a, idx) { a.classList.toggle("sel", idx === i);a.parentElement.setAttribute('aria-selected',String(idx===i)); });var input=$('#searchInput'),active=$('#search-option-'+i);if(active)input.setAttribute('aria-activedescendant',active.id);else input.removeAttribute('aria-activedescendant'); }
   $("#searchBtn").addEventListener("click", openSearch);
@@ -1126,7 +1136,7 @@
   $("#searchInput").addEventListener("keydown", function (e) {
     if (e.key === "ArrowDown") { e.preventDefault(); setSel(Math.min(searchSel + 1, searchHits.length - 1)); }
     else if (e.key === "ArrowUp") { e.preventDefault(); setSel(Math.max(searchSel - 1, 0)); }
-    else if (e.key === "Enter") { e.preventDefault(); var link = $all("#searchResults a")[searchSel]; if (link) { location.hash = link.getAttribute("href"); closeSearch(); } }
+    else if (e.key === "Enter") { e.preventDefault(); var link = $all("#searchResults a")[searchSel]; if (link) { var href = link.getAttribute("href"); closeSearch(); if (sameRoute(href)) { route(); updateReadProgress(); } else location.hash = href; } }
   });
   $("#searchModal").addEventListener("keydown", function (e) {
     if (e.key !== "Tab") return;

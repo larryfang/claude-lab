@@ -80,3 +80,50 @@ test("arrow keys scroll a focused code example only when it overflows", async ({
   if (stillOverflows) await expect(page).toHaveURL(/#\/claude-code\/cc-tour$/);
   else await expect(page).toHaveURL(/#\/claude-code\/cc-first/);
 });
+
+test("search snippets highlight every query word without corrupting their own markup", async ({ page }) => {
+  await page.goto("/#/");
+  await page.keyboard.press("/");
+  await page.locator("#searchInput").fill("plan mark");
+  await expect(page.locator(".sr-snippet").first()).toBeVisible();
+  await expect.poll(async () => page.locator(".sr-loading").count()).toBe(0);
+  const snippets = await page.locator(".sr-snippet").evaluateAll((els) => els.map((el) => ({ html: el.innerHTML, text: el.textContent })));
+  expect(snippets.length).toBeGreaterThan(0);
+  for (const s of snippets) {
+    expect(s.html).not.toContain("<!--");
+    expect(s.text).not.toMatch(/<\/?mark>/);
+    expect(s.html).toMatch(/<mark>plan<\/mark>/i);
+  }
+  // the second word is the one the old highlighter corrupted, so at least one snippet must show it marked
+  expect(snippets.some((s) => /<mark>mark/i.test(s.html))).toBe(true);
+});
+
+test("search sections link only to headings that exist on the page", async ({ page }) => {
+  await page.goto("/#/");
+  await page.keyboard.press("/");
+  await page.locator("#searchInput").fill("deal feels stalled");
+  await expect(page.locator("#searchResults a").first()).toBeVisible();
+  await expect.poll(async () => page.locator(".sr-loading").count()).toBe(0);
+  const hrefs = await page.locator("#searchResults a").evaluateAll((els) => els.map((a) => a.getAttribute("href")));
+  const sectioned = hrefs.filter((h) => h.includes("?s="));
+  expect(sectioned.length).toBeGreaterThan(0);
+  for (const href of sectioned) {
+    const slug = decodeURIComponent(href.split("?s=")[1]);
+    await page.goto("/" + href);
+    await expect(page.locator("article.lesson h1")).toBeVisible();
+    expect(await page.locator(`[id="${slug}"]`).count(), href).toBe(1);
+  }
+});
+
+test("choosing the search result for the current lesson returns to the top of it", async ({ page }) => {
+  await page.goto("/#/cowork/the-brief");
+  await expect(page.locator("article.lesson h1")).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 1200));
+  expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(400);
+  await page.keyboard.press("/");
+  await page.locator("#searchInput").fill("The B.R.I.E.F. Framework");
+  await expect(page.locator('#searchResults a[href="#/cowork/the-brief"]').first()).toBeVisible();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#searchModal")).toBeHidden();
+  await expect.poll(async () => page.evaluate(() => window.scrollY)).toBeLessThan(100);
+});
