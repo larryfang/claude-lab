@@ -31,3 +31,12 @@ test('Claude Code lessons carry the v2.1.302 headless Manual default and the v2.
  assert.match(files['32-hooks.md'],/"onFailure": "block"[^\n]*`http`[^\n]*v2\.1\.295/,'32-hooks.md: command and http hooks can fail closed since v2.1.295');
  assert.match(files['32-hooks.md'],/before a skill or custom command expands/,'32-hooks.md: UserPromptSubmit ordering');
 });
+
+test('Claude Code lessons describe idle compaction, the sed -i rewind limit and the whole-name MCP rule form',async()=>{
+ const files=Object.fromEntries((await lessons('content/cc')).map(({file,text})=>[file.split('/').pop(),text]));
+ assert.match(files['12-context-mgmt.md'],/v2\.1\.299[^\n]*idle compaction[^\n]*"idleCompaction": false/,'12-context-mgmt.md: idle compaction (v2.1.299) and how to turn it off');
+ assert.match(files['12-context-mgmt.md'],/`sed -i`[^\n]*v2\.1\.309[^\n]*not restored/,'12-context-mgmt.md: sed -i is not restored by /rewind (v2.1.309)');
+ assert.match(files['31-subagents.md'],/`effort`[^\n]*v2\.1\.292/,'31-subagents.md: per-call effort parameter (v2.1.292)');
+ assert.match(files['31-subagents.md'],/`autoCompactWindow`[^\n]*v2\.1\.296/,'31-subagents.md: autoCompactWindow field (v2.1.296)');
+ assert.match(files['22-permissions.md'],/MCP allow rules[^\n]*mcp__[a-z]+__\*[^\n]*a__b/,'22-permissions.md: MCP allow rules name the whole server');
+});

@@ -37,7 +37,9 @@ requirements. If the diff is clean, say so.
 Key frontmatter ([sub-agents reference](https://code.claude.com/docs/en/sub-agents)):
 - **`name`** / **`description`** — the description is how Claude decides when to delegate.
 - **`tools`** — restrict what it can do. This reviewer gets Read/Grep/Glob and receives the diff from the parent. Bash can modify files even without Edit or Write, so adding it is not a read-only restriction.
-- **`model`** — e.g. `haiku` for fast read-only research, `opus` for hard reasoning.
+- **`model`** — e.g. `haiku` for fast read-only research (Claude Haiku 5.5 on the Anthropic API since v2.1.293), `opus` for hard reasoning.
+- **`effort`** — a reasoning level (`low` … `max`) that applies while this subagent runs; Claude can also pass a per-call `effort` when you ask (v2.1.292+). **`autoCompactWindow`** (a plain integer from 100000 to 1000000 tokens) lets a long-running subagent compact earlier than the main conversation (v2.1.296+).
+- **`tools`** with MCP servers — list a server's tools as `mcp__<server>__*` using the server's whole name (v2.1.299+); a bare prefix no longer matches a server whose name merely starts with it.
 - **`memory`** — give the subagent its **own persistent memory** across sessions (subagents don't share the main session's auto memory): its `MEMORY.md` loads at start, and the subagent writes to its memory folder as it works ([@lydiahallie, 2026-07-20](https://x.com/lydiahallie/status/2079255826355892464)). It also turns on Read, Write and Edit, so a read-only reviewer gains write tools.
 
 Create or change them by asking Claude, or edit the files in `.claude/agents/` directly (since v2.1.198, `/agents` only prints that reminder). Subagents spawned mid-session run **in the background by default**, so your conversation keeps moving while they work.

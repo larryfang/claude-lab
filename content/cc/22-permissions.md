@@ -58,6 +58,7 @@ You can codify permissions in `.claude/settings.json` (commit it to share team r
 - **allow** — pre-approved, runs without a prompt
 - **deny** — blocked in every mode, even if Claude asks (great for secrets and destructive commands). It matches the command text, so it isn't an OS-level boundary: pair it with `/sandbox`
 - **ask** — an explicit rule that always prompts, even in auto mode (e.g. `Bash(docker *)`)
+- **MCP allow rules** name the whole server: `mcp__github__*` (v2.1.299+). `mcp__a` no longer covers a server called `a__b`
 - everything else → the classifier in auto mode, or a normal prompt in Manual mode
 
 Pre-approve a handful of read-only/test commands; deny secrets and destructive operations; let the rest go to the classifier or a prompt. That's the sweet spot.

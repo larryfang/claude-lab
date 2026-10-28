@@ -19,7 +19,7 @@ When you're **deep in one task** but the window is filling, don't clear (you'd l
 /compact focus on the API changes and the failing test
 ```
 
-`/compact` summarizes the conversation, preserving key code, file states, and decisions while freeing space. Claude also **auto-compacts** when you approach the limit. You can guide it from `CLAUDE.md` too, e.g. *"When compacting, always preserve the list of modified files and test commands."*
+`/compact` summarizes the conversation, preserving key code, file states, and decisions while freeing space. Claude also **auto-compacts** when you approach the limit, and since v2.1.299 the terminal runs **idle compaction**: a conversation of 200K+ tokens left idle for about 54 minutes is compacted before its one-hour prompt cache expires, so your next message does not reprocess it all. Turn that off in `/config` → Idle compaction, or with `"idleCompaction": false` in `settings.json`. Either way, read what a compaction kept before you continue. You can guide it from `CLAUDE.md` too, e.g. *"When compacting, always preserve the list of modified files and test commands."*
 
 ## /rewind — checkpoints, not chaos
 
@@ -30,7 +30,7 @@ A **prompt that starts a new turn** creates a checkpoint. A steering message sen
 - Since v2.1.191 the rewind menu can even resume the conversation from **before a `/clear`**, while you're still in the same Claude Code process ([changelog](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md))
 
 :::concept Be bold, then rewind
-With a clean starting point, you can tell Claude to **try a bold edit**. If it goes sideways, rewind and try another angle. Checkpoints persist across sessions, but retention is limited: the current default keeps the 100 most recent snapshots and cleans up sessions after 30 days. *(Rewind only undoes tracked file edits — not changes made by Bash commands like `rm`, `mv` or a migration, and generally not subagent edits. Commit first; it's not a replacement for git.)*
+With a clean starting point, you can tell Claude to **try a bold edit**. If it goes sideways, rewind and try another angle. Checkpoints persist across sessions, but retention is limited: the current default keeps the 100 most recent snapshots and cleans up sessions after 30 days. *(Rewind only undoes tracked file edits — not changes made by Bash commands like `rm`, `mv`, `sed -i` (since v2.1.309 it runs as written and is not restored) or a migration, and generally not subagent edits. Commit first; it's not a replacement for git.)*
 
 Want to keep the current state *and* explore an alternative? **`/branch`** forks the conversation to try another direction, and **`/fork`** copies the whole session into a new background session that keeps working while you continue here.
 :::
