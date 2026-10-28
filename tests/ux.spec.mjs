@@ -246,3 +246,36 @@ test("the re-verified strip fits a 320px phone without horizontal scroll", async
   const box = await strip.boundingBox();
   expect(box.x + box.width).toBeLessThanOrEqual(320);
 });
+
+test("keyboard users can see focus on the simulator, the import control, and scroll tables and terminal output", async ({ page }) => {
+  await page.goto("/#/claude-code/cc-first");
+  const input = page.locator(".ccsim-input").first();
+  await input.focus();
+  expect(await page.locator(".ccsim-inputline").first().evaluate((el) => getComputedStyle(el).boxShadow)).not.toBe("none");
+  await expect(page.locator(".ccsim-screen").first()).toHaveAttribute("tabindex", "0");
+  await page.goto("/#/cowork/the-brief");
+  await expect(page.locator(".table-wrap").first()).toHaveAttribute("tabindex", "0");
+  await page.goto("/#/me");
+  await page.locator("#progressImport").focus();
+  expect(await page.locator(".file-btn").first().evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe("none");
+  // the light-theme focus ring is the darker clay so it stands out on the page background
+  await page.locator("#progressExport").focus();
+  await page.keyboard.press("Shift+Tab"); await page.keyboard.press("Tab");
+  expect(await page.locator("#progressExport").evaluate((el) => getComputedStyle(el).outlineColor)).toBe("rgb(156, 69, 41)");
+  // form-control boundaries use the 3:1 control colour, including the planner selects styled in the later stylesheet
+  await page.goto("/#/");
+  expect(await page.locator(".planner-controls select").first().evaluate((el) => getComputedStyle(el).borderTopColor)).toBe("rgb(133, 127, 117)");
+  await page.goto("/#/cowork/what-is-cowork");
+  expect(await page.locator(".quiz-opt").first().evaluate((el) => getComputedStyle(el).borderTopColor)).toBe("rgb(133, 127, 117)");
+  await page.goto("/#/studio");
+  expect(await page.locator("#practiceBrief").evaluate((el) => getComputedStyle(el).borderTopColor)).toBe("rgb(133, 127, 117)");
+  // focus on the textarea is shown by the global ring in the focus colour
+  await page.locator("#practiceBrief").focus();
+  await page.keyboard.press("Shift+Tab"); await page.keyboard.press("Tab");
+  expect(await page.locator("#practiceBrief").evaluate((el) => getComputedStyle(el).outlineColor)).toBe("rgb(156, 69, 41)");
+  // dark theme carries its own control colour
+  await page.locator("#themeBtn").click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.goto("/#/cowork/what-is-cowork");
+  expect(await page.locator(".quiz-opt").first().evaluate((el) => getComputedStyle(el).borderTopColor)).toBe("rgb(132, 126, 116)");
+});

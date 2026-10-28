@@ -919,7 +919,10 @@
     WIDGETS.wire($("#content"), api);
     window.CHECKERS.wire($("#content"), api);
     // Code examples can scroll horizontally on phones; keyboard users need access too.
-    $all('.codeblock pre', $('#content')).forEach(function (pre) { pre.tabIndex = 0; pre.setAttribute('aria-label', 'Code example'); });
+    // Regions that can scroll must be reachable from the keyboard; a role lets the label apply.
+    $all('.codeblock pre', $('#content')).forEach(function (pre) { pre.tabIndex = 0; pre.setAttribute('role', 'region'); pre.setAttribute('aria-label', 'Code example'); });
+    $all('.table-wrap', $('#content')).forEach(function (el, i) { el.tabIndex = 0; el.setAttribute('role', 'region'); el.setAttribute('aria-label', 'Table ' + (i + 1)); });
+    $all('.ccsim-screen', $('#content')).forEach(function (el, i) { el.tabIndex = 0; el.setAttribute('role', 'region'); el.setAttribute('aria-label', 'Terminal output ' + (i + 1)); });
   }
   function maybeCelebrate(label) {
     var list = label.closest(".checklist"); if (!list) return;

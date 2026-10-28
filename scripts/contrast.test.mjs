@@ -28,3 +28,19 @@ for (const [name, t, pairs] of [["light", light, [...TEXT_PAIRS, ...LIGHT_ONLY]]
     assert.deepEqual(fails, []);
   });
 }
+
+// Non-text contrast (WCAG 1.4.11, 3:1): focus rings and form-control boundaries against the surfaces they sit on.
+const NON_TEXT_PAIRS = [["focus", "bg"], ["focus", "surface"], ["control-line", "surface"], ["control-line", "bg"]];
+for (const [name, t] of [["light", light], ["dark", dark]]) {
+  test(`${name} theme focus ring and control borders meet 3:1`, () => {
+    const missing = NON_TEXT_PAIRS.filter(([f, b]) => !t[f] || !t[b]).map(([f, b]) => `${f}/${b}`);
+    assert.deepEqual(missing, [], "tokens missing from styles.css");
+    const fails = NON_TEXT_PAIRS.filter(([f, b]) => ratio(t[f], t[b]) < 3).map(([f, b]) => `${f} on ${b}: ${ratio(t[f], t[b]).toFixed(2)}`);
+    assert.deepEqual(fails, []);
+  });
+}
+test("the simulator's suggested command is readable as text", () => {
+  const m = css.match(/\.ccsim-input::placeholder \{ color: (#[0-9a-fA-F]{6})/), bar = css.match(/\.ccsim-inputline \{[^}]*background: (#[0-9a-fA-F]{6})/);
+  assert.ok(m && bar, "placeholder and input-bar colours must be literal hex in styles.css");
+  assert.ok(ratio(m[1], bar[1]) >= 4.5, `placeholder ${m[1]} on ${bar[1]}: ${ratio(m[1], bar[1]).toFixed(2)}`);
+});
