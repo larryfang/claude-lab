@@ -96,6 +96,27 @@
   function fastPathMinutes(c, path) {
     return path.lessons.reduce(function (total, id) { var info = lessonInfo(c, id); return total + (info && info.lesson.minutes ? info.lesson.minutes : 0); }, 0);
   }
+  // Lessons re-checked against Claude's own docs on the latest verification pass (within 30 days of
+  // the newest date), so a returning learner sees what moved with the latest Claude update.
+  // Dates are whole UTC days, so the 30-day window cannot shift across a daylight-saving change.
+  function dayNumber(iso) { return /^\d{4}-\d{2}-\d{2}$/.test(iso) ? Math.floor(Date.parse(iso + "T00:00:00Z") / 864e5) : NaN; }
+  function recentlyVerified(c) {
+    var entries = Object.keys(c.freshness || {}).map(function (id) {
+      var info = lessonInfo(c, id), f = c.freshness[id];
+      return info && f && !isNaN(dayNumber(f.verifiedDate)) ? { id: id, title: info.lesson.title, date: f.verifiedDate, day: dayNumber(f.verifiedDate), source: f.sourceLabel || "" } : null;
+    }).filter(Boolean);
+    if (!entries.length) return [];
+    var newest = Math.max.apply(null, entries.map(function (e) { return e.day; }));
+    return entries.filter(function (e) { return newest - e.day <= 30; }).sort(function (a, b) { return b.day - a.day || a.title.localeCompare(b.title); });
+  }
+  function verifiedStrip(c) {
+    var recent = recentlyVerified(c); if (!recent.length) return "";
+    var whatsNew = lessonInfo(c, "cc-whats-new");
+    return '<section class="verified-strip" aria-labelledby="verifiedTitle"><h2 id="verifiedTitle">Checked against Claude on ' + formatVerifiedDate(recent[0].date) + '</h2>' +
+      '<p>' + recent.length + (recent.length === 1 ? ' lesson was' : ' lessons were') + ' re-verified against current Claude documentation in the latest pass' + (whatsNew ? ', and <a href="' + lessonHref(c.id, "cc-whats-new") + '">' + esc(whatsNew.lesson.title) + '</a> lists what changed' : '') + '.</p>' +
+      '<details class="verified-details"><summary>See the ' + (recent.length === 1 ? 'lesson' : recent.length + ' lessons') + '</summary>' +
+      '<ul class="verified-list">' + recent.map(function (e) { return '<li><a href="' + lessonHref(c.id, e.id) + '">' + esc(e.title) + '</a><span class="verified-when">' + formatVerifiedDate(e.date) + (e.source ? ' · ' + esc(e.source) : '') + '</span></li>'; }).join("") + '</ul></details></section>';
+  }
   function formatVerifiedDate(iso) {
     iso = String(iso || "");
     if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return esc(iso);
@@ -359,6 +380,7 @@
     html += '<div class="badge-row">';
     (c.badges || []).forEach(function (b) { var has = earned.indexOf(b) !== -1; html += '<span class="badge ' + (has ? "earned" : "") + '">' + (has ? b.emoji : "🔒") + " " + b.label + "</span>"; });
     html += '</div><a class="cert-link" href="' + courseHref(cid) + '/certificate">' + (p.pct === 100 ? "🎓 Get your certificate →" : "🎓 Certificate unlocks at 100%") + "</a></div></div>";
+    html += verifiedStrip(c);
 
     if (c.fastPaths && c.fastPaths.length) {
       html += '<h2 class="section-title">Choose your route</h2><p class="section-desc">Short on time? Pick the outcome closest to your job. Every route still counts toward the full course.</p>';

@@ -207,3 +207,42 @@ test("a guest's account button carries no sync state", async ({ page }) => {
   await expect(page.locator("#accountBtn")).toHaveAccessibleName("Sign in to save progress");
   await expect(page.locator("#accountBtn")).not.toHaveAttribute("data-sync", /.+/);
 });
+
+test("each course home names the lessons checked against Claude on the latest pass", async ({ page }) => {
+  await page.goto("/#/");
+  const courses = await page.evaluate(() => window.COURSES.map((c) => c.id));
+  for (const id of courses) {
+    await page.goto(`/#/${id}`);
+    const strip = page.locator(".verified-strip");
+    await expect(strip).toBeVisible();
+    // the same whole-day arithmetic the page uses: within 30 UTC days of the newest verification
+    const expected = await page.evaluate((cid) => {
+      const c = window.COURSES.find((x) => x.id === cid);
+      const day = (iso) => Math.floor(Date.parse(iso + "T00:00:00Z") / 864e5);
+      const days = Object.values(c.freshness).map((f) => day(f.verifiedDate));
+      const newest = Math.max(...days);
+      return { count: days.filter((d) => newest - d <= 30).length };
+    }, id);
+    await expect(strip.locator("h2")).toContainText("Checked against Claude on");
+    await expect(strip.locator("p").first()).toHaveText(new RegExp(`^${expected.count} lessons? (was|were) re-verified`));
+    await strip.locator("summary").click();
+    await expect(strip.locator(".verified-list li")).toHaveCount(expected.count);
+    await expect(strip.locator(".verified-list li").first()).toContainText("2026");
+  }
+  await expect(page.locator(".verified-strip p a[href='#/claude-code/cc-whats-new']")).toBeVisible();
+  await page.locator(".verified-list a").first().click();
+  await expect(page.locator("article.lesson h1")).toBeVisible();
+});
+
+test("the re-verified strip fits a 320px phone without horizontal scroll", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto("/#/claude-code");
+  const strip = page.locator(".verified-strip");
+  await expect(strip).toBeVisible();
+  await strip.locator("summary").click();
+  await expect(strip.locator(".verified-list li").first()).toBeVisible();
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(0);
+  const box = await strip.boundingBox();
+  expect(box.x + box.width).toBeLessThanOrEqual(320);
+});

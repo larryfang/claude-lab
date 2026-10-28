@@ -349,3 +349,12 @@ body.focus-mode[data-view=lesson] .content { padding-left: 28px; padding-right: 
 .session-takeaway h2 {font-size:1.2rem;margin-top:0;}
 .session-takeaway p {color:var(--ink-2);line-height:1.65;}
 @media(max-width:520px){.session-context{padding:16px;}.session-context p{flex-basis:100%;}.session-summary .hero-cta{align-items:stretch;}.session-summary .hero-cta>.btn{width:100%;}.session-takeaway{padding:20px;}}
+
+/* course home: lessons re-verified on the latest pass */
+.verified-strip {margin:22px 0 6px;padding:18px 22px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);}
+.verified-strip h2 {margin:0 0 6px;font-size:1.05rem;}
+.verified-strip p {margin:0 0 10px;color:var(--ink-2);font-size:.92rem;}
+.verified-details summary {cursor:pointer;font-size:.9rem;color:var(--ink-2);}
+.verified-list {list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:6px 18px;}
+.verified-list li {display:flex;flex-direction:column;gap:1px;font-size:.9rem;}
+.verified-when {color:var(--muted);font-size:.78rem;}
