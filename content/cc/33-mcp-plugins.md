@@ -29,13 +29,19 @@ For many services, a **CLI** is the most context-efficient integration. Install 
 
 A **plugin** bundles skills, subagents, hooks, and MCP servers into one installable unit. Instead of wiring each piece, install a plugin and get a ready-made toolkit. `/plugin` opens the marketplace browser in-session; the full flow ([plugin docs](https://code.claude.com/docs/en/plugins)):
 
-```bash
-# add a marketplace (a git repo with a marketplace manifest), then install from it
-/plugin marketplace add anthropics/claude-plugins-official
-/plugin install superpowers@claude-plugins-official
+In a session, add a marketplace (a git repo with a marketplace manifest), then install from it:
 
-# or from the shell
-claude plugin install superpowers@claude-plugins-official
+```prompt
+/plugin marketplace add anthropics/claude-plugins-official
+```
+```prompt
+/plugin install superpowers@claude-plugins-official
+```
+
+Or from the shell, in one step:
+
+```bash
+claude plugin install superpowers@claude-plugins-official --marketplace anthropics/claude-plugins-official
 ```
 
 Anthropic curates an official directory ([anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official)) and mirrors community submissions ([anthropics/claude-plugins-community](https://github.com/anthropics/claude-plugins-community)); any GitHub/GitLab repo or zip can be a marketplace, so **teams host their own**. A plugin is just files — `.claude-plugin/plugin.json` plus the usual `commands/`, `agents/`, `skills/`, `hooks/`, `.mcp.json`.

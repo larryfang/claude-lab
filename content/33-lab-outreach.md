@@ -13,7 +13,7 @@ Twenty genuinely specific emails beat two hundred generated ones. The tool will 
 :::
 
 :::lab Step 1 — A sequence for a real target list
-Use a real target list of 8–15 accounts, or the practice accounts from Module 1.
+Use a real target list of 8–15 accounts, or the practice accounts from Module 1. With practice accounts, delete "and each company's public website and news" from INPUTS in Step 1, because an invented name can match a real company.
 
 ```prompt
 BACKGROUND. I am an AE at [COMPANY], selling [ONE SENTENCE]. I have a target list of accounts I have had no meaningful contact with. I want a first-touch email per account that is genuinely specific, plus a two-step follow-up. My aim is a reply, not a meeting booked from a cold email.

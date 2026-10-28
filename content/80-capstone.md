@@ -146,7 +146,7 @@ One file per item that needs individual attention — per at-risk deal, per comp
 - [ ] Test the scheduled task's actual input tools and execution setting (see Module 8's cloud transition guidance). Review downloadable reports in the task conversation. Use a connected `Cowork-Reports` folder only if its connector supports file creation and subsequent reads; enable only the required tool. If previous-run storage is unavailable, keep comparisons manual. Create the schedule inside the Project from Stage 1
 - [ ] Run it **manually** twice more and read each output in full
 - [ ] Then schedule it for Monday 8am
-- [ ] After the second scheduled run, confirm it read the first run's file in `Cowork-Reports`
+- [ ] After the second scheduled run, confirm it read the first run's file (from `Cowork-Reports` if you used that connector, otherwise the first run's report that you supplied as an input)
 :::
 
 :::warning Three runs by hand, then the schedule

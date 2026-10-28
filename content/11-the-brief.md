@@ -40,7 +40,7 @@ If you cannot describe the result, you are not ready to delegate it. That is use
 
 Be explicit about what to read — and, when it matters, what to ignore.
 
-> ✅ "Use only the transcripts in `discovery/` and the ticket export `support-tickets.csv`. Do not use the web. Do not use anything in `archive/` — that data is from a different product."
+> ✅ "Use only the transcripts in `product/` and the ticket export `product/support-tickets.csv`. Do not use the web. Do not use anything in `archive/` — that data is from a different product."
 
 :::tip "Do not use the web" is a real instruction
 Restricting sources gives you a defined evidence set to check. Claude can still infer or invent a claim, so ask for a source location and verify that it actually supports the claim. The instruction does not switch off the model's general knowledge.
@@ -81,7 +81,7 @@ Summarise the customer interviews and tell me what to build.
 ```prompt
 I am a PM on a reporting product. We ran eight discovery calls to decide our Q4 focus, and I have to defend the choice to a leadership review on Thursday.
 
-Using only the transcripts in `discovery/` and the ticket export `support-tickets.csv`, produce two files in `output/`:
+Using only the transcripts in `product/` and the ticket export `product/support-tickets.csv`, produce two files in `output/`:
 
 1. `themes.csv` — one row per theme: theme, customer_count, customer_names, supporting_ticket_ids, arr_affected, confidence (high/medium/low) and one line on why that confidence.
 

@@ -38,6 +38,7 @@ Everything you'll reach for, on one page. Bookmark it. Reviewed against **Claude
 | `claude auto-mode config` | Inspect the auto-mode classifier rules (`critique` reviews your custom rules) |
 | `claude mcp add / list / login` | Manage MCP servers from the shell |
 | `claude plugin install <name>@<marketplace>` | Install a plugin non-interactively; add `--marketplace <source>` to register the marketplace in the same step (v2.1.292+) |
+| `claude plugin details <name>` | What an installed plugin loads: its components and projected token cost |
 | `claude ultrareview` | Cloud-hosted multi-agent review of the current branch or a PR; needs workspace trust, so scripts pass `--trust-workspace` (v2.1.309+) |
 | `claude import` | Migrate config from another AI coding agent |
 
@@ -80,6 +81,10 @@ Everything you'll reach for, on one page. Bookmark it. Reviewed against **Claude
 | `/statusline` | Set up a status line (context %, model, branch) |
 | `/memory` | Edit memory files; toggle auto memory |
 | `/doctor` | Full checkup that can also fix issues |
+| `/checkup` | Audit your setup for config issues and context dead weight |
+| `/config` | Settings dialog: output style, idle compaction and other session settings |
+| `/output-style [name]` | Switch the response style (Default, Explanatory, Learning…) |
+| `/workflows` | List the dynamic-workflow runs started with `ultracode` |
 | `/install-github-app` | Wire up `@claude` on your GitHub repo |
 | `/rename` | Name the session |
 | `/btw` | Quick aside that doesn't enter history |

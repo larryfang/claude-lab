@@ -30,7 +30,7 @@ Save an answer key outside `finance/`, at `answer-key/reconciliation.md`: the so
 - [ ] Files and answer key created; I checked the counts and a sample of the seeded cases
 :::
 
-Start a new task for the reconciliation, using only the three CSVs and the brief below. Keep the answer key out of its inputs and check enabled memory. Generated practice data is not automatically a valid test fixture; use the key and source rows to judge the result.
+Start a new task for the reconciliation, using only the three CSVs and the brief below. The INPUTS line is what keeps the answer key out (the file stays readable inside `Cowork-Lab`; move it outside the connected folder if it must be unreachable), and check enabled memory. Generated practice data is not automatically a valid test fixture; use the key and source rows to judge the result.
 
 ## Part 2 — The reconciliation (10 min)
 

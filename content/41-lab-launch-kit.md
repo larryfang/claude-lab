@@ -27,7 +27,7 @@ RESULT. `output/messaging-house.md` with these sections:
 
 Also produce `output/proof-inventory.csv` with columns claim, pillar, proof_point, source, date, status (supported / gap).
 
-INPUTS. Only the files I have provided. Do not use general knowledge about this market or invent customer quotes, metrics, benchmarks or case studies.
+INPUTS. Only `gtm/launch-brief-rough.txt` and `gtm/customer-quotes.txt` (on the practice path; with a real launch, name your own files here). Do not use general knowledge about this market or invent customer quotes, metrics, benchmarks or case studies.
 
 EDGES. Never write a proof point you cannot source to a file I gave you. Never invent a customer name or a statistic. If a pillar has no proof, keep the pillar and list it in Evidence Gaps rather than fabricating support.
 

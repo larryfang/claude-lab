@@ -8,6 +8,16 @@ The second half is the point. A battlecard is repeated out loud to the person be
 Start with **Research / web search** for public pages (Module 3). Use Claude in Chrome only when the task needs browser interaction, on a dedicated profile with access limited to the sites you will research.
 
 Without web access: save the competitor's pricing page, homepage and docs pages as text and point the brief at those files. The practice `gtm/competitor-*.txt` files from Module 1 also work. Also supply approved documentation for **your own product**; competitor research alone cannot establish where you win or lose.
+
+:::details No product documentation to hand? Generate a practice set
+Module 1 created competitor pages but nothing about your own product, so Step 2 would stop with nothing to supply. In a Cowork task with `Cowork-Lab` connected, run:
+
+```prompt
+Create `gtm/our-product-capabilities.txt` for a fictional company called Meridian Analytics that sells a reporting product. Include a version line (`Version 3.2, 2026-10-01`), a feature list of 12 items with a one-line description each, three pricing tiers with monthly prices, two named integrations, and two limitations stated plainly. Invent nothing beyond this file; it is practice data.
+```
+
+Then name that file in Step 2's INPUTS as the approved own-product documentation. Treat its claims the way you would treat a real capability sheet: quotable, dated, and the only source for "where we win".
+:::
 :::
 
 ## Part 1 — Research, with sourcing enforced (8 min)

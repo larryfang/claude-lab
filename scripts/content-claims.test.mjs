@@ -40,3 +40,32 @@ test('Claude Code lessons describe idle compaction, the sed -i rewind limit and 
  assert.match(files['31-subagents.md'],/`autoCompactWindow`[^\n]*v2\.1\.296/,'31-subagents.md: autoCompactWindow field (v2.1.296)');
  assert.match(files['22-permissions.md'],/MCP allow rules[^\n]*mcp__[a-z]+__\*[^\n]*a__b/,'22-permissions.md: MCP allow rules name the whole server');
 });
+
+test('every bash block in the Claude Code course parses, and in-session slash commands are not in shell blocks',async()=>{
+ const {spawnSync}=await import('node:child_process');
+ const {writeFileSync,mkdtempSync,rmSync}=await import('node:fs');const {tmpdir}=await import('node:os');const {join}=await import('node:path');
+ const dir=mkdtempSync(join(tmpdir(),'claude-lab-bash-'));
+ try{
+  for(const {file,text} of await lessons('content/cc')){
+   let n=0;
+   for(const match of text.matchAll(/```bash\s*\n([\s\S]*?)```/g)){
+    const code=match[1];const path=join(dir,'block-'+(n++)+'.sh');writeFileSync(path,code);
+    const result=spawnSync('bash',['-n',path],{encoding:'utf8'});
+    assert.equal(result.status,0,file+' bash block '+n+': '+result.stderr.trim());
+    assert.doesNotMatch(code,/^\s*\/[a-z-]+(\s|$)/m,file+' bash block '+n+' holds an in-session slash command, which fails when pasted into a shell');
+   }
+  }
+ }finally{rmSync(dir,{recursive:true,force:true});}
+});
+
+test('practice-data labs give the learner every input they are told to use',async()=>{
+ const files=Object.fromEntries((await lessons('content')).map(({file,text})=>[file.split('/').pop(),text]));
+ assert.match(files['42-lab-battlecard.md'],/:::details[^\n]*product[\s\S]*gtm\/our-product-capabilities\.txt/i,'42: a practice learner needs own-product documentation to finish Step 2');
+ assert.match(files['33-lab-outreach.md'],/invented name can match a real company/,'33: practice accounts must not be researched on the public web');
+ assert.doesNotMatch(files['11-the-brief.md'],/`discovery\/`/,'11: the model brief must point at the practice folder that exists (product/)');
+ assert.match(files['41-lab-launch-kit.md'],/INPUTS\. Only `gtm\/launch-brief-rough\.txt`/,'41: the practice path must name its input files');
+ assert.doesNotMatch(files['80-capstone.md'],/confirm it read the first run's file in `Cowork-Reports`\n/,'80: the second-run check must work without a Cowork-Reports connector');
+ const sheet=await readFile(new URL('../content/cc/90-cheatsheet.md',import.meta.url),'utf8');
+ for(const cmd of ['/checkup','/workflows','/config','/output-style']) assert.match(sheet,new RegExp('\\| `'+cmd.replace('/','\\/')),'cheat sheet must list '+cmd);
+ assert.match(sheet,/`claude plugin details/,'cheat sheet must list claude plugin details');
+});

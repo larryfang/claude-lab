@@ -58,7 +58,8 @@ Write the expected result and two acceptance cases: one normal input and one fai
 :::lab Clone → PR, for real
 **Orient & set up memory:**
 ```bash
-git clone <repo-url> && cd <repo> && claude
+# replace the URL and folder with your own repository
+git clone https://github.com/your-org/your-repo.git && cd your-repo && claude
 ```
 ```prompt
 /init

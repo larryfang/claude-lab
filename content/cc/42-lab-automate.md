@@ -41,8 +41,8 @@ claude -p "Give me a 3-bullet summary of what this repo does"
 Try piping a diff through a review:
 
 ```bash
-# make a small edit first, then stage only that file
-git add <the-file-you-edited>
+# make a small edit first, then stage only that file (replace the path with the one you edited)
+git add path/to/the-file-you-edited
 git diff --cached | claude -p "Review this staged diff. Print BLOCK + the reason if there's a likely bug or secret, otherwise print OK."
 ```
 - [ ] Claude reviewed my staged changes from the command line

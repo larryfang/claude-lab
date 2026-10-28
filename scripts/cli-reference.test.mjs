@@ -7,7 +7,7 @@ const VERSION=FIXTURE.match(/claude-help-([\d.]+)\.txt$/)[1];
 // Subcommand help captured at the same version; flags that only exist on a subcommand live here.
 // Limit: flags are checked against the union of these captures, and only the first word after
 // `claude` is checked as a subcommand, so a flag listed on the wrong row still passes.
-const SUBCOMMAND_FIXTURES=['tests/fixtures/claude-ultrareview-help-'+VERSION+'.txt','tests/fixtures/claude-plugin-install-help-'+VERSION+'.txt'];
+const SUBCOMMAND_FIXTURES=['tests/fixtures/claude-ultrareview-help-'+VERSION+'.txt','tests/fixtures/claude-plugin-install-help-'+VERSION+'.txt','tests/fixtures/claude-plugin-help-'+VERSION+'.txt'];
 
 async function read(file){ return readFile(new URL('../'+file,import.meta.url),'utf8'); }
 
