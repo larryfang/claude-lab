@@ -70,7 +70,15 @@ test("route pages and freshness evidence render", async ({ page }) => {
   await page.locator('.fast-path-card[href="#/cowork/path/essentials"]').click();
   await expect(page.locator(".path-list li")).toHaveCount(8);
   await page.goto("/#/claude-code/cc-subagents");
-  await expect(page.locator(".freshness")).toContainText("Verified 3 Oct 2026");
+  // The badge must show the registered verification date and source, whatever the current values are.
+  const expected = await page.evaluate(() => {
+    const entry = window.COURSES.find((course) => course.id === "claude-code").freshness["cc-subagents"];
+    const [year, month, day] = entry.verifiedDate.split("-");
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return `Verified ${Number(day)} ${months[Number(month) - 1]} ${year} · ${entry.sourceLabel}`;
+  });
+  expect(expected).toMatch(/^Verified \d{1,2} [A-Z][a-z]{2} 20\d\d · .+/);
+  await expect(page.locator(".freshness")).toHaveText(expected);
 });
 
 for (const width of [390, 320]) {
