@@ -880,12 +880,15 @@
   function wireLesson(cid, id) {
     var s = cstate(cid);
     $all(".check-item", $("#content")).forEach(function (label) {
-      var key = id + ":" + label.dataset.check;
+      var key = id + ":" + label.dataset.check, legacy = id + ":" + label.dataset.checkIndex;
       var input = label.querySelector("input");
+      // Ticks saved by position (before content-keyed ticks) move to the content key. The position key
+      // is always removed, so a merge from a device still on the old scheme cannot count a tick twice.
+      if (s.checks[legacy]) { s.checks[key] = true; delete s.checks[legacy]; save(true); }
       if (s.checks[key]) { input.checked = true; label.classList.add("checked"); }
       input.addEventListener("change", function () {
         label.classList.toggle("checked", input.checked);
-        if (input.checked) { s.checks[key] = true; touch(); } else delete s.checks[key];
+        if (input.checked) { s.checks[key] = true; touch(); } else { delete s.checks[key]; delete s.checks[legacy]; }
         save(); maybeCelebrate(label);
       });
     });

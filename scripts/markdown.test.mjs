@@ -41,3 +41,14 @@ test("the once-only escaping does not weaken the URL and attribute sanitising", 
   assert.match(MD.parseInline("[x](a&amp;lt;b)"), /href="a&amp;amp;lt;b"/);
   assert.doesNotMatch(MD.parseInline("[x](a&amp;lt;b)"), /<b|a<b/);
 });
+
+test("checklist ticks are keyed by the item's text, so inserting an item above does not move them", () => {
+  const before = render("- [ ] Export the pipeline\n- [ ] Check the totals\n");
+  const after = render("- [ ] Read the brief first\n- [ ] Export the pipeline\n- [ ] Check the totals\n");
+  const keys = (html) => [...html.matchAll(/data-check="([^"]+)" data-check-index="(\d+)"/g)].map((m) => m[1]);
+  assert.equal(keys(before).length, 2);
+  assert.deepEqual(keys(after).slice(1), keys(before), "the two original items keep their keys");
+  assert.match(before, /data-check-index="0"/);
+  const twice = render("- [ ] Same text\n- [ ] Same text\n");
+  assert.equal(new Set(keys(twice)).size, 2, "repeated texts still get distinct keys");
+});

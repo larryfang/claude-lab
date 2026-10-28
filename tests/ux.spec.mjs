@@ -179,3 +179,25 @@ test("an old lesson bookmark lands on the canonical route with lesson view and q
   await expect(page).toHaveURL(/#\/cowork\/the-brief\?path=sales$/);
   await expect(page.locator("article.lesson h1")).toBeVisible();
 });
+
+test("a tick saved by position before the content-keyed scheme still shows and moves to the new key", async ({ page }) => {
+  // seed once: an init script would reseed on every reload and hide whether the migrated key persisted
+  await page.addInitScript(() => { if (!sessionStorage.getItem("seeded")) { sessionStorage.setItem("seeded", "1"); localStorage.setItem("claudelab.v2", JSON.stringify({ courses: { cowork: { checks: { "welcome:0": true } } } })); } });
+  await page.goto("/#/cowork/welcome");
+  const first = page.locator(".check-item").first();
+  await expect(first.locator("input")).toBeChecked();
+  const key = await first.getAttribute("data-check");
+  expect(key).toMatch(/^h[0-9a-z]+/);
+  const checks = () => page.evaluate(() => JSON.parse(localStorage.getItem("claudelab.v2")).courses.cowork.checks);
+  expect((await checks())["welcome:" + key]).toBe(true);
+  expect((await checks())["welcome:0"]).toBeUndefined();
+  await page.reload();
+  await expect(page.locator(".check-item").first().locator("input")).toBeChecked();
+  // a position key that arrives later (a merge from a device on the old scheme) is folded in, never counted twice
+  await page.evaluate(() => { const s = JSON.parse(localStorage.getItem("claudelab.v2")); s.courses.cowork.checks["welcome:0"] = true; localStorage.setItem("claudelab.v2", JSON.stringify(s)); });
+  await page.reload();
+  expect(Object.keys(await checks())).toEqual(["welcome:" + key]);
+  await page.locator(".check-item").first().click();
+  await expect(page.locator(".check-item").first().locator("input")).not.toBeChecked();
+  expect(Object.keys(await checks())).toEqual([]);
+});

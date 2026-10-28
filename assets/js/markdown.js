@@ -105,7 +105,10 @@
         const checked = mm[1].toLowerCase() === "x";
         const idx = ctx.checkIdx++;
         const text = mm[2].replace(/\n/g, " ");
-        h += "<li><label class=\"check-item" + (checked ? " checked" : "") + "\" data-lesson=\"" + escAttr(ctx.lessonId || "") + "\" data-check=\"" + idx + "\">" +
+        // Saved ticks are keyed by the item's text, so editing the list above an item does not move its tick.
+        // Repeated texts get a counter; the position stays on the element so older position-keyed ticks still load.
+        const seen = ctx.checkKeys || (ctx.checkKeys = {}), base = hash(text), n = seen[base] = (seen[base] || 0) + 1, key = "h" + base + (n > 1 ? "-" + n : "");
+        h += "<li><label class=\"check-item" + (checked ? " checked" : "") + "\" data-lesson=\"" + escAttr(ctx.lessonId || "") + "\" data-check=\"" + key + "\" data-check-index=\"" + idx + "\">" +
           '<input type="checkbox"' + (checked ? " checked" : "") + ">" +
           '<span class="check-box">✓</span>' +
           '<span class="check-text">' + parseInline(text) + "</span></label>";
