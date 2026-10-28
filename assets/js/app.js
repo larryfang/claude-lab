@@ -590,7 +590,10 @@
         if (!input.isConnected || location.hash !== importRoute) return;
         var data = JSON.parse(text);
         if (!window.CLOUD_STATE.validState(data)) throw new Error("invalid progress data");
-        store = data; store.courses = store.courses || {}; save(); renderMe(); toast("✓ Progress imported");
+        store = data; store.courses = store.courses || {}; save();
+        // The file carries device preferences too; the page must show them, not wait for a reload.
+        applyTheme(store.theme || document.documentElement.getAttribute("data-theme")); applyFocus();
+        renderMe(); toast("✓ Progress imported");
       }).catch(function (err) { toast("⚠️ Import failed: that file is not a Claude Lab progress export (" + err.message + ")"); });
     });
   }

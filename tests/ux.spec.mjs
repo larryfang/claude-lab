@@ -127,3 +127,26 @@ test("choosing the search result for the current lesson returns to the top of it
   await expect(page.locator("#searchModal")).toBeHidden();
   await expect.poll(async () => page.evaluate(() => window.scrollY)).toBeLessThan(100);
 });
+
+test("the phone menu still opens while focus mode is on", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 800 });
+  await page.goto("/#/cowork/the-brief");
+  await expect(page.locator("article.lesson h1")).toBeVisible();
+  await page.locator("#focusBtn").click();
+  await expect(page.locator("#focusBtn")).toHaveAttribute("aria-pressed", "true");
+  await page.locator("#navToggle").click();
+  await expect(page.locator("#sidebar")).toHaveClass(/open/);
+  await expect(page.locator("#sidebar .nav-link").first()).toBeVisible();
+  await expect(page.locator("#sidebar")).toBeInViewport();
+});
+
+test("importing a progress file applies its theme and focus preference at once", async ({ page }) => {
+  await page.goto("/#/me");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.locator("#progressImport").setInputFiles({ name: "backup.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify({ theme: "dark", focus: true, courses: {} })) });
+  await expect(page.locator("#toast")).toContainText("Progress imported");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator("#focusBtn")).toHaveAttribute("aria-pressed", "true");
+  await page.goto("/#/cowork/the-brief");
+  await expect(page.locator("body")).toHaveClass(/focus-mode/);
+});

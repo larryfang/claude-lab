@@ -174,7 +174,7 @@ body[data-view=hub] .content, body[data-view=studio] .content { padding: 56px 40
 .lesson-outline .toc { padding: 2px 18px 18px; border: none; }
 .lesson-outline .toc-title:first-child { display: none; }
 .toc a { min-height: 44px; }
-body.focus-mode[data-view=lesson] .sidebar { display: none; }
+body.focus-mode[data-view=lesson] .sidebar:not(.open) { display: none; } /* a phone's slide-in menu must still open in focus mode */
 body.nav-open { overflow: hidden; }
 body.focus-mode[data-view=lesson] .content { padding-left: 28px; padding-right: 28px; }
 .studio-page-hero { margin-bottom: 40px; max-width: 660px; }
