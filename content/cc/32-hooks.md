@@ -20,7 +20,7 @@ Hooks fire on events in Claude's loop; the maintained [event reference](https://
 | **PreToolUse** | before a tool runs (and can **block** it) | denying edits to protected files; guarding dangerous commands |
 | **PostToolUse** | after a tool succeeds | auto-format/lint after edits; run affected tests |
 | **Stop** | when Claude tries to end its turn | gate completion on a passing build/test |
-| **UserPromptSubmit** | when you send a prompt | inject standard context, log requests |
+| **UserPromptSubmit** | when you send a prompt, before Claude processes it; since v2.1.299 it also runs before a skill or custom command expands, so a block stops the command's embedded shell steps too ([changelog](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md)); a separate **UserPromptExpansion** event fires when a typed command expands into a prompt | inject standard context, log requests, block a prompt |
 | **SessionStart** | at session start | print branch/status, set up env |
 | **PostToolUseFailure** | after a tool call fails | log or react to failures |
 | **SubagentStop** | when a subagent finishes | collect subagent results, notify |
@@ -59,7 +59,7 @@ For a protected folder, start with a **permission rule** rather than a shell sub
 
 Path rules cover the file tools and recognized shell file operations; they do not stop arbitrary scripts from accessing the same files. Use sandboxing or operating-system permissions when you need that boundary. Test allowed and denied paths before relying on it.
 
-A custom **PreToolUse** handler can also block an action: return exit code **2** and a useful stderr explanation, or the supported JSON decision. Other nonzero exit codes report a hook error without blocking. A **Stop** handler must likewise return exit code 2 or `{"decision":"block","reason":"…"}` to keep Claude working; a test command returning 1 by itself does not gate completion. Check `stop_hook_active` and handle an unavailable dependency without creating a loop ([decision control](https://code.claude.com/docs/en/hooks#decision-control)).
+A custom **PreToolUse** handler can also block an action: return exit code **2** and a useful stderr explanation, or the supported JSON decision. Other nonzero exit codes report a hook error without blocking, and on most events a handler that cannot start or times out also lets the action go ahead. To make a policy hook fail closed, set `"onFailure": "block"` on a `command` or `http` hook (v2.1.295+); then a mistyped path, a crash or a timeout blocks the action instead of letting it through ([block on failure](https://code.claude.com/docs/en/hooks#block-the-action-when-a-hook-fails)). A **Stop** handler must likewise return exit code 2 or `{"decision":"block","reason":"…"}` to keep Claude working; a test command returning 1 by itself does not gate completion. Check `stop_hook_active` and handle an unavailable dependency without creating a loop ([decision control](https://code.claude.com/docs/en/hooks#decision-control)).
 
 :::note Beyond shell commands
 `"type": "command"` is just the classic form. Hooks can also be **HTTP** calls to an endpoint, **prompt** hooks (an LLM judges the event against a rule you write in English), and **agent** hooks (an agent can inspect files and test output) — see the [hooks reference](https://code.claude.com/docs/en/hooks) for the events each handler supports. Model-based judgments still need evaluation; they are not deterministic correctness checks.

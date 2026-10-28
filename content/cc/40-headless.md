@@ -56,7 +56,7 @@ claude -p "Add a license header to this file" --allowedTools "Edit,Bash(git add 
 ```
 
 :::warning Unattended = scope tightly
-With no human in the loop, the permission mode and your pre-approved tools are your safety rails: `--allowedTools` pre-approves tools, `--tools` restricts which built-in tools exist, and `--permission-mode dontAsk` denies anything not pre-approved. Allow only what the job needs. Use `--verbose` while developing the prompt, then turn it off in production.
+With no human in the loop, the permission mode and your pre-approved tools are your safety rails. From v2.1.302 a `claude -p` run with no `--permission-mode` starts in Manual (`default`) and **denies** any call that needs approval unless an allow rule, a hook or `--permission-prompt-tool` answers it; Agent SDK runs behave the same. A script that relies on the interactive Auto default silently does less than you expect ([mode table](https://code.claude.com/docs/en/permission-modes#tool-calls-denied-in-claude--p-and-agent-sdk-runs)). `--allowedTools` pre-approves tools, `--tools` restricts which built-in tools exist, and `--permission-mode dontAsk` denies anything not pre-approved. Allow only what the job needs. Use `--verbose` while developing the prompt, then turn it off in production.
 :::
 
 ## In CI: GitHub Actions

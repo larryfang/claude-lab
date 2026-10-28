@@ -24,3 +24,10 @@ test('the 6 October 2026 Cowork execution change is described as in effect, not 
  const schedules=files.find(({file})=>file.endsWith('62-schedules.md')).text;
  assert.match(schedules,/schedules created before that date keep running on your computer/,'existing local schedules must be distinguished from new cloud schedules');
 });
+
+test('Claude Code lessons carry the v2.1.302 headless Manual default and the v2.1.295 hook fail-closed option',async()=>{
+ const files=Object.fromEntries((await lessons('content/cc')).map(({file,text})=>[file.split('/').pop(),text]));
+ for(const name of ['22-permissions.md','40-headless.md']) assert.match(files[name],/v2\.1\.302[^\n]*Manual[^\n]*denie[^\n]*permission-prompt-tool/,name+': headless runs with no mode start in Manual and deny calls that need approval unless an allow rule, hook or permission prompt tool answers');
+ assert.match(files['32-hooks.md'],/"onFailure": "block"[^\n]*`http`[^\n]*v2\.1\.295/,'32-hooks.md: command and http hooks can fail closed since v2.1.295');
+ assert.match(files['32-hooks.md'],/before a skill or custom command expands/,'32-hooks.md: UserPromptSubmit ordering');
+});
