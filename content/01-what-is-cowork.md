@@ -6,8 +6,8 @@ There is exactly one idea to absorb in this lesson. Everything else in the cours
 Anthropic is combining chat and Cowork into one Claude, starting with Pro and Max ([announcement](https://claude.com/blog/cowork-is-now-claude), [Help Center](https://support.claude.com/en/articles/16761823)). If your message box shows **Chat** and **Cowork**, choose **Cowork**. If you are on Pro or Max and there is no such choice, you already have the new Claude: every conversation can take a Cowork task. The shift below — from prompt to outcome — is the same in both.
 :::
 
-:::note Execution update — checked 3 October 2026
-Anthropic says **new Pro and Max tasks move to the cloud on 6 October**, including scheduled tasks. Existing local tasks stay local. Connected folders remain on your computer, but files Claude opens are processed on Anthropic's servers; local access requires Desktop open. If the work must execute locally, use Claude Code. Check your organization's policy before using real work data ([surface and transition guide](https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile)).
+:::note Execution update — checked 29 October 2026
+**Since 6 October 2026, new Pro and Max tasks run in the cloud**, including new scheduled tasks; the "Only on your computer" setting was removed and there is no way back. Tasks started before that date stay on your computer with a banner that says so. Connected folders remain on your computer and Claude reaches them only while Desktop is open; when a cloud task needs a file, Claude fetches a copy of that file to Anthropic's servers. If the work must execute locally, use Claude Code in the desktop app. Check your organization's policy before using real work data ([surface and transition guide](https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile)).
 :::
 
 :::concept The shift: from prompt to outcome

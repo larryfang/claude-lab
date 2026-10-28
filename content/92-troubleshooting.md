@@ -146,7 +146,7 @@ Then add a status line and a failure path: *"If a source is unreachable, incompl
 :::
 
 :::details My scheduled task did not run at the scheduled time
-Check **Scheduled** for the run history, timezone, errors and actual execution setting. Cloud tasks can run with your computer off, but access to local files or apps needs Desktop open. On **6 October 2026**, new Pro and Max tasks move to the cloud, including tasks using local files; existing local tasks stay local. Do not infer execution location from a folder path. Check the [transition guidance](https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile) before adapting a schedule.
+Check **Scheduled** for the run history, timezone, errors and actual execution setting. Cloud tasks can run with your computer off, but access to local files or apps needs Desktop open. Since **6 October 2026**, new Pro and Max tasks run in the cloud, including tasks that use local files; tasks created before that date keep running on your computer. Do not infer execution location from a folder path. Check the [transition guidance](https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile) before adapting a schedule.
 :::
 
 :::details Output from a Project is subtly and consistently wrong

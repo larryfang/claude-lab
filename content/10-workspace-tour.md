@@ -42,7 +42,7 @@ For bigger jobs Cowork splits work across parallel workers — one researching e
 
 ## 6 — Scheduled tasks
 
-Set up recurring work — every Monday at 8am, every weekday at 6pm. Cloud schedules can run with your computer off; access to local folders or apps still needs Desktop open. **From 6 October 2026, Anthropic says new Pro and Max tasks, including schedules using local files, move to the cloud.** Existing local tasks stay local. Check the task's actual execution setting and your organization's controls ([schedule guide](https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork)).
+Set up recurring work — every Monday at 8am, every weekday at 6pm. Cloud schedules can run with your computer off; access to local folders or apps still needs Desktop open. **Since 6 October 2026, new Pro and Max tasks run in the cloud, including new schedules that use local files.** Schedules created before that date keep running on your computer. Check the task's actual execution setting and your organization's controls ([schedule guide](https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork)).
 
 **Where it matters to you:** a scheduled job runs with **no one reading the plan**. Only schedule jobs that are read-only or write to a scratch folder, and that you have run by hand successfully at least three times. Module 8.
 

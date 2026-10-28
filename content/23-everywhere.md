@@ -38,11 +38,11 @@ The move is the same one Module 3 taught for a missing connector: **ask IT with 
 
 ## Cowork in your pocket
 
-Cowork runs in beta on **web and mobile** (Pro/Max/Team; Enterprise where enabled), with sessions running in Anthropic's cloud — start a task from your phone, steer it with follow-ups, review the output, resume a session you started elsewhere ([guide](https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile)).
+Cowork runs on **web and mobile** (Pro and Max; Team in beta; Enterprise where an owner enables it), with sessions running in Anthropic's cloud — start a task from your phone, steer it with follow-ups, review the output, resume a session you started elsewhere ([guide](https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile)).
 
 How you start a task depends on which version you see. If the message box shows a **Chat** / **Cowork** choice, pick **Cowork**. If there is no choice, you have the new Claude — rolling out from 16 September 2026, Pro and Max first — and any conversation can take a task ([announcement](https://claude.com/blog/cowork-is-now-claude)).
 
-The honest caveats: **local folders, browser use and computer use** need the Claude Desktop app open and online on your computer (and local folders only for sessions started on desktop) — cloud sessions work from connectors and uploaded files instead. So the pattern that works is:
+The honest caveats: **local folders, browser use and computer use** need the Claude Desktop app open and online on your computer (and local folders only for sessions started on desktop, or for scheduled tasks) — cloud sessions work from connectors and uploaded files instead. Since 6 October 2026, new Pro and Max tasks run in the cloud on every surface; when a cloud task needs a local file, Claude fetches a copy of that one file through the open Desktop app. So the pattern that works is:
 
 > **Kick off before the commute, review on the phone.** Start the account-brief run at your desk; approve the plan; read the finished brief on the train. Or start from the phone entirely, as long as the inputs come from connectors, not your laptop's folders.
 
@@ -78,7 +78,7 @@ Q: What happens to an email Claude for Outlook writes?
 A: It lands as an **unsent draft** for your review. The send gate stays yours.
 
 Q: What do Cowork sessions on web and mobile work from?
-A: **Connectors and uploaded files.** Local folders, browser use and computer use need your desktop app open — and local folders work only in sessions started on desktop.
+A: **Connectors and uploaded files.** Local folders, browser use and computer use need your desktop app open — and local folders work only in sessions started on desktop, or in scheduled tasks.
 
 Q: Is using Claude in Office, Slack or mobile a new trust decision?
 A: Yes, in part. Office and mobile run on your account, skills and connectors — but Outlook needs its own Microsoft Graph consent, and add-in activity is not in Enterprise audit logs. Claude Tag runs on connections an Owner attaches to each channel; on Team plans it can also use your own connectors for your requests, and what it posts is visible to the whole channel. Your data rules still apply everywhere.

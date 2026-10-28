@@ -49,7 +49,7 @@ Read-only. Never modify the CRM. Write only the report file, nothing else.
 ```
 
 :::warning Check where the task runs and saves its result
-Cloud schedules can work with connected tools and account files while your computer is off. Access to local files or apps still requires Desktop open. **On 6 October 2026, new Pro and Max tasks move to the cloud, including schedules using local files; existing local tasks stay local.** Review the actual execution setting, organization controls and run history rather than assuming a local folder means local execution ([current transition guide](https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile)).
+Cloud schedules can work with connected tools and account files while your computer is off. Access to local files or apps still requires Desktop open. **Since 6 October 2026, new Pro and Max tasks run in the cloud, including schedules that use local files; schedules created before that date keep running on your computer.** Review the actual execution setting, organization controls and run history rather than assuming a local folder means local execution ([current transition guide](https://support.claude.com/en/articles/15520349-use-claude-cowork-on-web-desktop-and-mobile)).
 
 For the brief above, use a Project saved to your account. Project knowledge is context; add files you want to keep there yourself. Keep the downloadable report in the task conversation by default. A connected `Cowork-Reports` folder is an option only if its connector provides a file-creation tool: a connection alone does not grant that capability. Test saving, reading on the next run and the unavailable-source path. If no persistent report is accessible, supply the previous report yourself or label the run as having no comparison baseline.
 :::
@@ -150,7 +150,7 @@ Q: What goes in a scheduled report's status line?
 A: The date, the number of records queried, the number returned, and OK or PROBLEM. It is your failure detection at a glance.
 
 Q: Where does a scheduled task run, and what changes if it needs local files?
-A: Check the task's actual execution setting. Cloud runs use connectors and account files; reaching local files requires Desktop open. From 6 October 2026, new Pro and Max tasks, including local-file schedules, move to the cloud. Test where the report is saved and how the next run reads it.
+A: Check the task's actual execution setting. Cloud runs use connectors and account files; reaching local files requires Desktop open. Since 6 October 2026, new Pro and Max tasks, including local-file schedules, run in the cloud; only schedules created before that date keep running locally. Test where the report is saved and how the next run reads it.
 
 Q: When should you delete a scheduled job?
 A: When you have not read its last three outputs. It is not saving you time; it is generating unread files and false confidence.
