@@ -147,14 +147,29 @@
   events.push(e);if(events.length>500)events.splice(0,events.length-500);write('claudelab.events.'+user.id,events);
   if(!eventTimer)eventTimer=setTimeout(flushEvents,2000);
  }
- var sending=false;
+ var sending=false,isolating=false;
+ // The database rejects a whole batch when one event is invalid (a lesson it does not know yet, a
+ // constraint). Such a rejection never succeeds on retry, so the batch is narrowed to one event
+ // at a time and the bad event is dropped. Only data-shaped codes count (22xxx bad values, 23xxx
+ // constraints, P0001 the function's own checks); an auth or missing-function error (42xxx) or a
+ // network failure waits and retries, because dropping on those would destroy a valid queue.
+ function permanentRejection(e){return !!(e&&typeof e.code==='string'&&/^(22[0-9A-Z]{3}|23[0-9A-Z]{3}|P0001)$/.test(e.code));}
+ var skippedInARow=0; // a server-side fault that rejects every event must not drain the whole queue
+ function dropEvents(uid,batch){var ids=new Set(batch.map(function(e){return e.id;}));events=events.filter(function(e){return !ids.has(e.id);});write('claudelab.events.'+uid,events);}
  async function flushEvents(){
   clearTimeout(eventTimer);eventTimer=null;if(!user||!navigator.onLine||sending||!events.length)return;sending=true;
-  var turn=generation,uid=user.id,batch=events.slice(0,20);
+  var turn=generation,uid=user.id,batch=events.slice(0,isolating?1:20);
   try{var r=await client.rpc('record_learning_events',{batch:batch}).retry(false).abortSignal(AbortSignal.timeout(15000));if(r.error)throw r.error;if(turn!==generation)return;
-   var ids=new Set(batch.map(function(e){return e.id;}));events=events.filter(function(e){return !ids.has(e.id);});write('claudelab.events.'+uid,events);
+   dropEvents(uid,batch);isolating=false;skippedInARow=0;
    if(events.length)eventTimer=setTimeout(flushEvents,200);
-  }catch(e){if(turn===generation){notify('Activity saved on this device — upload will retry');eventTimer=setTimeout(flushEvents,30000);}}
+  }catch(e){
+   if(turn!==generation)return;
+   if(permanentRejection(e)&&skippedInARow<5){
+    if(batch.length===1){console.warn('Learning event skipped: '+batch[0].type+' rejected with '+e.code+' '+(e.message||''));dropEvents(uid,batch);isolating=false;skippedInARow++;notify('Some activity could not be uploaded and was skipped');}
+    else isolating=true;
+    if(events.length)eventTimer=setTimeout(flushEvents,200);
+   }else{notify('Activity saved on this device — upload will retry');eventTimer=setTimeout(flushEvents,30000);}
+  }
   finally{sending=false;if(turn!==generation&&events.length)eventTimer=setTimeout(flushEvents,200);}
  }
  function usage(e){if(['view','complete','quiz'].indexOf(e.type)<0)return;record({type:e.type,correct:e.correct,done:e.done});}

@@ -108,3 +108,60 @@ test('a fresh account whose server copy is empty still uploads a resume place',a
  assert.equal(uploads.length,1,'the first change must be uploaded');
  assert.deepEqual(uploads[0],{courses:{},last:{c:'cowork',l:'welcome',t:1}});
 });
+
+test('one event the database rejects does not block the rest of the learning-event queue',async()=>{
+ const uid='learner-a',bad='00000000-0000-4000-8000-00000000bad0';
+ const queued=[{id:bad,session_id:'00000000-0000-4000-8000-000000000001',type:'view',course:'cowork',lesson:'brand-new-lesson'},
+  {id:'00000000-0000-4000-8000-000000000002',session_id:'00000000-0000-4000-8000-000000000001',type:'view',course:'cowork',lesson:'welcome'},
+  {id:'00000000-0000-4000-8000-000000000003',session_id:'00000000-0000-4000-8000-000000000001',type:'complete',course:'cowork',lesson:'welcome',done:true}];
+ const h=await harness();
+ h.storage.set('claudelab.events.'+uid,JSON.stringify(queued));
+ const c=h.context.window.supabase.createClient();const uploaded=[];let calls=0;
+ c.rpc=(name,args)=>({retry(){return this;},abortSignal(){calls++;if(name!=='record_learning_events')return Promise.resolve({data:{state:{courses:{}},revision:1}});
+  if(args.batch.some(e=>e.id===bad))return Promise.resolve({error:{code:'23503',message:'lesson is not in the catalog'}});
+  uploaded.push(...args.batch.map(e=>e.id));return Promise.resolve({data:args.batch.length});}});
+ h.emit('SIGNED_OUT',null);await h.runTimers();h.emit('SIGNED_IN',{user:{id:uid}});await h.runTimers();
+ h.elements.accountStatus={textContent:''};
+ h.context.window.ACCOUNT.record({type:'studio'});
+ for(let n=0;n<12;n++){for(const t of h.timers.splice(0))if(!t.cancelled)await t.fn();await new Promise(r=>setImmediate(r));}
+ assert.deepEqual(uploaded.filter(id=>id.endsWith('02')||id.endsWith('03')).sort(),['00000000-0000-4000-8000-000000000002','00000000-0000-4000-8000-000000000003']);
+ assert.equal(uploaded.includes(bad),false);
+ assert.deepEqual(JSON.parse(h.storage.get('claudelab.events.'+uid)),[]);
+ assert.match(h.elements.accountStatus.textContent,/skipped/);
+ assert.ok(calls<12,'the bad event must be isolated in a few calls, not retried forever');
+});
+
+for(const [label,error] of [['a stale session (42501)',{code:'42501',message:'Sign in required'}],['a network failure',{code:'',message:'TypeError: Failed to fetch'}],['a request timeout (DOMException code 23)',{name:'TimeoutError',code:23,message:'The operation was aborted due to timeout'}]]){
+ test('learning events are kept and retried after '+label+', never dropped',async()=>{
+  const uid='learner-a';
+  const queued=[{id:'00000000-0000-4000-8000-000000000011',session_id:'00000000-0000-4000-8000-000000000001',type:'view',course:'cowork',lesson:'welcome'},
+   {id:'00000000-0000-4000-8000-000000000012',session_id:'00000000-0000-4000-8000-000000000001',type:'complete',course:'cowork',lesson:'welcome',done:true}];
+  const h=await harness();
+  h.storage.set('claudelab.events.'+uid,JSON.stringify(queued));
+  const c=h.context.window.supabase.createClient();
+  c.rpc=(name)=>({retry(){return this;},abortSignal(){return Promise.resolve(name==='record_learning_events'?{error}:{data:{state:{courses:{}},revision:1}});}});
+  const seen=[];h.elements.accountStatus={set textContent(v){seen.push(v);},get textContent(){return seen.join(' | ');}};
+  h.emit('SIGNED_OUT',null);await h.runTimers();h.emit('SIGNED_IN',{user:{id:uid}});await h.runTimers();
+  h.context.window.ACCOUNT.record({type:'studio'});
+  for(let n=0;n<6;n++){const retries=h.timers.filter(t=>t.ms===30000);for(const t of h.timers.splice(0))if(!t.cancelled&&t.ms!==30000)await t.fn();h.timers.push(...retries);await new Promise(r=>setImmediate(r));}
+  const kept=JSON.parse(h.storage.get('claudelab.events.'+uid)).map(e=>e.id);
+  assert.ok(kept.includes(queued[0].id)&&kept.includes(queued[1].id),'queued events must survive: '+kept);
+  assert.ok(h.timers.some(t=>t.ms===30000&&!t.cancelled),'a 30 s retry must be armed');
+  assert.match(h.elements.accountStatus.textContent,/upload will retry/);
+ });
+}
+
+test('a server fault that rejects every event stops draining the queue after a few skips',async()=>{
+ const uid='learner-a';
+ const queued=Array.from({length:12},(_,i)=>({id:'00000000-0000-4000-8000-0000000000'+String(20+i),session_id:'00000000-0000-4000-8000-000000000001',type:'view',course:'cowork',lesson:'welcome'}));
+ const h=await harness();
+ h.storage.set('claudelab.events.'+uid,JSON.stringify(queued));
+ const c=h.context.window.supabase.createClient();
+ c.rpc=(name)=>({retry(){return this;},abortSignal(){return Promise.resolve(name==='record_learning_events'?{error:{code:'22P02',message:'invalid input syntax'}}:{data:{state:{courses:{}},revision:1}});}});
+ h.emit('SIGNED_OUT',null);await h.runTimers();h.emit('SIGNED_IN',{user:{id:uid}});await h.runTimers();
+ h.context.window.ACCOUNT.record({type:'studio'});
+ for(let n=0;n<40;n++){const retries=h.timers.filter(t=>t.ms===30000);for(const t of h.timers.splice(0))if(!t.cancelled&&t.ms!==30000)await t.fn();h.timers.push(...retries);await new Promise(r=>setImmediate(r));}
+ const kept=JSON.parse(h.storage.get('claudelab.events.'+uid));
+ assert.ok(kept.length>=queued.length-5,'at most five events may be skipped before the drain stops: '+kept.length+' kept');
+ assert.ok(h.timers.some(t=>t.ms===30000&&!t.cancelled),'the queue must fall back to the 30 s retry');
+});
