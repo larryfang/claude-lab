@@ -1260,13 +1260,18 @@
     if (parts[0] === "review") { renderReview(); return; }
     if (parts[0] === "notebook") { renderNotebook(); return; }
     if (parts[0] === "me") { renderMe(); return; }
-    if (parts[0] === "lesson" && parts[1]) { renderLesson(currentCourseId || COURSES[0].id, parts.slice(1).join("/")); return; }
+    // Old bookmarks: #/lesson/<id> and #/<course>/lesson/<id> become the canonical route, so the view, focus button and quiz keys match.
+    var legacyQuery = location.hash.indexOf("?") > -1 ? location.hash.slice(location.hash.indexOf("?")) : "";
+    if (parts[0] === "lesson" && parts[1]) {
+      var legacyId = parts.slice(1).join("/"), legacyCourse = [byId[currentCourseId], COURSES[0]].filter(Boolean).filter(function (x) { return lessonInfo(x, legacyId); })[0];
+      if (legacyCourse) { location.replace("#/" + legacyCourse.id + "/" + legacyId + legacyQuery); return; }
+    }
     var c = byId[parts[0]];
     if (c) {
       if (parts[1] === 'session') { renderSession(c.id,pathId,sessionToken); return; }
       if (parts[1] === "path" && parts[2]) { renderFastPath(c.id, parts.slice(2).join("/")); return; }
       if (parts[1] === "certificate") { renderCertificate(c.id); return; }
-      if (parts[1] === "lesson" && parts[2]) { renderLesson(c.id, parts.slice(2).join("/")); return; }
+      if (parts[1] === "lesson" && parts[2]) { location.replace("#/" + c.id + "/" + parts.slice(2).join("/") + legacyQuery); return; }
       if (parts[1]) { renderLesson(c.id, parts.slice(1).join("/"), section, pathId, sessionToken); return; }
       renderCourseHome(c.id); return;
     }

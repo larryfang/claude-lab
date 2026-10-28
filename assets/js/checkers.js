@@ -8,10 +8,13 @@
   "use strict";
 
   /* ---------- B.R.I.E.F. ---------- */
+  // One list of output file types: the Result letter and the "no file name" warning must agree.
+  var FILE_TYPES = "md|csv|xlsx|docx|pptx|pdf|html|json|txt";
+  var FILE_NAME = new RegExp("\\b[\\w\\-\\/]+\\.(" + FILE_TYPES + ")\\b", "i");
   var LETTERS = [
     { key: "B", name: "Background", re: /\b(i am|i'm|i work|i run|i lead|we are|we're|we ran|our (team|company|customers?|product|aes?|reps?)|my (team|role|manager|boss)|this is for|for (my|our|the) (vp|cfo|ceo|execs?|leadership|team|manager|board|customers?|aes?))\b/i,
       hint: "Add two or three sentences: who you are, the situation, and who will read the result." },
-    { key: "R", name: "Result", re: /(\b[\w\-\/]+\.(md|csv|xlsx|docx|pptx|pdf|html|json|txt)\b)|\b(produce|create|deliver|build|draft|write)\b[\s\S]{0,160}\b(sections?|table|columns?|slides?|tabs?|bullets?|headline|one-pager|deck|spreadsheet|workbook)\b/i,
+    { key: "R", name: "Result", re: new RegExp("(" + FILE_NAME.source + ")|\\b(produce|create|deliver|build|draft|write)\\b[\\s\\S]{0,160}\\b(sections?|table|columns?|slides?|tabs?|bullets?|headline|one-pager|deck|spreadsheet|workbook)\\b", "i"),
       hint: "Name the artefact: the file name, the format, and the sections in order (for example `output/deal-review.md`)." },
     { key: "I", name: "Inputs", re: /\b(using only|use only|only use|only the|sources?|connectors?|transcripts?|exports?|the files? in|attached|do not use the web|don't use the web|from the crm)\b|`[\w\-.]+\/`/i,
       hint: "Say which sources to use (a folder, an export, a connector) and which to ignore. \"Use only …\" makes every claim checkable." },
@@ -29,7 +32,7 @@
     var warnings = [];
     if (words > 0 && words < 40) warnings.push("Short brief (" + words + " words). Check that the result, permitted inputs, and review criteria are explicit; length alone does not determine quality.");
     WISHES.forEach(function (w) { if (text.toLowerCase().indexOf(w) !== -1) warnings.push("“" + w + "” is a wish, not an instruction. Say what it means here: which source, which check, which limit."); });
-    if (words > 0 && !/\b(\w+\.(md|csv|xlsx|docx|pptx))\b/i.test(text)) warnings.push("No file name. Naming the output file makes the result concrete and easy to find.");
+    if (words > 0 && !FILE_NAME.test(text)) warnings.push("No file name. Naming the output file makes the result concrete and easy to find.");
     return { score: letters.filter(function (l) { return l.ok; }).length, total: 5, letters: letters, warnings: warnings, words: words };
   }
 

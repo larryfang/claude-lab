@@ -99,3 +99,13 @@ test("a tree is not prose, but one long wrapped line is", () => {
 test("a shouted NEVER is not a project gotcha", () => {
   assert.equal(check(claudemd("# Rules\nNEVER ignore these rules.\n- Write tests"), "gotchas").level, "warn");
 });
+
+test("every output file type the Result letter accepts also satisfies the file-name warning", () => {
+  for (const ext of ["md", "csv", "xlsx", "docx", "pptx", "pdf", "html", "json", "txt"]) {
+    const r = brief(`I am an AE preparing for a renewal call with our biggest customer next week. Produce output/report.${ext} with three sections. Use only the CRM export. Never estimate a missing number. Flag any contradiction.`);
+    assert.equal(letter(r, "R").ok, true, ext);
+    assert.ok(!r.warnings.some((w) => /No file name/.test(w)), `${ext}: ${r.warnings.join(" | ")}`);
+  }
+  const none = brief("I am an AE. Produce a report with three sections. Use only the CRM export. Never estimate. Flag contradictions.");
+  assert.ok(none.warnings.some((w) => /No file name/.test(w)));
+});

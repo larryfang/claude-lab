@@ -159,3 +159,23 @@ test("the session planner saves a preference only when the learner changes it", 
   await page.locator("#learningTime").selectOption("30");
   await expect.poll(async () => page.evaluate(() => JSON.parse(localStorage.getItem("claudelab.v2") || "{}").learning?.minutes)).toBe(30);
 });
+
+test("an old lesson bookmark lands on the canonical route with lesson view and quiz keys", async ({ page }) => {
+  await page.goto("/#/cowork/lesson/what-is-cowork");
+  await expect(page).toHaveURL(/#\/cowork\/what-is-cowork$/);
+  await expect(page.locator("article.lesson h1")).toBeVisible();
+  await expect(page.locator("body")).toHaveAttribute("data-view", "lesson");
+  await expect(page.locator("#focusBtn")).toBeVisible();
+  // a score is stored once every question in the block is answered; it must be keyed by the canonical lesson id
+  const questions = page.locator(".quiz").first().locator(".quiz-q");
+  for (let i = 0; i < await questions.count(); i++) await questions.nth(i).locator('.quiz-opt[data-correct="1"]').click();
+  await expect.poll(async () => page.evaluate(() => Object.keys((JSON.parse(localStorage.getItem("claudelab.v2") || "{}").courses?.cowork?.quiz) || {}))).toEqual(["what-is-cowork:0"]);
+  // the first course is the Cowork course, so a bare legacy route lands there
+  await page.goto("/#/lesson/welcome");
+  await expect(page).toHaveURL(/#\/cowork\/welcome$/);
+  await expect(page.locator("body")).toHaveAttribute("data-view", "lesson");
+  // a route or session chosen on the old form travels with the redirect
+  await page.goto("/#/cowork/lesson/the-brief?path=sales");
+  await expect(page).toHaveURL(/#\/cowork\/the-brief\?path=sales$/);
+  await expect(page.locator("article.lesson h1")).toBeVisible();
+});
