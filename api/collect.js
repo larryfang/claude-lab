@@ -50,7 +50,9 @@ function readBody(req, limit) {
   });
 }
 
-export default async function collect(req, res) {
+// The store is injectable so the handler can be tested without a blob token.
+export function createCollector(save) {
+  return async function collect(req, res) {
   for (const [key, value] of Object.entries(cors)) res.setHeader(key, value);
   if (req.method === "OPTIONS") return res.status(204).end();
   if (req.method !== "POST") return res.status(405).end();
@@ -78,16 +80,19 @@ export default async function collect(req, res) {
       accept.push(event.id);
       continue;
     }
-    if (!allow(event.visitor, now)) continue;
+    if (!allow(event.visitor, now)) { if (event.id) reject.push(event.id); continue; } // tell the browser to drop it instead of retrying every 4 s
     if (event.id) seen.add(event.id);
     kept.push(event);
     if (event.id) accept.push(event.id);
   }
   try {
-    if (kept.length) await saveEvents(kept);
+    if (kept.length) await save(kept);
   } catch {
     return res.status(500).end();
   }
   res.setHeader("content-type", "application/json");
   return res.status(200).end(JSON.stringify({ accept, reject }));
+  };
 }
+
+export default createCollector(saveEvents);

@@ -20,6 +20,8 @@
   else{guest=copy(api.getState());write('claudelab.guest',guest);}
  }
  function schedule(){clearTimeout(timer);if(user)timer=setTimeout(sync,700);}
+ // Usage tracking waits for this before deciding whether a page view belongs to a guest or an account.
+ function markReady(){ready=true;try{window.dispatchEvent(new Event('claudelab:accountready'));}catch(e){}}
  async function remoteState(uid){var r=await client.from('learner_state').select('state,revision').eq('user_id',uid||user.id).maybeSingle().retry(false).abortSignal(AbortSignal.timeout(15000));if(r.error)throw r.error;var saved=r.data||{state:{},revision:0};if(!validProgress(saved.state))throw Error('Invalid saved progress');return saved;}
  async function sync(){
   if(!user)return;if(!navigator.onLine){notify('Saved on this device — sync needs a connection');return;}if(syncing){schedule();return;}syncing=true;var turn=generation,uid=user.id;
@@ -89,7 +91,7 @@
   api=adapter;guest=copy(api.getState());
   // Existing local progress must survive the first account switch without import.
   write('claudelab.guest',guest);
-  if(!config||!config.url||!config.publishableKey){ready=true;notify(status);if(isAccountRoute()||isAdminRoute())api.refresh();return;}
+  if(!config||!config.url||!config.publishableKey){markReady();notify(status);if(isAccountRoute()||isAdminRoute())api.refresh();return;}
   client=window.supabase.createClient(config.url,config.publishableKey,{auth:{flowType:'pkce',detectSessionInUrl:false,persistSession:true,autoRefreshToken:true}});
   client.auth.onAuthStateChange(function(event,session){
    if(event==='SIGNED_OUT'){authEpoch++;if(!ready)deferredAuth={session:null,request:authEpoch};acceptUser(null);}
@@ -116,7 +118,7 @@
    var initial=deferredAuth||{session:s.data.session,request:sessionRequest};
    while(initial){deferredAuth=null;await verifySession(initial.session,initial.request);initial=deferredAuth;}
   }catch(e){if(!authFeedback)authFeedback='Sign-in could not finish. Please try again or continue as a guest.';notify('Sign-in could not finish. Open your account to retry.');}
-  ready=true;notify(status);if(isAccountRoute()||isAdminRoute())api.refresh();else refreshPrompts();
+  markReady();notify(status);if(isAccountRoute()||isAdminRoute())api.refresh();else refreshPrompts();
   window.addEventListener('online',function(){sync();flushEvents();});
   ['pointerdown','keydown','scroll'].forEach(function(k){document.addEventListener(k,function(){lastInput=Date.now();},{passive:true});});
   document.addEventListener('visibilitychange',function(){lastPulse=Date.now();if(document.hidden){sync();flushEvents();}});
@@ -248,5 +250,5 @@
    }
   });
  }
- window.ACCOUNT={init:init,onSave:localSave,sync:sync,recordUsage:usage,record:record,isSignedIn:function(){return !!user;},renderAccount:renderAccount,renderAdmin:renderAdmin,guestPrompt:guestPrompt};
+ window.ACCOUNT={init:init,onSave:localSave,sync:sync,recordUsage:usage,record:record,isSignedIn:function(){return !!user;},isReady:function(){return ready;},renderAccount:renderAccount,renderAdmin:renderAdmin,guestPrompt:guestPrompt};
 })();

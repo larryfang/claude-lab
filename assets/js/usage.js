@@ -134,8 +134,12 @@
       })
       .catch(function () { flushing = false; again(4000); });
   }
+  // Until the account is verified, a page view cannot be filed as a guest's: a signed-in learner
+  // reloading a lesson would otherwise be counted as a guest and given a guest browser id.
+  var held = [], holdOver = false;
   function queue(ev) {
     if (window.ACCOUNT && window.ACCOUNT.isSignedIn()) { window.ACCOUNT.recordUsage(ev); return; }
+    if (!holdOver && window.ACCOUNT && window.ACCOUNT.isReady && !window.ACCOUNT.isReady()) { ev.t = ev.t || Date.now(); held.push(ev); return; }
     if (trackingOff()) return;
     if (!sessionSent && ev.type !== "session") {
       sessionSent = true;
@@ -144,7 +148,7 @@
       queue({ type: "session", ref: host });
     }
     ev.id = randomId();
-    ev.t = Date.now();
+    ev.t = ev.t || Date.now();
     ev.visitor = visitorId();
     ev.session = sessionId();
     ev.narrow = window.innerWidth < 720;
@@ -222,6 +226,11 @@
     clearTimeout(searchTimer);
     searchTimer = setTimeout(function () { recordSearch(0); }, 800);
   });
+  function releaseHeld() { held.splice(0).forEach(queue); }
+  window.addEventListener("claudelab:accountready", releaseHeld);
+  // If verification hangs, stop holding after 20 s and treat the visit as a guest's from then on;
+  // a sign-in that completes later is not re-filed. Events held at pagehide are dropped on purpose.
+  setTimeout(function () { holdOver = true; releaseHeld(); }, 20000);
   window.addEventListener("hashchange", route);
   window.addEventListener("scroll", measureScroll, { passive: true });
   window.addEventListener("pagehide", function () { leave(); flush(true); });
