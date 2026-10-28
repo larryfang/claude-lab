@@ -250,3 +250,20 @@ test('a failed replace keeps the fault and the recovery offer',async()=>{
  assert.equal(h.context.window.ACCOUNT.syncFault(),'unreadable','the fault stays until a replace succeeds');
  assert.match(seen[seen.length-1],/could not be replaced/);
 });
+
+test('learning events carry the time they happened only once the cloud config says the database accepts it',async()=>{
+ const uid='learner-a';
+ const h=await harness();
+ const c=h.context.window.supabase.createClient();const batches=[];
+ c.rpc=(name,args)=>({retry(){return this;},abortSignal(){if(name==='record_learning_events')batches.push(args.batch);return Promise.resolve(name==='record_learning_events'?{data:args.batch.length}:{data:{state:{courses:{}},revision:1}});}});
+ h.emit('SIGNED_OUT',null);await h.runTimers();h.emit('SIGNED_IN',{user:{id:uid}});await h.runTimers();
+ h.storage.set('claudelab.usage.allow','1');
+ const flush=async()=>{for(let n=0;n<4;n++){for(const t of h.timers.splice(0))if(!t.cancelled&&t.ms!==30000)await t.fn();await new Promise(r=>setImmediate(r));}};
+ h.context.window.ACCOUNT.record({type:'studio'});await flush();
+ assert.equal(batches.length,1);assert.equal(batches[0][0].occurred_at,undefined,'not sent before the migration is live');
+ h.context.window.CLAUDELAB_CLOUD.eventTime=true;
+ h.context.window.ACCOUNT.record({type:'studio'});await flush();
+ assert.equal(batches.length,2);
+ assert.match(batches[1][0].occurred_at,/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+ assert.ok(Math.abs(Date.now()-Date.parse(batches[1][0].occurred_at))<5000);
+});

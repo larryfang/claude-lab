@@ -172,6 +172,9 @@
  function record(input){
   if(!user||!client||(navigator.webdriver&&read('claudelab.usage.allow',null)!==1))return;
   var e=Object.assign({id:crypto.randomUUID(),session_id:sessionId,type:input.type},currentPlace());
+  // The time the event happened, not the upload time. Sent only once the database accepts the field
+  // (migration 20261029100000 applied, then "eventTime": true in cloud-config.js).
+  if(config&&config.eventTime===true)e.occurred_at=new Date().toISOString();
   if(input.type!=='studio'&&(!e.course||!e.lesson))return;
   ['correct','done','active_seconds'].forEach(function(k){if(input[k]!==undefined)e[k]=input[k];});
   events.push(e);if(events.length>500)events.splice(0,events.length-500);write('claudelab.events.'+user.id,events);
