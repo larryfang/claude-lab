@@ -150,3 +150,12 @@ test("importing a progress file applies its theme and focus preference at once",
   await page.goto("/#/cowork/the-brief");
   await expect(page.locator("body")).toHaveClass(/focus-mode/);
 });
+
+test("the session planner saves a preference only when the learner changes it", async ({ page }) => {
+  await page.goto("/#/");
+  await expect(page.locator("#learningGoal")).toBeVisible();
+  await page.waitForTimeout(300);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("claudelab.v2") || "{}").learning)).toBeUndefined();
+  await page.locator("#learningTime").selectOption("30");
+  await expect.poll(async () => page.evaluate(() => JSON.parse(localStorage.getItem("claudelab.v2") || "{}").learning?.minutes)).toBe(30);
+});

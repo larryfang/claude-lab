@@ -108,6 +108,15 @@
     return '<span class="level-chip ' + (map[level] || "level-core") + '">' + level + "</span>";
   }
 
+  // Canonical form for comparing saved state: keys sorted, and the empty maps cstate() creates on a
+  // lesson page (checks, quiz, ...) dropped, because a server copy never carries them.
+  function canonical(v) {
+    if (!v || typeof v !== 'object' || Array.isArray(v)) return v;
+    return Object.keys(v).sort().reduce(function (o, k) { var inner = canonical(v[k]); if (!(inner && typeof inner === 'object' && !Array.isArray(inner) && !Object.keys(inner).length)) o[k] = inner; return o; }, {});
+  }
+  // Which parts of the saved state a lesson page is rendered from.
+  function sameRendered(a, b) { return ['courses', 'cards', 'daily'].every(function (k) { return JSON.stringify(canonical(a[k] || {})) === JSON.stringify(canonical(b[k] || {})); }); }
+
   /* ---------- Theme ---------- */
   function applyTheme(t) { document.documentElement.setAttribute("data-theme", t); store.theme = t; save(); }
   (function () { var t = store.theme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); applyTheme(t); })();
@@ -1270,10 +1279,14 @@
   window.ACCOUNT.init({
     getState: function () { return store; }, download: download, refresh: route,
     applyState: function (next, keepNotes) {
-      var prefs = { theme: store.theme, focus: store.focus }, notes = keepNotes ? store.notes : next.notes;
+      var prefs = { theme: store.theme, focus: store.focus }, notes = keepNotes ? store.notes : next.notes, before = store;
       if (keepNotes) prefs.name = store.name;
       store = Object.assign({ courses: {} }, next, prefs, { notes: notes || {} });
-      store.courses = store.courses || {}; applyFocus(); save(true); route();
+      store.courses = store.courses || {}; applyFocus(); save(true);
+      // A background pull that only brought another device's resume place or activity must not
+      // rebuild the lesson the learner is reading (scroll, note focus and unscored answers would go).
+      if (keepNotes && document.body.dataset.view === 'lesson' && sameRendered(before, store)) { refreshTopProgress(currentCourseId); if (byId[currentCourseId]) refreshNavMeters(byId[currentCourseId]); return; }
+      route();
     }
   });
 })();

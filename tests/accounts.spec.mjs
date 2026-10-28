@@ -183,3 +183,72 @@ test('background sync preserves lesson content and scrolling when server reorder
  expect(await page.evaluate(()=>window.scrollY)).toBeGreaterThan(400);
  expect(saves).toBe(saved);
 });
+
+test('a background pull of another device\'s activity does not rebuild the lesson being read',async({page})=>{
+ const email='learner@example.org';
+ const user={id:'00000000-0000-4000-8000-000000000001',aud:'authenticated',role:'authenticated',email,email_confirmed_at:new Date().toISOString(),app_metadata:{provider:'github'},user_metadata:{user_name:'learner'}};
+ const exp=Math.floor(Date.now()/1000)+3600;
+ const access_token=[Buffer.from(JSON.stringify({alg:'HS256',typ:'JWT'})).toString('base64url'),Buffer.from(JSON.stringify({sub:user.id,exp,aud:'authenticated',role:'authenticated'})).toString('base64url'),'test-signature'].join('.');
+ const session={user,access_token,refresh_token:'test-refresh-token',expires_in:3600,expires_at:exp,token_type:'bearer'};
+ await page.addInitScript(()=>{
+  localStorage.setItem('claudelab.v2',JSON.stringify({courses:{cowork:{completed:{welcome:true}}}}));
+  localStorage.setItem('sb-sbzrhwxpavjogwdnavkh-auth-token-code-verifier',JSON.stringify('test-verifier'));
+  sessionStorage.setItem('claudelab.authSource','github');
+ });
+ await page.route('**/auth/v1/token?grant_type=pkce',r=>r.fulfill({json:session}));
+ await page.route('**/auth/v1/user',r=>r.fulfill({json:user}));
+ let remote={state:{courses:{}},revision:0},saves=0;
+ await page.route('**/rest/v1/learner_state?**',r=>r.fulfill({json:remote}));
+ await page.route('**/rest/v1/rpc/save_learning_state',r=>{saves++;remote={state:r.request().postDataJSON().body,revision:remote.revision+1};return r.fulfill({json:remote});});
+ await page.route('**/rest/v1/learning_events**',r=>r.fulfill({status:201,json:[]}));
+ await page.goto('/?code=test-github-callback');
+ await expect(page.locator('#accountStatus')).toContainText('Progress synced');
+ await page.goto('/#/cowork/welcome');
+ await expect(page.locator('.lesson-top')).toBeVisible();
+ await page.evaluate(()=>{window.stableLesson=document.querySelector('.lesson-top');window.scrollTo(0,600);});
+ await expect.poll(()=>page.evaluate(()=>window.scrollY)).toBeGreaterThan(400);
+ // Opening the lesson changed this device's resume place; let that upload finish first.
+ await expect.poll(()=>remote.state.last?.l,{timeout:10000}).toBe('welcome');
+ await page.waitForTimeout(800);
+ // The phone then recorded a day of activity; nothing on this page changed.
+ remote={state:Object.assign({},remote.state,{activity:Object.assign({},remote.state.activity||{},{'2026-10-28':3})}),revision:remote.revision+1};
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.evaluate(()=>{window.ACCOUNT.sync();});
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('claudelab.v2')).activity?.['2026-10-28'])).toBe(3);
+ expect(errors).toEqual([]);
+ expect(await page.evaluate(()=>window.stableLesson===document.querySelector('.lesson-top'))).toBe(true);
+ expect(await page.evaluate(()=>window.scrollY)).toBeGreaterThan(400);
+});
+test('a background pull that changes what the lesson renders still rebuilds it',async({page})=>{
+ const email='learner@example.org';
+ const user={id:'00000000-0000-4000-8000-000000000001',aud:'authenticated',role:'authenticated',email,email_confirmed_at:new Date().toISOString(),app_metadata:{provider:'github'},user_metadata:{user_name:'learner'}};
+ const exp=Math.floor(Date.now()/1000)+3600;
+ const access_token=[Buffer.from(JSON.stringify({alg:'HS256',typ:'JWT'})).toString('base64url'),Buffer.from(JSON.stringify({sub:user.id,exp,aud:'authenticated',role:'authenticated'})).toString('base64url'),'test-signature'].join('.');
+ const session={user,access_token,refresh_token:'test-refresh-token',expires_in:3600,expires_at:exp,token_type:'bearer'};
+ await page.addInitScript(()=>{
+  localStorage.setItem('claudelab.v2',JSON.stringify({courses:{cowork:{completed:{welcome:true}}}}));
+  localStorage.setItem('sb-sbzrhwxpavjogwdnavkh-auth-token-code-verifier',JSON.stringify('test-verifier'));
+  sessionStorage.setItem('claudelab.authSource','github');
+ });
+ await page.route('**/auth/v1/token?grant_type=pkce',r=>r.fulfill({json:session}));
+ await page.route('**/auth/v1/user',r=>r.fulfill({json:user}));
+ let remote={state:{courses:{}},revision:0},saves=0;
+ await page.route('**/rest/v1/learner_state?**',r=>r.fulfill({json:remote}));
+ await page.route('**/rest/v1/rpc/save_learning_state',r=>{saves++;remote={state:r.request().postDataJSON().body,revision:remote.revision+1};return r.fulfill({json:remote});});
+ await page.route('**/rest/v1/learning_events**',r=>r.fulfill({status:201,json:[]}));
+ await page.goto('/?code=test-github-callback');
+ await expect(page.locator('#accountStatus')).toContainText('Progress synced');
+ await page.goto('/#/cowork/welcome');
+ await expect(page.locator('.lesson-top')).toBeVisible();
+ await page.evaluate(()=>{window.stableLesson=document.querySelector('.lesson-top');window.scrollTo(0,600);});
+ await expect.poll(()=>page.evaluate(()=>window.scrollY)).toBeGreaterThan(400);
+ // Opening the lesson changed this device's resume place; let that upload finish first.
+ await expect.poll(()=>remote.state.last?.l,{timeout:10000}).toBe('welcome');
+ await page.waitForTimeout(800);
+ // The phone completed another lesson: the sidebar check mark and meters on this page must change.
+ remote={state:Object.assign({},remote.state,{courses:{cowork:Object.assign({},remote.state.courses?.cowork||{},{completed:{welcome:true,'what-is-cowork':true}})}}),revision:remote.revision+1};
+ await page.evaluate(()=>{window.ACCOUNT.sync();});
+ await expect.poll(()=>page.evaluate(()=>JSON.parse(localStorage.getItem('claudelab.v2')).courses.cowork.completed['what-is-cowork'])).toBe(true);
+ await expect.poll(()=>page.evaluate(()=>window.stableLesson!==document.querySelector('.lesson-top'))).toBe(true);
+ await expect(page.locator('.nav-link[data-lesson="what-is-cowork"].done')).toHaveCount(1);
+});

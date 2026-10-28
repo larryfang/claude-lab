@@ -114,8 +114,10 @@ test("session planner persists preferences and resumes inside the selected route
 test("planner explains an over-budget lesson and offers review for a finished route", async ({ page }) => {
   await page.goto("/#/");
   await page.evaluate(() => {
-    const store = JSON.parse(localStorage.getItem("claudelab.v2"));
+    // The hub no longer saves anything until the learner changes the planner, so the store may be empty here.
+    const store = JSON.parse(localStorage.getItem("claudelab.v2")) || { courses: {} };
     const lessons = window.COURSES[0].fastPaths.find((p) => p.id === "finance").lessons;
+    store.courses.cowork = store.courses.cowork || {};
     store.courses.cowork.completed = Object.fromEntries(lessons.filter((id) => id !== "lab-variance").map((id) => [id, true]));
     store.learning = { goal: "finance", minutes: 15 };
     localStorage.setItem("claudelab.v2", JSON.stringify(store));
