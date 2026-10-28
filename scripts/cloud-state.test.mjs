@@ -21,3 +21,25 @@ test('guest import keeps the better best quiz score from either workspace',()=>{
  assert.deepEqual(plain(core.mergeImport(remote,guest)).courses.cowork.quiz['the-brief:0'],{c:3,t:3});
  assert.deepEqual(plain(core.mergeImport(guest,remote)).courses.cowork.quiz['the-brief:0'],{c:3,t:3});
 });
+test('a record removed on another device is not recreated as a partial object',()=>{
+ const base={courses:{},last:{c:'cowork',l:'welcome',t:1},cards:{x:{f:'Q',b:'A',box:1}},daily:{'2026-10-29':{c:1,t:3}}};
+ const local={courses:{},last:{c:'cowork',l:'welcome',t:2},cards:{x:{f:'Q',b:'A',box:2,due:'2026-11-01'}},daily:{'2026-10-29':{c:2,t:3}}};
+ const reset={courses:{}};
+ const merged=plain(core.apply(reset,core.diff(base,local)));
+ assert.equal(core.validState(merged),true);
+ assert.deepEqual(merged.last,local.last);
+ assert.deepEqual(merged.cards.x,local.cards.x);
+ assert.deepEqual(merged.daily['2026-10-29'],local.daily['2026-10-29']);
+});
+test('the resume place from one device is not mixed with another device\'s route',()=>{
+ const base={courses:{},last:{c:'cowork',l:'welcome'}};
+ const laptop={courses:{},last:{c:'claude-code',l:'cc-what'}};
+ const phone={courses:{},last:{c:'cowork',l:'verify',p:'sales',s:'the-brief,verify'}};
+ const merged=plain(core.apply(phone,core.diff(base,laptop)));
+ assert.deepEqual(merged.last,laptop.last);
+});
+test('a server copy with reordered keys inside a whole record is not a change',()=>{
+ const local={courses:{},last:{c:'cowork',l:'welcome',t:2},cards:{x:{f:'Q',b:'A',box:2}}};
+ const server={cards:{x:{box:2,b:'A',f:'Q'}},last:{t:2,l:'welcome',c:'cowork'},courses:{}};
+ assert.deepEqual(plain(core.diff(server,local)),[]);
+});

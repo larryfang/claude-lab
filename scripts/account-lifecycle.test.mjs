@@ -72,3 +72,39 @@ test('guest review cards alone are offered for import',async()=>{
  h.context.location.hash='#/account';h.elements.content={innerHTML:''};h.context.window.ACCOUNT.renderAccount();
  assert.ok(h.elements.content.innerHTML.includes('Import guest progress'));
 });
+
+async function settle(h){for(let n=0;n<6;n++){for(const t of h.timers.splice(0))if(!t.cancelled)await t.fn();await new Promise(r=>setImmediate(r));}}
+
+test('a reset on another device does not turn the local resume place into a partial record',async()=>{
+ const uploads=[];let reads=0;
+ const h=await harness({remote:()=>Promise.resolve({data:{state:++reads===1?{courses:{},last:{c:'cowork',l:'welcome',t:1}}:{courses:{}},revision:reads}})});
+ const c=h.context.window.supabase.createClient();
+ c.rpc=async(name,args)=>{uploads.push(plain(args.body));return {data:{state:args.body,revision:9}};};
+ h.getState().last.t=2;h.context.window.ACCOUNT.onSave();await settle(h);
+ assert.equal(uploads.length,1,'the change must still be uploaded');
+ assert.deepEqual(uploads[0].last,{c:'cowork',l:'welcome',t:2});
+ assert.equal(h.context.window.CLOUD_STATE.validState(uploads[0]),true);
+});
+
+test('sync refuses to upload a merged state the app could not load back',async()=>{
+ const uploads=[];
+ const h=await harness();
+ const c=h.context.window.supabase.createClient();
+ c.rpc=async(name,args)=>{uploads.push(plain(args.body));return {data:{state:args.body,revision:9}};};
+ // Simulate a merge that produces a record this app would reject on load.
+ h.context.window.CLOUD_STATE.apply=()=>({courses:{},last:{t:2}});
+ h.elements.accountStatus={textContent:''};
+ h.getState().last={c:'cowork',l:'welcome',t:2};h.context.window.ACCOUNT.onSave();await settle(h);
+ assert.deepEqual(uploads,[]);
+ assert.match(h.elements.accountStatus.textContent,/could not be merged/);
+});
+
+test('a fresh account whose server copy is empty still uploads a resume place',async()=>{
+ const uploads=[];
+ const h=await harness({remote:()=>Promise.resolve({data:{state:{},revision:0}})});
+ const c=h.context.window.supabase.createClient();
+ c.rpc=async(name,args)=>{uploads.push(plain(args.body));return {data:{state:args.body,revision:1}};};
+ h.getState().last={c:'cowork',l:'welcome',t:1};h.context.window.ACCOUNT.onSave();await settle(h);
+ assert.equal(uploads.length,1,'the first change must be uploaded');
+ assert.deepEqual(uploads[0],{courses:{},last:{c:'cowork',l:'welcome',t:1}});
+});

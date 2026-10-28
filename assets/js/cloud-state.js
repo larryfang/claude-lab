@@ -26,10 +26,17 @@
   ['courses','cards','activity','last','learning','daily'].forEach(function(k){ if(s[k] !== undefined) out[k]=clone(s[k]); });
   return out;
  }
+ // Records that only make sense whole. A leaf-level diff could recreate one that another
+ // device removed as a partial object (for example `last` without its course), which no
+ // longer validates and would poison every later sync.
+ var atomic=[['last'],['learning'],['cards','*'],['daily','*'],['courses','*','quiz','*']];
+ function wholeRecord(path){return atomic.some(function(p){return p.length===path.length&&p.every(function(k,i){return k==='*'||k===path[i];});});}
+ // Key order is not a change: Postgres can return a record's fields in another order.
+ function canon(v){return object(v)?'{'+Object.keys(v).sort().map(function(k){return JSON.stringify(k)+':'+canon(v[k]);}).join(',')+'}':JSON.stringify(v);}
  function diff(a,b,path,out) {
   path=path||[];out=out||[];
-  if(JSON.stringify(a)===JSON.stringify(b))return out;
-  if(b && typeof b==='object' && !Array.isArray(b) && (a===undefined || (a && typeof a==='object' && !Array.isArray(a)))) {
+  if(canon(a)===canon(b))return out;
+  if(!wholeRecord(path) && b && typeof b==='object' && !Array.isArray(b) && (a===undefined || (a && typeof a==='object' && !Array.isArray(a)))) {
    a=a||{};
    Array.from(new Set(Object.keys(a).concat(Object.keys(b)))).forEach(function(k){if(forbidden.indexOf(k)<0)diff(a[k],b[k],path.concat(k),out);});
   } else out.push({path:path,value:b===undefined?null:clone(b),remove:b===undefined});

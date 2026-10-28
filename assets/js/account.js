@@ -35,7 +35,10 @@
    }
    for(var attempt=0;attempt<4;attempt++){
     if(turn!==generation)return;
-    var merged=core.apply(r.state,changes),result=await client.rpc('save_learning_state',{expected_revision:r.revision,body:merged}).retry(false).abortSignal(AbortSignal.timeout(15000));
+    var merged=core.apply(r.state,changes);merged.courses=merged.courses||{};
+    // Never upload a state this app could not load back: that would lock every device out.
+    if(!core.validState(merged))throw Error('Progress could not be merged');
+    var result=await client.rpc('save_learning_state',{expected_revision:r.revision,body:merged}).retry(false).abortSignal(AbortSignal.timeout(15000));
     if(turn!==generation)return;
     if(result.error){if(result.error.code==='PT409'){r=await remoteState();continue;}throw result.error;}
     var later=core.diff(current,core.snapshot(api.getState()));base=result.data.state;revision=result.data.revision;
@@ -47,7 +50,10 @@
     if(later.length)schedule();return;
    }
    throw Error('Another device is updating progress. Try sync again.');
-  }catch(e){if(turn===generation)notify('Saved on this device — sync needs a connection');}
+  }catch(e){
+   var why=e&&e.message==='Progress could not be merged'?'Saved on this device — it could not be merged with the account copy, so sync is paused':e&&e.message==='Invalid saved progress'?'Saved on this device — the account copy could not be read, so sync is paused':'Saved on this device — sync needs a connection';
+   if(turn===generation)notify(why);
+  }
   finally{syncing=false;}
  }
  async function acceptUser(next){
