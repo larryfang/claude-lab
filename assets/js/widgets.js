@@ -69,6 +69,7 @@
     function boxOf(card) { var saved = opts.lookup && opts.lookup(card.id); return saved && saved.box || 1; }
     function show() {
       if (i >= cards.length) {
+        flipped = false; // the number keys grade the visible card; there is none on the done panel
         if (count) count.textContent = cards.length + " / " + cards.length;
         stage.innerHTML = '<div class="flash-done" role="status">' + opts.doneHtml(cards.length) + '<button class="flash-again btn-sm" type="button">Go again</button></div>';
         $(".flash-again", stage).addEventListener("click", function () { i = 0; show(); });
@@ -103,7 +104,7 @@
       $(".flash-hint", stage).textContent = flipped ? "How well did you recall it?" : "Select the card to flip it. Recall the answer first.";
     }
     function rate(r) {
-      if (!flipped) return;
+      if (!flipped || i >= cards.length) return;
       opts.onGrade(cards[i], r);
       i++; show();
       var next = $(".flash-card", stage) || $(".flash-again", stage); if (next) next.focus();
@@ -122,6 +123,7 @@
     saved.f = card.f; saved.b = card.b;
     cards[card.id] = grade(saved, r);
     api.touch(); api.save();
+    if (api.refreshNav) api.refreshNav(); // the sidebar's due-card badge reads the store
   }
 
   function wireFlash(root, api) {
@@ -141,7 +143,7 @@
     var keys = items.map(function (_, k) { return k; }), rnd = seeded(seed || 7);
     for (var k = keys.length - 1; k > 0; k--) { var j = Math.floor(rnd() * (k + 1)), t = keys[k]; keys[k] = keys[j]; keys[j] = t; }
     if (keys.every(function (v, idx) { return v === idx; })) keys.push(keys.shift());
-    var tries = 0, dragged = null;
+    var tries = 0, dragged = null, revealed = false;
     list.innerHTML = keys.map(function (v) {
       return '<li class="order-item" data-key="' + v + '" draggable="true"><span class="order-grip" aria-hidden="true">⠿</span><span class="order-pos"></span>' +
         '<span class="order-text">' + items[v] + '</span><span class="order-moves">' +
@@ -179,6 +181,10 @@
       var lis = $all(".order-item", list), right = 0;
       lis.forEach(function (li, idx) { var ok = Number(li.dataset.key) === idx; li.classList.toggle("ok", ok); li.classList.toggle("bad", !ok); if (ok) right++; });
       api.touch();
+      if (right === lis.length && revealed) {
+        result.innerHTML = "That is the order you were shown. Reload the lesson later and try it unaided to earn the credit.";
+        return;
+      }
       if (right === lis.length) {
         root.classList.add("solved");
         result.innerHTML = "✓ Correct" + (tries ? " (after " + tries + (tries === 1 ? " retry" : " retries") + ")" : " first time") + ". " + (root.dataset.explain || "");
@@ -189,6 +195,7 @@
       result.innerHTML = right + " of " + lis.length + " in the right place. Move the red ones and check again." + (tries >= 2 ? ' <button class="order-reveal linkish" type="button">Show the answer</button>' : "");
       var reveal = $(".order-reveal", result);
       if (reveal) reveal.addEventListener("click", function () {
+        revealed = true;
         lis.slice().sort(function (a, b) { return a.dataset.key - b.dataset.key; }).forEach(function (li) { list.appendChild(li); });
         moved(); result.textContent = "Here is the answer. Read the explanation, then try the next one. " + (root.dataset.explain || "").replace(/<[^>]+>/g, "");
       });

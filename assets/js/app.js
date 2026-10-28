@@ -516,7 +516,7 @@
     var deckEl = $(".review-deck");
     if (deckEl) WIDGETS.deck(deckEl, due, {
       lookup: function (id) { return store.cards[id]; },
-      onGrade: function (card, r) { WIDGETS.saveCard({ store: store, save: save, touch: touch }, card, r); },
+      onGrade: function (card, r) { WIDGETS.saveCard({ store: store, save: save, touch: touch, refreshNav: buildHubNav }, card, r); },
       doneHtml: function (n) { buildHubNav(); return "<strong>Review done — " + n + (n === 1 ? " card" : " cards") + ".</strong> Each one is rescheduled. The ones you knew come back later; the ones you missed come back sooner."; }
     });
   }
@@ -878,7 +878,7 @@
       });
     });
     wireSims($("#content"));
-    var api = { course: cid, lesson: id, state: s, store: store, save: save, toast: toast, touch: touch };
+    var api = { course: cid, lesson: id, state: s, store: store, save: save, toast: toast, touch: touch, refreshNav: buildHubNavIfNeeded };
     WIDGETS.wire($("#content"), api);
     window.CHECKERS.wire($("#content"), api);
     // Code examples can scroll horizontally on phones; keyboard users need access too.

@@ -113,3 +113,46 @@ test("flashcards work from the keyboard alone", async ({ page }) => {
   await expect(deck.locator(".flash-count")).toHaveText(`2 / ${total}`);
   await expect(deck.locator(".flash-card")).toBeFocused();
 });
+
+test("grading keys on the finished deck panel do not throw", async ({ page }) => {
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/#/cowork/the-brief");
+  const deck = page.locator(".flash").first();
+  const total = Number((await deck.locator(".flash-count").textContent()).split("/")[1]);
+  for (let n = 0; n < total; n++) {
+    await deck.locator(".flash-card").click();
+    await deck.locator('.flash-grade[data-rate="good"]').click();
+  }
+  await expect(deck.locator(".flash-done")).toBeVisible();
+  await deck.locator(".flash-again").focus();
+  await page.keyboard.press("1");
+  await page.keyboard.press("2");
+  await expect(deck.locator(".flash-done")).toBeVisible();
+  expect(errors).toEqual([]);
+  const s = await stored(page);
+  expect(Object.keys(s.cards || {}).length).toBe(total);
+});
+
+test("grading a card in a lesson updates the sidebar's due-card badge at once", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/#/cowork/the-brief");
+  const deck = page.locator(".flash").first();
+  await expect(page.locator(".nav-learn .nav-count")).toHaveCount(0);
+  await deck.locator(".flash-card").click();
+  await deck.locator('.flash-grade[data-rate="again"]').click();
+  await expect(page.locator(".nav-learn .nav-count")).toHaveText("1");
+});
+
+test("showing the answer to an ordering exercise does not award the credit", async ({ page }) => {
+  await page.goto("/#/claude-code/cc-epcc");
+  const ex = page.locator(".order").first();
+  await ex.locator(".order-check").click();
+  await ex.locator(".order-check").click();
+  await ex.locator(".order-reveal").click();
+  await ex.locator(".order-check").click();
+  await expect(ex).not.toHaveClass(/solved/);
+  await expect(ex.locator(".order-result")).toContainText("unaided");
+  const s = await stored(page);
+  expect(Object.values(s.courses["claude-code"]?.ex || {})).toEqual([]);
+});
