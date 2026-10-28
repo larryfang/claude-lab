@@ -196,3 +196,57 @@ test('a failed upload during sign-out still signs the learner out and keeps the 
  assert.equal(h.context.window.ACCOUNT.isSignedIn(),false);
  assert.equal(JSON.parse(h.storage.get('claudelab.events.'+uid)).length,1,'the event must wait in storage for the next sign-in');
 });
+
+test('an unreadable account copy pauses sync, offers recovery on the account page, and can be replaced with this device\'s progress',async()=>{
+ const uid='learner-a';let reads=0;const saves=[];
+ const h=await harness({remote:()=>Promise.resolve(++reads===1?{data:{state:{courses:{}},revision:4}}:{data:{state:{courses:{},last:{t:2}},revision:5}})});
+ const c=h.context.window.supabase.createClient();
+ c.rpc=(name,args)=>({retry(){return this;},abortSignal(){if(name!=='record_learning_events')saves.push(args);return Promise.resolve({data:{state:args.body,revision:(args.expected_revision||0)+1}});}});
+ const seen=[];h.elements.accountStatus={set textContent(v){seen.push(v);},get textContent(){return seen.join(' | ');}};
+ h.getState().courses.cowork={completed:{welcome:true}};h.context.window.ACCOUNT.onSave();
+ for(let n=0;n<6;n++){for(const t of h.timers.splice(0))if(!t.cancelled)await t.fn();await new Promise(r=>setImmediate(r));}
+ assert.equal(h.context.window.ACCOUNT.syncFault(),'unreadable');
+ assert.match(seen.join(' | '),/could not be read/);
+ assert.deepEqual(saves,[],'nothing may be uploaded while the account copy is unreadable');
+ h.context.location.hash='#/account';h.elements.content={innerHTML:'',querySelector:()=>null,querySelectorAll:()=>[]};
+ h.context.window.ACCOUNT.renderAccount();
+ assert.match(h.elements.content.innerHTML,/id="replaceAccountCopy"/);
+ assert.equal(await h.context.window.ACCOUNT.replaceAccountCopy(),true);
+ assert.equal(saves.length,1);
+ assert.equal(saves[0].expected_revision,5);
+ assert.equal(h.context.window.CLOUD_STATE.validState(saves[0].body),true);
+ assert.equal(saves[0].body.courses.cowork.completed.welcome,true);
+ assert.equal(h.context.window.ACCOUNT.syncFault(),null);
+ assert.match(seen[seen.length-1],/replaced/);
+});
+
+test('a sync fault never follows the learner to another account, and the replace action refuses to run without one',async()=>{
+ let reads=0;const saves=[];
+ const h=await harness({remote:()=>Promise.resolve(++reads<=2?{data:{state:{courses:{},last:{t:2}},revision:5}}:{data:{state:{courses:{}},revision:1}})});
+ const c=h.context.window.supabase.createClient();
+ c.rpc=(name,args)=>({retry(){return this;},abortSignal(){if(name!=='record_learning_events')saves.push(args);return Promise.resolve({data:{state:args.body,revision:(args.expected_revision||0)+1}});}});
+ h.elements.accountStatus={textContent:''};
+ h.getState().courses.cowork={completed:{welcome:true}};h.context.window.ACCOUNT.onSave();
+ for(let n=0;n<6;n++){for(const t of h.timers.splice(0))if(!t.cancelled)await t.fn();await new Promise(r=>setImmediate(r));}
+ assert.equal(h.context.window.ACCOUNT.syncFault(),'unreadable');
+ h.emit('SIGNED_OUT',null);await h.runTimers();
+ assert.equal(h.context.window.ACCOUNT.syncFault(),null,'sign-out clears the fault');
+ h.emit('SIGNED_IN',{user:{id:'learner-b'}});await h.runTimers();
+ assert.equal(h.context.window.ACCOUNT.syncFault(),null,'the next account starts without a fault');
+ assert.equal(await h.context.window.ACCOUNT.replaceAccountCopy(),false,'no fault, no overwrite');
+ assert.deepEqual(saves.filter(s=>s.expected_revision===1),[],'the healthy account copy must not be replaced');
+});
+
+test('a failed replace keeps the fault and the recovery offer',async()=>{
+ let reads=0;
+ const h=await harness({remote:()=>Promise.resolve({data:{state:{courses:{},last:{t:2}},revision:5}})});
+ const c=h.context.window.supabase.createClient();
+ c.rpc=(name)=>({retry(){return this;},abortSignal(){return Promise.resolve(name==='record_learning_events'?{data:0}:{error:{code:'XX000',message:'storage failure'}});}});
+ const seen=[];h.elements.accountStatus={set textContent(v){seen.push(v);},get textContent(){return seen.join(' | ');}};
+ h.getState().courses.cowork={completed:{welcome:true}};h.context.window.ACCOUNT.onSave();
+ for(let n=0;n<6;n++){for(const t of h.timers.splice(0))if(!t.cancelled)await t.fn();await new Promise(r=>setImmediate(r));}
+ assert.equal(h.context.window.ACCOUNT.syncFault(),'unreadable');
+ assert.equal(await h.context.window.ACCOUNT.replaceAccountCopy(),false);
+ assert.equal(h.context.window.ACCOUNT.syncFault(),'unreadable','the fault stays until a replace succeeds');
+ assert.match(seen[seen.length-1],/could not be replaced/);
+});

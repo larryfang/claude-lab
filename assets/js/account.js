@@ -3,6 +3,7 @@
  'use strict';
  var config=window.CLAUDELAB_CLOUD, core=window.CLOUD_STATE, api, user=null, client=null, ready=false;
  var base={},revision=0,syncing=false,timer=null,generation=0,status='Progress saved on this device',authFeedback='';
+ var syncFault=null; // 'unreadable' (account copy rejected on load) or 'unmergeable' (this device's merge rejected): sync is paused until the learner replaces the account copy
  var authBusy=false,authEpoch=0,adminRequest=0,deferredAuth=null;
  var guest=null,events=[],eventTimer=null,sessionId=crypto.randomUUID(),lastInput=Date.now(),lastPulse=Date.now();
  function copy(v){return JSON.parse(JSON.stringify(v));}
@@ -33,7 +34,7 @@
     base=r.state;revision=r.revision;
     var after=core.diff(current,core.snapshot(api.getState())),pulled=core.apply(base,after);
     if(core.diff(pulled,core.snapshot(api.getState())).length)api.applyState(pulled,true);
-    write(cacheKey(uid),{state:api.getState(),base:base,revision:revision});notify('Progress synced');if(after.length)schedule();return;
+    write(cacheKey(uid),{state:api.getState(),base:base,revision:revision});clearFault();notify('Progress synced');if(after.length)schedule();return;
    }
    for(var attempt=0;attempt<4;attempt++){
     if(turn!==generation)return;
@@ -48,14 +49,40 @@
     // Compare state values, not JSON field order: Postgres can reorder keys.
     // Ordinary background saves must leave the lesson and scroll position intact.
     if(core.diff(next,core.snapshot(api.getState())).length)api.applyState(next,true);
-    write(cacheKey(uid),{state:api.getState(),base:base,revision:revision});notify('Progress synced');
+    write(cacheKey(uid),{state:api.getState(),base:base,revision:revision});clearFault();notify('Progress synced');
     if(later.length)schedule();return;
    }
    throw Error('Another device is updating progress. Try sync again.');
   }catch(e){
-   var why=e&&e.message==='Progress could not be merged'?'Saved on this device — it could not be merged with the account copy, so sync is paused':e&&e.message==='Invalid saved progress'?'Saved on this device — the account copy could not be read, so sync is paused':'Saved on this device — sync needs a connection';
-   if(turn===generation)notify(why);
+   var fault=e&&e.message==='Progress could not be merged'?'unmergeable':e&&e.message==='Invalid saved progress'?'unreadable':null;
+   var why=fault==='unmergeable'?'Saved on this device — it could not be merged with the account copy, so sync is paused':fault==='unreadable'?'Saved on this device — the account copy could not be read, so sync is paused':'Saved on this device — sync needs a connection';
+   if(turn===generation){notify(why);if(fault&&fault!==syncFault){syncFault=fault;if(isAccountRoute())renderAccount();}}
   }
+  finally{syncing=false;}
+ }
+ function clearFault(){if(syncFault){syncFault=null;if(isAccountRoute())renderAccount();}}
+ // Recovery for a paused sync: upload this device's whole progress as the new account copy.
+ // The account copy's own recent changes are lost, which the account page says before offering it.
+ async function replaceAccountCopy(){
+  if(!user||!client||!syncFault)return false; // only ever a recovery from a paused sync, never a plain overwrite
+  if(syncing){notify('Sync is busy — try again in a moment');return false;}
+  var turn=generation,uid=user.id;syncing=true;clearTimeout(timer);
+  try{
+   var body=core.snapshot(api.getState());body.courses=body.courses||{};
+   if(!core.validState(body))throw Error('This device\'s progress is not valid');
+   var r=await client.from('learner_state').select('revision').eq('user_id',uid).maybeSingle().retry(false).abortSignal(AbortSignal.timeout(15000));if(r.error)throw r.error;
+   var expected=r.data?r.data.revision:0,result;
+   for(var attempt=0;attempt<2;attempt++){
+    result=await client.rpc('save_learning_state',{expected_revision:expected,body:body}).retry(false).abortSignal(AbortSignal.timeout(15000));
+    if(!result.error||result.error.code!=='PT409')break;
+    r=await client.from('learner_state').select('revision').eq('user_id',uid).maybeSingle().retry(false).abortSignal(AbortSignal.timeout(15000));if(r.error)throw r.error;expected=r.data?r.data.revision:0;
+   }
+   if(result.error)throw result.error;if(turn!==generation)return false; // the server copy is replaced by then; only this device's bookkeeping is skipped
+   base=result.data.state;revision=result.data.revision;write(cacheKey(uid),{state:api.getState(),base:base,revision:revision});
+   syncFault=null;notify('Account copy replaced with this device\'s progress');if(isAccountRoute())renderAccount();
+   if(core.diff(base,core.snapshot(api.getState())).length)schedule(); // edits made during the upload
+   return true;
+  }catch(e){if(turn===generation)notify('The account copy could not be replaced — '+(e&&e.message?e.message:'try again'));return false;}
   finally{syncing=false;}
  }
  // Queued learning events are cleared from memory with the account, so one batch is uploaded first
@@ -63,7 +90,7 @@
  async function signOutNow(){await sync();await flushEvents();var r=await client.auth.signOut({scope:'local'});if(r.error)return false;await acceptUser(null);return true;}
  async function acceptUser(next){
   if(user && next && user.id===next.id)return;
-  var previous=user;generation++;clearTimeout(timer);clearTimeout(eventTimer);isolating=false;skippedInARow=0;
+  var previous=user;generation++;clearTimeout(timer);clearTimeout(eventTimer);isolating=false;skippedInARow=0;syncFault=null; // a fault belongs to the account it was found on
   if(previous)write(cacheKey(previous.id),{state:api.getState(),base:base,revision:revision});
   user=null;events=[];
   if(!next){flag('claudelab.accountOwner',null);base={};revision=0;api.applyState(guestState(),false);notify('Progress saved on this device');return;}
@@ -212,6 +239,7 @@
   }
   else{
    html+='<p>Signed in as <strong>'+esc(user.email)+'</strong></p><p id="accountStatus" role="status">'+esc(status)+'</p><div class="account-actions"><button class="btn btn-primary" id="syncNow" type="button">Sync now</button><button class="btn btn-ghost" id="accountExport" type="button">Export my learning data</button><button class="btn btn-ghost" id="accountSignOut" type="button">Sign out</button></div>';
+   if(syncFault)html+='<div class="account-recover" role="region" aria-labelledby="recoverTitle"><h2 id="recoverTitle">Sync is paused</h2><p>'+(syncFault==='unreadable'?'The copy saved to your account could not be read, so nothing is syncing. You can replace it with the progress on this device.':'The progress on this device could not be merged with the account copy, so nothing is syncing. You can replace the account copy with this device\'s progress.')+' This overwrites the whole account copy: anything in it that is not on this device, from any time, will be lost, and the export on this page cannot save it because it only reads this device. The button asks twice.</p><button class="btn btn-primary" id="replaceAccountCopy" type="button">Replace the account copy with this device\'s progress</button></div>';
    if(guestHasProgress())html+='<div class="account-import"><h2>Bring your guest progress with you?</h2><p>Import completed lessons, quiz results and review cards from this browser. Your notebook stays in its guest workspace. Existing account progress is preserved.</p><button class="btn btn-primary" id="importGuest" type="button">Import guest progress</button><button class="btn btn-ghost" id="dismissImport" type="button">Keep it separate</button></div>';
    html+='<p class="account-note">Learning records include lessons visited, completions, quiz results and estimated active time. Notebook text and typed practice briefs are excluded. Raw activity is kept for 90 days; daily totals and progress remain until account deletion. Your records are private to your account and the course administrator.</p><a href="#/me">See my progress →</a><p><a href="#/admin">Course administration</a> · Restricted to the course owner</p>';
   }
@@ -220,6 +248,11 @@
   var syncButton=document.getElementById('syncNow');if(syncButton)syncButton.onclick=function(){sync();flushEvents();};
   var signout=document.getElementById('accountSignOut');if(signout)signout.onclick=async function(){
    signout.disabled=true;if(!await signOutNow()){notify('Could not sign out. Try again.');signout.disabled=false;return;}renderAccount();
+  };
+  // Destructive, so it takes two clicks: the first turns the button into the confirmation.
+  var replace=document.getElementById('replaceAccountCopy');if(replace)replace.onclick=async function(){
+   if(replace.dataset.confirm!=='1'){replace.dataset.confirm='1';replace.textContent='Click again to overwrite the account copy';setTimeout(function(){if(replace.dataset.confirm==='1'&&!replace.disabled){replace.dataset.confirm='';replace.textContent='Replace the account copy with this device\'s progress';}},8000);return;}
+   replace.disabled=true;if(!await replaceAccountCopy()){replace.disabled=false;replace.dataset.confirm='';replace.textContent='Replace the account copy with this device\'s progress';}
   };
   var im=document.getElementById('importGuest');if(im)im.onclick=function(){api.applyState(core.mergeImport(core.snapshot(api.getState()),core.snapshot(guest)),true);guest={courses:{},notes:guest.notes||{},theme:guest.theme,focus:guest.focus};write('claudelab.guest',guest);localSave();renderAccount();};
   var dismiss=document.getElementById('dismissImport');if(dismiss)dismiss.onclick=function(){flag('claudelab.importDismissed.'+user.id,'1');document.querySelector('.account-import').remove();};
@@ -268,5 +301,5 @@
    }
   });
  }
- window.ACCOUNT={init:init,onSave:localSave,sync:sync,signOut:signOutNow,recordUsage:usage,record:record,isSignedIn:function(){return !!user;},isReady:function(){return ready;},renderAccount:renderAccount,renderAdmin:renderAdmin,guestPrompt:guestPrompt};
+ window.ACCOUNT={init:init,onSave:localSave,sync:sync,signOut:signOutNow,replaceAccountCopy:replaceAccountCopy,syncFault:function(){return syncFault;},recordUsage:usage,record:record,isSignedIn:function(){return !!user;},isReady:function(){return ready;},renderAccount:renderAccount,renderAdmin:renderAdmin,guestPrompt:guestPrompt};
 })();

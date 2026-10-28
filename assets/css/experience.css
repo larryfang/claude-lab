@@ -298,8 +298,9 @@ body.focus-mode[data-view=lesson] .content { padding-left: 28px; padding-right: 
 .account-panel p,.admin-page>p {color:var(--ink-2);line-height:1.7;overflow-wrap:anywhere;}
 .account-actions {display:flex;flex-wrap:wrap;gap:10px;margin:24px 0;}
 .account-note {font-size:.8rem;color:var(--muted);margin-top:24px;}
-.account-import {margin-top:26px;padding:22px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);}
-.account-import button {margin:5px 5px 5px 0;}
+.account-import, .account-recover {margin-top:26px;padding:22px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);}
+.account-import button, .account-recover button {margin:5px 5px 5px 0;}
+.account-recover {border-color:var(--warn, var(--line));}
 .admin-stats {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:24px 0;}
 .admin-stats>div {padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--surface);}
 .admin-stats strong,.admin-stats span {display:block;}.admin-stats strong {font-size:1.8rem;}.admin-stats span {font-size:.75rem;color:var(--muted);}
