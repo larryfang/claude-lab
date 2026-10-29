@@ -150,3 +150,45 @@ test('navigation announces completion only for lessons that are actually complet
  await page.locator('#completeBtn').click();
  await expect(welcome).toHaveAccessibleName('Welcome: Hire Your AI Teammate 6 minutes');
 });
+
+test('a finished session continues the route instead of looping back to its summary',async({page})=>{
+ await page.addInitScript(()=>localStorage.setItem('claudelab.v2',JSON.stringify({courses:{cowork:{completed:{welcome:true,'what-is-cowork':true}}},last:{c:'cowork',l:'what-is-cowork',p:'gtm',s:'welcome,what-is-cowork',t:1}})));
+ await page.goto('/#/');
+ const primary=page.locator('[data-resume-primary]');
+ await expect(primary).toContainText('Continue where you left off');
+ await expect(primary).toHaveAttribute('href','#/cowork/lab-setup?path=gtm');
+ await page.goto('/#/cowork');
+ await expect(page.locator('.hero-cta .btn-primary')).toHaveAttribute('href','#/cowork/lab-setup?path=gtm');
+});
+
+test('planning the next session lands on the planner even when the daily quiz loads above it',async({page})=>{
+ await page.setViewportSize({width:1280,height:720});
+ await page.addInitScript(()=>localStorage.setItem('claudelab.v2',JSON.stringify({courses:{cowork:{completed:{welcome:true,'what-is-cowork':true,'the-brief':true}}}})));
+ await page.goto('/#/?plan=1');
+ await expect(page.locator('.daily')).toBeVisible();
+ await expect(page.locator('#learningGoal')).toBeFocused();
+ await expect(page.locator('#learningGoal')).toBeInViewport();
+});
+
+test('review deck counters follow each grade',async({page})=>{
+ const today=new Date().toISOString().slice(0,10);
+ await page.addInitScript(d=>localStorage.setItem('claudelab.v2',JSON.stringify({courses:{},cards:{one:{f:'Q',b:'A',box:1,due:d,c:'cowork',l:'the-brief'}}})),today);
+ await page.goto('/#/review');
+ await expect(page.locator('.review-due b')).toHaveText('1');
+ await page.locator('.flash-card').click();
+ await page.locator('.flash-grade[data-rate="good"]').click();
+ await expect(page.locator('.review-due b')).toHaveText('0');
+ await expect(page.locator('.box-col').nth(1).locator('b')).toHaveText('1');
+});
+
+test('un-completing the last lesson of a session restores the finish label',async({page})=>{
+ await page.goto('/#/cowork/what-is-cowork?path=gtm&session=welcome%2Cwhat-is-cowork');
+ await page.evaluate(()=>localStorage.setItem('claudelab.v2',JSON.stringify({courses:{cowork:{completed:{welcome:true}}}})));
+ await page.reload();
+ await expect(page.locator('#completeBtn')).toHaveText('✓ Finish this session');
+ await page.locator('#completeBtn').click();
+ await page.goto('/#/cowork/what-is-cowork?path=gtm&session=welcome%2Cwhat-is-cowork');
+ await expect(page.locator('#completeBtn')).toHaveClass(/done/);
+ await page.locator('#completeBtn').click();
+ await expect(page.locator('#completeBtn')).toHaveText('✓ Finish this session');
+});

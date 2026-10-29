@@ -125,7 +125,23 @@
     goal.addEventListener('change', function () { update(true); }); time.addEventListener('change', function () { update(true); }); update(false);
     var jump = document.querySelector('[data-open-planner]');
     if (jump) jump.addEventListener('click', function () { goal.focus({ preventScroll: true }); document.querySelector('.session-planner').scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' }); });
-    if (jump && new URLSearchParams(location.hash.split('?')[1] || '').get('plan') === '1') jump.click();
+    if (jump && new URLSearchParams(location.hash.split('?')[1] || '').get('plan') === '1') {
+      // The daily quiz above the planner arrives later and pushes it down; jump now, then keep the planner in view
+      // until that slot has filled or been removed (with a fallback timeout), unless the learner has started
+      // scrolling or typing, in which case they are in charge.
+      jump.click();
+      var slot = document.getElementById('dailySlot');
+      if (slot && slot.parentNode) {
+        var parent = slot.parentNode, done = false, watch, timer;
+        var stop = function () { if (done) return; done = true; if (watch) watch.disconnect(); clearTimeout(timer); };
+        var keep = function () { if (done) return; var el = document.querySelector('.session-planner'); if (el) el.scrollIntoView({ behavior: 'auto', block: 'center' }); if (!slot.isConnected || slot.firstChild) stop(); };
+        ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (k) { window.addEventListener(k, stop, { once: true, passive: true }); });
+        watch = new MutationObserver(keep);
+        watch.observe(parent, { childList: true });
+        watch.observe(slot, { childList: true });
+        timer = setTimeout(function () { keep(); stop(); }, 4000);
+      }
+    }
   }
 
   function studioPage(api) {

@@ -85,8 +85,10 @@
     if (!info || isRef(info.module)) return null;
     var path = (c.fastPaths || []).filter(function (p) { return p.id === last.p; })[0];
     var session = sessionLessons(c, path, last.s, last.l), completed = cstate(c.id).completed;
-    if (session && session.every(function (id) { return completed[id]; })) return { course:c, module:info.module, lesson:info.lesson, href:sessionHref(c.id,path.id,session.join(',')), label:'Review your finished session' };
-    var order = session || (path ? path.lessons : countable(c).map(function (x) { return x.lesson.id; }));
+    // A finished session continues along its route (or the course) instead of looping back to its summary.
+    var finished = session && session.every(function (id) { return completed[id]; });
+    var order = (!finished && session) || (path ? path.lessons : countable(c).map(function (x) { return x.lesson.id; }));
+    if (finished) session = null;
     var id = completed[last.l] ? order.filter(function (id) { return !completed[id]; })[0] : last.l;
     if (!id) return { course:c, module:info.module, lesson:info.lesson, href:path ? fastPathHref(c.id,path.id) : courseHref(c.id), label:'Choose your next practice' };
     var next = lessonInfo(c,id); next.href = pathLessonHref(c.id,id,path && path.id,session && session.join(',')); next.label = 'Continue where you left off'; return next;
@@ -525,18 +527,25 @@
   function lessonLink(cid, lid) { var c = byId[cid], info = c && lessonInfo(c, lid); return info ? '<a href="' + lessonHref(cid, lid) + '">' + c.emoji + " " + esc(info.lesson.title) + "</a>" : esc(lid); }
 
   /* ---------- Review deck ---------- */
+  // Counts shown above the deck; rebuilt after every grade so they never lag the cards.
+  function reviewStatsHtml() {
+    var all = objVals(store.cards), due = all.filter(function (c) { return WIDGETS.srs.isDue(c); });
+    var boxes = [1, 2, 3, 4, 5].map(function (b) { return all.filter(function (c) { return (c.box || 1) === b; }).length; });
+    var html = '';
+    html += '<div class="review-stats"><div class="review-due"><b>' + due.length + '</b><span>due today</span></div><div><b>' + all.length + '</b><span>cards in your deck</span></div><div><b>' + boxes[4] + '</b><span>mastered</span></div></div>';
+    html += '<div class="box-bar" aria-label="Cards by box">' + boxes.map(function (n, k) {
+      return '<div class="box-col"><div class="box-fill" style="--h:' + (all.length ? Math.round(n / all.length * 100) : 0) + '%"></div><b>' + n + "</b><small>Box " + (k + 1) + " · " + (WIDGETS.srs.INTERVALS[k + 1] ? "every " + WIDGETS.srs.INTERVALS[k + 1] + "d" : "daily") + "</small></div>";
+    }).join("") + "</div>";
+    return html;
+  }
   function renderReview() {
     pageShell("Review deck");
     var all = objVals(store.cards);
     var due = Object.keys(store.cards || {}).filter(function (id) { return WIDGETS.srs.isDue(store.cards[id]); }).map(function (id) { var c = store.cards[id]; return { id: id, f: c.f, b: c.b, c: c.c, l: c.l, box: c.box, due: c.due }; })
       .sort(function (a, b) { return (a.box || 1) - (b.box || 1) || (a.due || "").localeCompare(b.due || ""); });
-    var boxes = [1, 2, 3, 4, 5].map(function (b) { return all.filter(function (c) { return (c.box || 1) === b; }).length; });
     var html = crumbs("🔁 Review deck");
     html += '<section class="page-hero"><span class="hero-eyebrow">🔁 Spaced repetition</span><h1>Review deck</h1><p class="hero-sub">Every flashcard you meet in a lesson lands here and comes back just before you would forget it. Five minutes a day keeps each framework within reach.</p></section>';
-    html += '<div class="review-stats"><div class="review-due"><b>' + due.length + '</b><span>due today</span></div><div><b>' + all.length + '</b><span>cards in your deck</span></div><div><b>' + boxes[4] + '</b><span>mastered</span></div></div>';
-    html += '<div class="box-bar" aria-label="Cards by box">' + boxes.map(function (n, k) {
-      return '<div class="box-col"><div class="box-fill" style="--h:' + (all.length ? Math.round(n / all.length * 100) : 0) + '%"></div><b>' + n + "</b><small>Box " + (k + 1) + " · " + (WIDGETS.srs.INTERVALS[k + 1] ? "every " + WIDGETS.srs.INTERVALS[k + 1] + "d" : "daily") + "</small></div>";
-    }).join("") + "</div>";
+    html += '<div id="reviewStats">' + reviewStatsHtml() + '</div>';
     if (due.length) html += '<div class="flash review-deck"><div class="flash-head"><span class="flash-kicker">Today\'s review</span><span class="flash-count"></span></div><div class="flash-stage"></div></div>';
     else {
       var next = all.map(function (c) { return c.due; }).filter(Boolean).sort()[0];
@@ -547,7 +556,7 @@
     var deckEl = $(".review-deck");
     if (deckEl) WIDGETS.deck(deckEl, due, {
       lookup: function (id) { return store.cards[id]; },
-      onGrade: function (card, r) { WIDGETS.saveCard({ store: store, save: save, touch: touch, refreshNav: buildHubNav }, card, r); },
+      onGrade: function (card, r) { WIDGETS.saveCard({ store: store, save: save, touch: touch, refreshNav: buildHubNav }, card, r); var stats = $("#reviewStats"); if (stats) stats.innerHTML = reviewStatsHtml(); },
       doneHtml: function (n) { buildHubNav(); return "<strong>Review done — " + n + (n === 1 ? " card" : " cards") + ".</strong> Each one is rescheduled. The ones you knew come back later; the ones you missed come back sooner."; }
     });
   }
@@ -897,7 +906,7 @@
     var session = sessionLessons(c,path,sessionToken,id), token = session && session.join(',');
     var order = session || (path ? path.lessons : countable(c).map(function (x) { return x.lesson.id; })), nextId = order[order.indexOf(id) + 1] || null;
     var cb = $("#completeBtn");
-    if (cb) { cb.classList.toggle("done", !was); cb.textContent = completeLabel(!was, !!nextId, !!path); var hint = $(".complete-hint"); if (hint) hint.textContent = completeHint(!was, !!nextId); }
+    if (cb) { cb.classList.toggle("done", !was); cb.textContent = (session && !nextId && was) ? '✓ Finish this session' : completeLabel(!was, !!nextId, !!path); var hint = $(".complete-hint"); if (hint) hint.textContent = completeHint(!was, !!nextId); }
     var navA = $('.nav-link[data-lesson="' + id + '"]'); if (navA) { navA.classList.toggle("done", !was); var status = $('.nav-status',navA); if (status) status.textContent = was ? '' : ' Completed'; }
     refreshTopProgress(cid); refreshNavMeters(c);
     if (!was) {
