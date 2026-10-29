@@ -65,7 +65,7 @@ body[data-view=admin] #content{max-width:1200px}
 .admin-insights span{display:block;font-size:.75rem}
 .admin-definitions dt{font-size:.85rem;font-weight:600;margin:18px 0 6px}
 .admin-definitions dd{font-size:.8rem;line-height:1.7;color:var(--muted);margin:0}
-.admin-page [aria-busy=true]{opacity:.8}
+.admin-page[aria-busy=true]{opacity:.8} /* the attribute is set on the page itself */
 .admin-page :focus-visible{outline:2px solid var(--clay-deep);outline-offset:3px}
 @media(max-width:900px){.admin-two{grid-template-columns:minmax(0,1fr);gap:0}.admin-heading{display:block}.admin-private{display:inline-block;margin:0}.admin-panel-head{flex-wrap:wrap;gap:8px}.admin-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.admin-panel{padding:16px}.admin-stat{padding:14px}.admin-metrics{gap:8px}.admin-stat dt{font-size:.7rem}.admin-controls label,.admin-controls .admin-search{min-width:0;max-width:none;width:100%;flex:auto}.admin-controls select,.admin-controls input{width:100%}.admin-chart{min-height:100px}.admin-pagination>div{width:100%;justify-content:space-between}.admin-heading p{font-size:.85rem}.admin-jump a{padding:10px 12px}}

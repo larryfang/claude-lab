@@ -81,3 +81,46 @@ test('owner route aliases load the dashboard',async({page})=>{
  await setup(page);
  for(const hash of ['#admin','#/admin/','#/admin?source=account']){await page.goto('/'+hash);await expect(page.locator('.admin-private')).toHaveText('Owner access verified');}
 });
+
+test('owner dashboard keeps keyboard focus, typed searches and shows busy state while loading',async({page})=>{
+ const requests=[];let gate=null;
+ await setup(page,async r=>{const p=r.request().postDataJSON();requests.push(p);if(gate){await gate;}return r.fulfill({json:adminFixture(p)});});
+ await expect(page.locator('#adminLearners')).toContainText('Showing 1–25 of 28');
+ // paging to the last page disables Next, so focus moves to an enabled control instead of the page body
+ await page.locator('#adminNext').focus();await page.keyboard.press('Enter');
+ await expect(page.locator('#adminLearners')).toContainText('Showing 26–28 of 28');
+ expect(await page.evaluate(()=>document.activeElement.id)).toBe('adminPrevious');
+ await page.keyboard.press('Enter');
+ await expect(page.locator('#adminLearners')).toContainText('Showing 1–25 of 28');
+ expect(await page.evaluate(()=>document.activeElement.id)).toBe('adminNext');
+ // a typed learner search survives Apply filters and is sent with it
+ await page.locator('#adminSearch').fill('learner27@');await page.locator('#adminDays').selectOption('7');await page.getByRole('button',{name:'Apply filters'}).click();
+ await expect(page.locator('#adminLearners')).toContainText('Showing 1–1 of 1');
+ expect(requests.at(-1).p_query).toBe('learner27@');await expect(page.locator('#adminSearch')).toHaveValue('learner27@');
+ // while a load is in flight the page is marked busy, dimmed, and the pagination buttons are disabled
+ let release;gate=new Promise(res=>release=res);
+ await page.locator('#refreshAdmin').click();
+ await expect(page.locator('.admin-page')).toHaveAttribute('aria-busy','true');
+ expect(await page.locator('.admin-page').evaluate(el=>getComputedStyle(el).opacity)).toBe('0.8');
+ await expect(page.locator('#adminNext')).toBeDisabled();
+ release();gate=null;
+ await expect(page.locator('.admin-page')).toHaveAttribute('aria-busy','false');
+ expect(await page.locator('.admin-page').evaluate(el=>getComputedStyle(el).opacity)).toBe('1');
+});
+
+test('owner dashboard retries keep keyboard focus after failure and after success',async({page})=>{
+ let fail=true,guestFail=true;
+ await setup(page,r=>{const p=r.request().postDataJSON();if(fail){fail=false;return r.fulfill({status:500,json:{message:'boom'}});}return r.fulfill({json:adminFixture(p)});});
+ await page.unroute('https://claude-lab-usage.vercel.app/api/report?**');
+ await page.route('https://claude-lab-usage.vercel.app/api/report?**',r=>{if(guestFail){guestFail=false;return r.fulfill({status:500,body:'no'});}return r.fulfill({json:guestFixture()});});
+ // the first load failed: the retry button is offered; retrying from the keyboard lands on Refresh once the dashboard is back
+ await expect(page.locator('#retryAdmin')).toBeVisible();
+ await page.locator('#retryAdmin').focus();await page.keyboard.press('Enter');
+ await expect(page.locator('.admin-private')).toHaveText('Owner access verified');
+ expect(await page.evaluate(()=>document.activeElement.id)).toBe('refreshAdmin');
+ // the guest report failed: retrying from its button keeps focus inside the guest panel while it loads and after it lands
+ await expect(page.locator('#retryGuest')).toBeVisible();
+ await page.locator('#retryGuest').focus();await page.keyboard.press('Enter');
+ await expect(page.locator('#adminGuest')).toContainText('Guest browser IDs');
+ expect(await page.evaluate(()=>document.getElementById('adminGuest').contains(document.activeElement))).toBe(true);
+});
