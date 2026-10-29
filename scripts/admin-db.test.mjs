@@ -56,6 +56,15 @@ test('administrator SQL metrics, pagination and private access', {skip:!availabl
     ('${uid(5)}',(now() at time zone 'UTC')::date-12,'cowork','welcome',1,1,0,0,30,now()-interval '12 days'),
     ('${uid(5)}',(now() at time zone 'UTC')::date-1,'cowork','welcome',1,1,0,0,30,now()-interval '1 day'),
     ('${uid(5)}',(now() at time zone 'UTC')::date,'code','intro',1,2,1,1,30,now());`);
+  await t.test('a learner records events with the time they happened, clamped to the retention window',()=>{
+   const batch=(occurred)=>`jsonb_build_array(jsonb_build_object('id','00000000-0000-4000-8000-00000000ee01','session_id','00000000-0000-4000-8000-00000000ee00','type','heartbeat','active_seconds',1${occurred===undefined?'':`,'occurred_at',${occurred}`}))`;
+   const stored=(occurred)=>JSON.parse(as(2,`select public.record_learning_events(${batch(occurred)}); select json_build_object('n',count(*),'day_ago',bool_and(abs(extract(epoch from occurred_at-(now()-interval '1 day')))<1),'now',bool_and(abs(extract(epoch from occurred_at-now()))<1),'floor',bool_and(abs(extract(epoch from occurred_at-(now()-interval '90 days')))<1))::text from public.learning_events where id='00000000-0000-4000-8000-00000000ee01'`));
+   assert.deepEqual(stored(`(now()-interval '1 day')::text`),{n:1,day_ago:true,now:false,floor:false},'a day-old event keeps its time');
+   assert.deepEqual(stored(`(now()+interval '1 day')::text`),{n:1,day_ago:false,now:true,floor:false},'a future time is stored as now');
+   assert.deepEqual(stored(`(now()-interval '100 days')::text`),{n:1,day_ago:false,now:false,floor:true},'an old time is clamped to the retention floor');
+   assert.deepEqual(stored(),{n:1,day_ago:false,now:true,floor:false},'an absent time means now');
+   assert.throws(()=>as(2,`select public.record_learning_events(${batch("'garbage'")})`),/invalid input syntax/,'a malformed time raises');
+  });
   await t.test('only the confirmed pinned owner can call every administrator endpoint',()=>{
    assert.equal(as(1,'select public.learning_admin_access()'),'t');
    assert.equal(JSON.parse(as(1,'select public.learning_admin_report()')).summary.learners,6);
