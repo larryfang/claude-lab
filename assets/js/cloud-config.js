@@ -5,5 +5,6 @@
   "providers": [
     "google",
     "github"
-  ]
+  ],
+  "eventTime": true
 };
