@@ -139,7 +139,7 @@
   function sameRendered(a, b) { return ['courses', 'cards', 'daily'].every(function (k) { return JSON.stringify(canonical(a[k] || {})) === JSON.stringify(canonical(b[k] || {})); }); }
 
   /* ---------- Theme ---------- */
-  function applyTheme(t) { document.documentElement.setAttribute("data-theme", t); store.theme = t; save(); }
+  function applyTheme(t) { document.documentElement.setAttribute("data-theme", t); store.theme = t; save(); var b = $("#themeBtn"); if (b) { b.setAttribute("aria-pressed", String(t === "dark")); b.setAttribute("aria-label", "Dark mode"); } }
   (function () { var t = store.theme || (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); applyTheme(t); })();
   $("#themeBtn").addEventListener("click", function () { applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark"); });
   function applyFocus() { document.body.classList.toggle('focus-mode', !!store.focus); $('#focusBtn').setAttribute('aria-pressed', String(!!store.focus)); $('#focusBtn').setAttribute('aria-label', store.focus ? 'Exit focus mode' : 'Enter focus mode'); }
@@ -376,7 +376,7 @@
 
     html += '<div class="dash">';
     html += '<div class="ring" style="--p:' + p.pct + '"><span class="ring-label">' + p.pct + "%</span></div>";
-    html += '<div class="dash-info"><h3>Your progress</h3><p>' + p.done + " of " + p.total + " lessons complete · " + courseXp(c) + " XP. " + (p.pct === 100 ? "You finished the whole course — 🏆" : "Work top-to-bottom, or jump around.") + "</p>";
+    html += '<div class="dash-info"><h2>Your progress</h2><p>' + p.done + " of " + p.total + " lessons complete · " + courseXp(c) + " XP. " + (p.pct === 100 ? "You finished the whole course — 🏆" : "Work top-to-bottom, or jump around.") + "</p>";
     html += '<div class="badge-row">';
     (c.badges || []).forEach(function (b) { var has = earned.indexOf(b) !== -1; html += '<span class="badge ' + (has ? "earned" : "") + '">' + (has ? b.emoji : "🔒") + " " + b.label + "</span>"; });
     html += '</div><a class="cert-link" href="' + courseHref(cid) + '/certificate">' + (p.pct === 100 ? "🎓 Get your certificate →" : "🎓 Certificate unlocks at 100%") + "</a></div></div>";
@@ -540,7 +540,7 @@
     if (due.length) html += '<div class="flash review-deck"><div class="flash-head"><span class="flash-kicker">Today\'s review</span><span class="flash-count"></span></div><div class="flash-stage"></div></div>';
     else {
       var next = all.map(function (c) { return c.due; }).filter(Boolean).sort()[0];
-      html += '<div class="empty-state"><span class="empty-emoji">🌿</span><h3>' + (all.length ? "All caught up." : "Your deck is empty.") + "</h3><p>" +
+      html += '<div class="empty-state"><span class="empty-emoji">🌿</span><h2>' + (all.length ? "All caught up." : "Your deck is empty.") + "</h2><p>" +
         (all.length ? "Nothing is due today. The next card comes back on " + formatVerifiedDate(next) + "." : 'Flashcards join your deck when you grade them in a lesson. Start with ' + lessonLink("cowork", "the-brief") + ".") + "</p></div>";
     }
     $("#content").innerHTML = html;
@@ -580,16 +580,18 @@
       var lv = n === 0 ? "" : n === 1 ? " l1" : n <= 3 ? " l2" : n <= 6 ? " l3" : " l4";
       cells += '<i class="heat-cell' + lv + '" title="' + formatVerifiedDate(d) + " · " + n + (n === 1 ? " action" : " actions") + '"></i>';
     }
-    return '<div class="heat-wrap"><div class="heat" role="img" aria-label="Activity over the last 16 weeks">' + cells + '</div><div class="heat-legend" aria-hidden="true">Less <i class="heat-cell"></i><i class="heat-cell l1"></i><i class="heat-cell l2"></i><i class="heat-cell l3"></i><i class="heat-cell l4"></i> More</div></div>';
+    return '<div class="heat-wrap"><div class="heat" role="region" aria-label="Activity over the last 16 weeks, newest week on the right" tabindex="0">' + cells + '</div><div class="heat-legend" aria-hidden="true">Less <i class="heat-cell"></i><i class="heat-cell l1"></i><i class="heat-cell l2"></i><i class="heat-cell l3"></i><i class="heat-cell l4"></i> More</div></div>';
   }
   function renderMe() {
     pageShell("My progress");
     var xp = totalXp(), lv = levelOf(xp), st = streaks(), cards = objVals(store.cards);
     var q = { c: 0, t: 0 }, ex = 0, lessons = 0;
     COURSES.forEach(function (c) { var s = cstate(c.id); Object.keys(s.quiz).forEach(function(k){if(lessonInfo(c,k.split(':')[0])){q.c += s.quiz[k].c;q.t += s.quiz[k].t;}}); ex += completedActivities(c,s.ex); lessons += progressPct(c).done; });
-    var html = crumbs("📈 My progress") + '<div data-guest-prompt>' + window.ACCOUNT.guestPrompt() + '</div>';
-    html += '<section class="page-hero level-hero"><span class="hero-eyebrow">📈 Level ' + lv.idx + "</span><h1>" + lv.name + "</h1>";
+    var html = crumbs("📈 My progress");
+    html += '<section class="page-hero level-hero"><span class="hero-eyebrow">📈 My progress · Level ' + lv.idx + "</span><h1>" + lv.name + "</h1>";
+    // the guest prompt follows the page heading so its own h2 sits under the h1
     html += '<div class="xp-bar"><div class="xp-fill" style="width:' + lv.pct + '%"></div></div><p class="xp-note">' + xp + " XP" + (lv.next ? " · " + (lv.next.xp - xp) + " XP to " + lv.next.name : " · top level reached") + "</p></section>";
+    html += '<div data-guest-prompt>' + window.ACCOUNT.guestPrompt() + '</div>';
     html += '<div class="stat-grid">' +
       '<div class="stat stat-xp"><span class="stat-num">' + xp + '</span><span class="stat-lbl">XP earned</span></div>' +
       '<div class="stat stat-streak"><span class="stat-num">' + st.current + '</span><span class="stat-lbl">day streak · best ' + st.best + "</span></div>" +
@@ -612,6 +614,7 @@
     html += '<h2 class="section-title">Your data</h2><p class="section-desc">' + (window.ACCOUNT.isSignedIn() ? 'Learning progress syncs to your account. Your notebook stays in this browser. Export to keep a local backup.' : 'Progress lives only in this browser. Sign in to sync across devices, or export to keep a backup.') + '</p>';
     html += '<div class="data-actions"><button class="btn btn-ghost" id="progressExport" type="button">⬇ Export progress</button><label class="btn btn-ghost file-btn">⬆ Import progress<input type="file" id="progressImport" accept="application/json,.json"></label></div>';
     $("#content").innerHTML = html;
+    var heat = $(".heat"); if (heat) heat.scrollLeft = heat.scrollWidth; // open on the current week
     $("#progressExport").addEventListener("click", function () { download("claude-lab-progress.json", "application/json", JSON.stringify(store, null, 2)); });
     $("#progressImport").addEventListener("change", function (e) {
       var input = e.target, file = input.files && input.files[0], importRoute = location.hash; if (!file) return;
@@ -638,7 +641,7 @@
     var html = '<div class="lesson-top no-print"><a class="crumb" href="#/">All courses</a><span>›</span><a class="crumb" href="' + courseHref(cid) + '">' + c.emoji + " " + esc(c.title) + '</a><span>›</span><span class="crumb">Certificate</span></div>';
     if (p.pct < 100) {
       var next = countable(c).filter(function (x) { return !s.completed[x.lesson.id]; })[0];
-      html += '<div class="cert-locked"><span class="empty-emoji">🔒</span><h2>Your certificate unlocks at 100%</h2><p>' + p.done + " of " + p.total + " lessons complete — " + (p.total - p.done) + ' to go.</p><div class="xp-bar"><div class="xp-fill" style="width:' + p.pct + '%"></div></div>' +
+      html += '<div class="cert-locked"><span class="empty-emoji">🔒</span><h1>Your certificate unlocks at 100%</h1><p>' + p.done + " of " + p.total + " lessons complete — " + (p.total - p.done) + ' to go.</p><div class="xp-bar"><div class="xp-fill" style="width:' + p.pct + '%"></div></div>' +
         (next ? '<a class="btn btn-primary" href="' + lessonHref(cid, next.lesson.id) + '">Continue: ' + esc(next.lesson.title) + " →</a>" : "") + "</div>";
       $("#content").innerHTML = html; return;
     }
@@ -697,7 +700,7 @@
       if (session) html += '<aside class="session-context" aria-label="Your learning session"><span>' + icon('clock') + ' <strong>This session: lesson ' + (pos + 1) + ' of ' + session.length + '</strong></span><p>Finish these lessons, then pause and choose your next step.</p><a href="' + sessionHref(cid,path.id,token) + '">Session overview</a></aside>';
       var referenceReturn = isRef(m) && resumePlace();
       if (referenceReturn) html += '<aside class="session-context" aria-label="Return to your learning"><span>Keep your place while you look this up.</span><a href="' + referenceReturn.href + '">Back to your learning ' + icon('arrow') + '</a></aside>';
-      html += '<div class="lesson-grid"><div class="lesson-main">';
+      html += '<div class="lesson-grid"><aside class="toc-rail"></aside><div class="lesson-main">';
       html += '<article class="lesson">' + bodyHtml + "</article>";
 
       html += '<div class="lesson-foot">';
@@ -713,7 +716,7 @@
       if (nextId) { var ni = lessonInfo(c, nextId); html += '<a class="next" href="' + pathLessonHref(c.id, nextId, path && path.id, token) + '"><span class="dir">Next →</span><span class="ptitle">' + ni.lesson.title + "</span></a>"; }
       else { html += '<a class="next" href="' + (session ? sessionHref(cid,path.id,token) : path ? fastPathHref(c.id, path.id) : courseHref(c.id)) + '"><span class="dir">' + (session ? 'Session review →' : 'Done →') + '</span><span class="ptitle">' + (session ? 'Pause and choose your next step' : path ? "Route overview" : "Course home") + "</span></a>"; }
       html += "</div></div>";
-      html += '</div><aside class="toc-rail"></aside></div>';
+      html += '</div></div>';
 
       $("#content").innerHTML = html;
       $("#content").classList.add("with-toc");
@@ -791,7 +794,8 @@
     return pop;
   }
   var openTerm = null;
-  function closeTerm() { var pop = $("#termPop"); if (pop) pop.hidden = true; if (openTerm) { openTerm.setAttribute("aria-expanded", "false"); openTerm = null; } }
+  // keepFocus: on a route change the term button is about to be replaced, so focus is not sent back to it
+  function closeTerm(keepFocus) { var pop = $("#termPop"), wasInside = pop && pop.contains(document.activeElement); if (pop) pop.hidden = true; if (openTerm) { openTerm.setAttribute("aria-expanded", "false"); if (wasInside && !keepFocus) openTerm.focus({ preventScroll: true }); openTerm = null; } }
   function showTerm(btn) {
     var c = byId[currentCourseId]; if (!c) return;
     var t = (glossaryCache[c.id] || []).filter(function (x) { return x.name === btn.dataset.term; })[0]; if (!t) return;
@@ -801,6 +805,15 @@
     pop.setAttribute("aria-label", t.name);
     pop.innerHTML = '<p class="term-name">' + MD.parseInline(t.name) + '</p><p class="term-def">' + MD.parseInline(t.def) + '</p><div class="term-actions"><button class="term-add btn-sm" type="button"' + (has ? " disabled" : "") + ">" + (has ? "✓ In your review deck" : "＋ Add to review deck") + '</button><a href="' + lessonHref(c.id, c.glossary) + '">Full glossary →</a></div>';
     pop.hidden = false; openTerm = btn; btn.setAttribute("aria-expanded", "true");
+    // The popover lives at the end of <body>, so keyboard users are brought into it and returned to the term afterwards.
+    pop.tabIndex = -1; pop.focus({ preventScroll: true });
+    // Tab moves through the popover's own controls; leaving it either way closes it and returns to the term.
+    pop.onkeydown = function (e) {
+      if (e.key !== "Tab") return;
+      var items = $all("a[href], button:not([disabled])", pop), at = document.activeElement;
+      var leaving = !items.length || (!e.shiftKey && at === items[items.length - 1]) || (e.shiftKey && (at === items[0] || at === pop));
+      if (leaving) { e.preventDefault(); closeTerm(); btn.focus(); }
+    };
     var r = btn.getBoundingClientRect(), w = Math.min(340, window.innerWidth - 24);
     pop.style.width = w + "px";
     pop.style.left = Math.max(12, Math.min(r.left + window.scrollX, window.scrollX + window.innerWidth - w - 12)) + "px";
@@ -809,7 +822,8 @@
     if (!below && !above) pop.scrollIntoView({ block: "nearest" });
     $(".term-add", pop).addEventListener("click", function (e) {
       WIDGETS.saveCard({ store: store, save: save, touch: touch, course: c.id, lesson: c.glossary }, { id: cardId, f: MD.parseInline(t.name), b: MD.parseInline(t.def), c: c.id, l: c.glossary }, "good");
-      e.target.disabled = true; e.target.textContent = "✓ In your review deck"; buildHubNavIfNeeded(); toast("🃏 " + t.name + " added to your review deck");
+      e.target.disabled = true; e.target.textContent = "✓ In your review deck"; pop.focus({ preventScroll: true }); // a disabled button cannot keep focus
+      buildHubNavIfNeeded(); toast("🃏 " + t.name + " added to your review deck");
     });
   }
   function buildHubNavIfNeeded() { var c = byId[currentCourseId]; if (c) { var active = $(".nav-link.active"); buildCourseNav(c, active ? active.dataset.lesson : null); } }
@@ -965,8 +979,10 @@
         var entered = input.value.trim(), expected = (st.cmd || "").trim();
         if (entered && expected && entered.replace(/\s+/g, " ") !== expected.replace(/\s+/g, " ")) {
           clearMismatch();
-          var mismatch = document.createElement("div"); mismatch.className = "ccsim-mismatch"; mismatch.setAttribute("role", "status"); mismatch.textContent = "Guided step: type the suggested command shown in the field, or leave it blank and choose Run.";
-          sim.insertBefore(mismatch, $(".ccsim-note", sim)); input.setAttribute("aria-invalid", "true"); input.focus(); return;
+          var mismatch = document.createElement("div"); mismatch.className = "ccsim-mismatch"; mismatch.setAttribute("role", "status");
+          sim.insertBefore(mismatch, $(".ccsim-note", sim)); input.setAttribute("aria-invalid", "true"); input.focus();
+          // a live region announces changes made after it is in the DOM, not content it was created with
+          requestAnimationFrame(function () { mismatch.textContent = "Guided step: type the suggested command shown in the field, or leave it blank and choose Run."; }); return;
         }
         clearMismatch();
         var typed = entered || expected;
@@ -1054,8 +1070,9 @@
     var msg = right === qs.length ? "Perfect score. That idea is yours now." : right >= qs.length / 2 ? "Solid. Read the explanations for the ones you missed, then retry." : "Worth another pass — reread the section, then retry.";
     var row = $(".quiz-score", quiz) || document.createElement("div");
     row.className = "quiz-score"; row.setAttribute("role", "status");
-    row.innerHTML = '<span class="quiz-score-num">' + right + " / " + qs.length + '</span><span class="quiz-score-msg">' + msg + '</span><button class="quiz-retry btn-sm" type="button">↻ Retry</button>';
-    quiz.appendChild(row);
+    if (!row.isConnected) quiz.appendChild(row); // in the DOM before it gets content, so the status is announced
+    var scoreHtml = '<span class="quiz-score-num">' + right + " / " + qs.length + '</span><span class="quiz-score-msg">' + msg + '</span><button class="quiz-retry btn-sm" type="button">↻ Retry</button>';
+    requestAnimationFrame(function () { row.innerHTML = scoreHtml; });
     if (right === qs.length && qs.length > 1) burstConfetti();
   }
   function retryQuiz(quiz) {
@@ -1280,7 +1297,7 @@
     $('#focusBtn').hidden = document.body.dataset.view !== 'lesson';
     $all('.global-nav a').forEach(function (a) { var active = a.dataset.view === document.body.dataset.view || (a.dataset.view === 'learning' && ['me', 'review', 'notebook'].indexOf(parts[0]) !== -1); if (active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
     closeShortcuts();
-    closeTerm();
+    closeTerm(true);
     if (!parts.length) { renderHub(); return; }
     if (parts[0] === "studio") { pageShell("Practice studio"); window.EXPERIENCE.studioPage({ download: download, toast: toast }); return; }
     if (parts[0] === "account") { pageShell("Your account"); window.ACCOUNT.renderAccount(); return; }

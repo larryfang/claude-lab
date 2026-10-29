@@ -279,3 +279,76 @@ test("keyboard users can see focus on the simulator, the import control, and scr
   await page.goto("/#/cowork/what-is-cowork");
   expect(await page.locator(".quiz-opt").first().evaluate((el) => getComputedStyle(el).borderTopColor)).toBe("rgb(132, 126, 116)");
 });
+
+test("the glossary popover takes focus and gives it back, and the page outline precedes the article", async ({ page }) => {
+  await page.goto("/#/claude-code/cc-hooks");
+  const term = page.locator("article.lesson button.term").first();
+  await term.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#termPop")).toBeVisible();
+  expect(await page.evaluate(() => document.getElementById("termPop").contains(document.activeElement))).toBe(true);
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#termPop .term-add")).toBeFocused();
+  // activating Add disables the button; focus must stay inside the popover and Escape returns to the term
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#termPop .term-add")).toBeDisabled();
+  expect(await page.evaluate(() => document.getElementById("termPop").contains(document.activeElement))).toBe(true);
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#termPop")).toBeHidden();
+  await expect(term).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#termPop")).toBeVisible();
+  await page.keyboard.press("Tab");
+  // leaving the popover's last control closes it and returns to the term
+  const controls = await page.locator("#termPop a[href], #termPop button:not([disabled])").count();
+  for (let i = 1; i < controls; i++) await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#termPop")).toBeHidden();
+  await expect(term).toBeFocused();
+  await page.setViewportSize({ width: 390, height: 800 });
+  await page.goto("/#/cowork/the-brief");
+  await expect(page.locator(".toc-rail nav[aria-label='On this page']")).toHaveCount(1);
+  expect(await page.evaluate(() => !!(document.querySelector(".toc-rail").compareDocumentPosition(document.querySelector(".lesson-main")) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/#/cowork/the-brief");
+  const [rail, main] = await Promise.all([page.locator(".toc-rail").boundingBox(), page.locator(".lesson-main").boundingBox()]);
+  expect(rail.x).toBeGreaterThan(main.x + main.width - 1);
+});
+
+test("headings, landmarks and the theme button describe the page honestly", async ({ page }) => {
+  await page.addInitScript(() => {
+    const activity = {};
+    for (let d = 0; d < 112; d += 7) activity[new Date(Date.now() - d * 864e5).toISOString().slice(0, 10)] = 2;
+    localStorage.setItem("claudelab.v2", JSON.stringify({ courses: {}, activity }));
+  });
+  const levels = () => page.locator("#content h1, #content h2, #content h3").evaluateAll((els) => els.map((el) => Number(el.tagName[1])));
+  await page.goto("/#/me");
+  const me = await levels();
+  expect(me[0]).toBe(1);
+  await expect(page.locator("#content [data-guest-prompt] h2")).toBeVisible();
+  await page.goto("/#/cowork");
+  expect(await page.locator(".dash-info h2").evaluate((el) => getComputedStyle(el).fontFamily)).toMatch(/Space Grotesk|Fraunces/);
+  await page.goto("/#/review");
+  expect(await levels()).not.toContain(3);
+  await page.goto("/#/studio");
+  const studio = await levels();
+  expect(studio.indexOf(3) === -1 || studio.indexOf(2) < studio.indexOf(3)).toBe(true);
+  await expect(page.locator(".studio-workbench")).toHaveAttribute("aria-label", "Practice kit");
+  await page.goto("/#/cowork/certificate");
+  await expect(page.locator("#content h1")).toHaveCount(1);
+  await expect(page.locator("#nav")).toHaveAttribute("aria-label", "Course lessons");
+  await expect(page.locator("#themeBtn")).toHaveAttribute("aria-pressed", "false");
+  await page.locator("#themeBtn").click();
+  await expect(page.locator("#themeBtn")).toHaveAttribute("aria-pressed", "true");
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto("/#/me");
+  const heat = page.locator(".heat");
+  await expect(heat).toHaveAttribute("tabindex", "0");
+  await expect(heat).toHaveAttribute("role", "region");
+  await expect(heat).toHaveAttribute("aria-label", /newest week on the right/);
+  expect(await heat.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(true);
+  expect(await heat.evaluate((el) => el.scrollLeft > 0 && el.scrollLeft + el.clientWidth >= el.scrollWidth - 1)).toBe(true);
+  // the heading levels changed for structure, not size
+  await page.goto("/#/cowork");
+  expect(await page.locator(".dash-info h2").evaluate((el) => parseFloat(getComputedStyle(el).fontSize))).toBeLessThan(20);
+});

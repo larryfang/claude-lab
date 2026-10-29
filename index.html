@@ -19,9 +19,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="assets/css/styles.css?v=2026-10-29t" />
-  <link rel="stylesheet" href="assets/css/experience.css?v=2026-10-29t" />
-  <link rel="stylesheet" href="assets/css/admin.css?v=2026-10-29t" />
+  <link rel="stylesheet" href="assets/css/styles.css?v=2026-10-29u" />
+  <link rel="stylesheet" href="assets/css/experience.css?v=2026-10-29u" />
+  <link rel="stylesheet" href="assets/css/admin.css?v=2026-10-29u" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -54,7 +54,7 @@
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.2-3.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <span>Find a lesson</span><kbd>/</kbd>
       </button>
-      <button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode" title="Toggle theme">
+      <button class="icon-btn" id="themeBtn" aria-label="Dark mode" aria-pressed="false" title="Toggle theme">
         <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="2"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M19.4 4.6l-1.8 1.8M6.4 17.6l-1.8 1.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
       </button>
@@ -69,7 +69,7 @@
   <div class="layout">
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar" aria-label="Course navigation">
-      <nav class="nav" id="nav"><!-- built by app.js --></nav>
+      <nav class="nav" id="nav" aria-label="Course lessons"><!-- built by app.js --></nav>
       <div class="sidebar-footer">
         <button class="reset-btn" id="resetBtn" title="Clear your saved progress">Reset progress</button>
       </div>
@@ -119,17 +119,17 @@
   <!-- Cache busting: bump every ?v= together when you ship a JS or CSS change.
        Use the same string on all asset URLs.
        Lesson Markdown does not need it — app.js fetches content/ with cache:"no-cache". -->
-  <script src="assets/vendor/supabase-2.117.2.js?v=2026-10-29t"></script>
-  <script src="assets/js/cloud-config.js?v=2026-10-29t"></script>
-  <script src="assets/js/cloud-state.js?v=2026-10-29t"></script>
-  <script src="assets/js/admin.js?v=2026-10-29t"></script>
-  <script src="assets/js/account.js?v=2026-10-29t"></script>
-  <script src="assets/js/markdown.js?v=2026-10-29t"></script>
-  <script src="assets/js/widgets.js?v=2026-10-29t"></script>
-  <script src="assets/js/checkers.js?v=2026-10-29t"></script>
-  <script src="assets/js/content.js?v=2026-10-29t"></script>
-  <script src="assets/js/usage.js?v=2026-10-29t"></script>
-  <script src="assets/js/experience.js?v=2026-10-29t"></script>
-  <script src="assets/js/app.js?v=2026-10-29t"></script>
+  <script src="assets/vendor/supabase-2.117.2.js?v=2026-10-29u"></script>
+  <script src="assets/js/cloud-config.js?v=2026-10-29u"></script>
+  <script src="assets/js/cloud-state.js?v=2026-10-29u"></script>
+  <script src="assets/js/admin.js?v=2026-10-29u"></script>
+  <script src="assets/js/account.js?v=2026-10-29u"></script>
+  <script src="assets/js/markdown.js?v=2026-10-29u"></script>
+  <script src="assets/js/widgets.js?v=2026-10-29u"></script>
+  <script src="assets/js/checkers.js?v=2026-10-29u"></script>
+  <script src="assets/js/content.js?v=2026-10-29u"></script>
+  <script src="assets/js/usage.js?v=2026-10-29u"></script>
+  <script src="assets/js/experience.js?v=2026-10-29u"></script>
+  <script src="assets/js/app.js?v=2026-10-29u"></script>
 </body>
 </html>
